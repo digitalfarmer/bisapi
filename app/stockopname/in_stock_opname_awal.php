@@ -8,7 +8,7 @@ class in_stock_opname_awal extends Model
 {
     
     protected $table='in_stock_opname_awal';
-    #protected $id=['No_Kertas_Kerja','Kode_Barang','Level'];
+    protected $id='no_kertas_kerja';
     protected $fillable =[
         'No_Kertas_Kerja',
         'Kode_Barang',
