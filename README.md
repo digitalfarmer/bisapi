@@ -41,6 +41,7 @@ We would like to extend our thanks to the following sponsors for funding Laravel
 - **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
 - **[DevSquad](https://devsquad.com)**
 - [UserInsights](https://userinsights.com)
+- [LobotIjo](https://difitalfarmer.github.io)
 - [Fragrantica](https://www.fragrantica.com)
 - [SOFTonSOFA](https://softonsofa.com/)
 - [User10](https://user10.com)
