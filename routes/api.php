@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
  Route::get('bismysql/getUpdatePickingItem/{picking_id}','BISAPIController@getUpdatePickingItem');  
  Route::get('bismysql/sentStockAdjusment/{adjustment_id}','BISAPIController@sentStockAdjusment');   
  Route::get('bismysql/getSessionID','BISAPIController@getSessionID');  
- Route::get('bismysql/kartuStok/{no_kertas_kerja}','BISAPIController@kartuStok');  
+ Route::get('bismysql/KartuStokAdjustment/{no_kertas_kerja}','BISAPIController@KartuStokAdjustment');  
  
  Route::get('stockopname','StockOpnameController@index');
  Route::post('stockopname','StockOpnameController@store');
