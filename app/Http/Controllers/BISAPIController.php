@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\DB;
  
 use App\in_delivery_model;
 use App\in_delivery_detail_model;
@@ -11,7 +12,6 @@ use App\in_delivery_flag_wms_model;
 use App\ms_barang_satuan_model;
 use App\in_stock_opname_model;
 use App\in_stock_opname_selisih_model;
-use App\DB;
 use Session;
 
 use Illuminate\Http\Request;
@@ -33,13 +33,50 @@ class BISAPIController extends Controller
 
       //   }
 
-    public function kartuStok(request $request)
+    public function KartuStokAdjustment(request $request)
     {      
         // /KJBLG20200800001
+
+        /* BISMySQL Query
+      'insert into in_kartu_stok_detail '+
+      'select  '+
+      'date_format(so.tanggal,"%Y%m"),  '+
+      'so.no_kertas_kerja,  '+
+      '"ADJUSTMENT",  '+
+      'so.tanggal, '+
+      'iso.kode_barang,  '+
+      'so.kode_gudang,  '+
+      'case so.status_barang '+
+      'when "BAIK" then "AVAILABLE" '+
+      'when "SEMI RUSAK" then "DEFECT" '+
+      'when "RUSAK" then "REJECT" '+
+      'when "BERMASALAH" then "PENDING" '+
+      'when "HOLD" then "HOLD" '+
+      'end, '+
+      'iso.no_batch,  '+
+      'iso.level,  '+
+      'sum(iso.jumlah),  '+
+      'mbs.harga_beli,  '+
+      '"LAINLAIN", "", '+
+      'iso.kadaluarsa, '+
+      'so.time_stamp '+	  
+      'from '+
+      'in_stock_opname so, '+
+      'in_stock_opname_selisih iso, '+
+      'ms_barang_satuan mbs '+
+      'where  '+
+      'so.no_kertas_kerja="'+no_ref+'" '+
+      'and iso.no_kertas_kerja=so.no_kertas_kerja '+
+      'and mbs.kode_barang=iso.kode_barang '+
+      'and mbs.level=iso.level '+
+      'group by so.no_kertas_kerja, so.kode_gudang, iso.kode_barang, iso.no_batch, so.status_barang, iso.kadaluarsa, iso.level';
+
+        */
         
         $no_ref = substr($request->no_kertas_kerja,0,5).'/'.substr($request->no_kertas_kerja,5,6).'/'.substr($request->no_kertas_kerja,11,5);
                                     
         $opname = in_stock_opname_model::where('in_stock_opname.no_kertas_kerja',$no_ref) 
+                                        ->where('in_stock_opname.Status','POST')
                                         ->join('in_stock_opname_selisih','in_stock_opname.no_kertas_kerja','=','in_stock_opname_selisih.no_kertas_kerja')
                                         ->join('ms_barang_satuan', function($join)
                                                         {
@@ -48,46 +85,98 @@ class BISAPIController extends Controller
                                                         } 
                                         )                                                   
                                         ->select(
-                                        #'in_stock_opname.Status_Barang',  
-                                        #'in_stock_opname.Status',
-                                        #'in_stock_opname.User_ID',           
-                                        #'in_stock_opname.Time_Stamp',   
-                                        //  'in_stock_opname_selisih.Jumlah',  
+                                        DB::raw('date_format(in_stock_opname.tanggal,"%Y%m") Periode'),
+                                        DB::raw('"ADJUSTMENT" Jenis_Transaksi'),
+                                        'in_stock_opname.Tanggal as Tgl_Transaksi',
                                         'in_stock_opname.No_Kertas_Kerja',     
                                         'in_stock_opname.Kode_Principal',  
                                         'in_stock_opname.Kode_Divisi_Produk',  
                                         'in_stock_opname.Kode_Gudang',  
-                                        'in_stock_opname.Tanggal',                                                                                  
-                                        'in_stock_opname_selisih.No_Kertas_Kerja',     
+                                        DB::raw('case in_stock_opname.status_barang '.
+                                        'when "BAIK" then "AVAILABLE" '.
+                                        'when "SEMI RUSAK" then "DEFECT" '.
+                                        'when "RUSAK" then "REJECT" '.
+                                        'when "BERMASALAH" then "PENDING" '.
+                                        'when "HOLD" then "HOLD" '.
+                                        'end as Status_Barang'),
+                                        //'in_stock_opname.Tanggal',                                                                                  
+                                       // 'in_stock_opname_selisih.No_Kertas_Kerja',     
                                         'in_stock_opname_selisih.Kode_Barang',  
                                         'in_stock_opname_selisih.No_Batch',    
-                                        'in_stock_opname_selisih.Kadaluarsa',   
+                                        'in_stock_opname_selisih.Kadaluarsa',
+                                        DB::raw('sum(in_stock_opname_selisih.jumlah) as Jumlah'),        
+                                        'ms_barang_satuan.Harga_Beli',                                 
                                         'in_stock_opname_selisih.Level',                                        
                                         'ms_barang_satuan.Satuan',
-                                        'in_stock_opname_selisih.Referensi'          
-                                        )
-                                        //so.no_kertas_kerja, so.kode_gudang, iso.kode_barang, iso.no_batch, 
-                                        //so.status_barang, iso.kadaluarsa, iso.level'
-                                        //->raw('sum(in_stock_opname_selisih.Jumlah) as Jumlah')                                        
-                                        ->groupBy('in_stock_opname.No_Kertas_Kerja',     
+                                        'in_stock_opname_selisih.Referensi',
+                                        DB::raw('Now() as TimeStamp')
+                                        )                                 
+                                        ->groupBy(
+                                        DB::raw('date_format(in_stock_opname.tanggal,"%Y%m")'),
+                                        'in_stock_opname.Tanggal',
+                                        'Jenis_Transaksi',
+                                        'in_stock_opname.No_Kertas_Kerja',     
                                         'in_stock_opname.Kode_Principal',  
                                         'in_stock_opname.Kode_Divisi_Produk',  
                                         'in_stock_opname.Kode_Gudang',  
-                                        'in_stock_opname.Tanggal',                                                                                  
+                                        'in_stock_opname.Tanggal',   
+                                        'in_stock_opname.status_barang',                                                                                    
                                         'in_stock_opname_selisih.No_Kertas_Kerja',     
                                         'in_stock_opname_selisih.Kode_Barang',  
-                                        'in_stock_opname_selisih.No_Batch',    
-                                        'in_stock_opname_selisih.Kadaluarsa',   
+                                        'in_stock_opname_selisih.No_Batch',     
+                                        'in_stock_opname_selisih.Kadaluarsa', 
+                                        'ms_barang_satuan.Harga_Beli',  
                                         'in_stock_opname_selisih.Level',
                                         'ms_barang_satuan.Satuan',
-                                        'in_stock_opname_selisih.Referensi') 
-                                         ->get();
+                                        'in_stock_opname_selisih.Referensi',
+                                        'TimeStamp'
+                                        ) 
+                                        ->get();
         
-        response()->json([ 
+        $rowCount=0;
+ 
+        foreach ($opname as  $opnameItem)
+        {
+                $OpnameData[$rowCount]['Periode']         =  $opnameItem['Periode'];
+                $OpnameData[$rowCount]['No_Transaksi'] =  $opnameItem['No_Kertas_Kerja'];
+                $OpnameData[$rowCount]['Jenis_Transaksi'] =  $opnameItem['Jenis_Transaksi'];
+                $OpnameData[$rowCount]['Tgl_Transaksi']   =  $opnameItem['Tgl_Transaksi'];    
+                $OpnameData[$rowCount]['Barang'] =  $opnameItem['Kode_Barang'];        
+                $OpnameData[$rowCount]['Gudang'] =  $opnameItem['Kode_Gudang'];  
+                $OpnameData[$rowCount]['STATUS'] =  $opnameItem['Status_Barang'];
+                $OpnameData[$rowCount]['Batch'] =  $opnameItem['No_Batch'];
+                $OpnameData[$rowCount]['Level_Asal'] =  $opnameItem['Level'];
+                $OpnameData[$rowCount]['Net'] =  $opnameItem['Jumlah'];
+                $OpnameData[$rowCount]['Harga_Beli'] =  $opnameItem['Harga_Beli'];
+                $OpnameData[$rowCount]['Keterangan'] =  'LAINLAIN';
+                $OpnameData[$rowCount]['ID_Program_Promosi'] =  '';
+                $OpnameData[$rowCount]['Expired'] =  $opnameItem['Kadaluarsa'];
+                $OpnameData[$rowCount]['TimeStamp'] =  $opnameItem['TimeStamp'];
+              
+                $rowCount++;
+
+        }
+        
+       // return($OpnameData);
+        if (count($OpnameData)>0) 
+        { 
+           $saved=in_stock_opname_detail_model::insert($OpnameData);
+            if($saved)
+            {
+            response()->json([ 
                         'success'=>1,                       
-                        'data'=>$opname,
+                        'data'=>$OpnameData,
                         'nomor'=>$no_ref                        
-                        ])->send();   
+                        ])->send();  
+            } 
+        } 
+        else
+        {   
+            response()->json([ 
+                'success'=>0,                    
+                'message'=>'Selisih No KKSO '.$no_ref.' Tidak ada !'                        
+                ])->send();    
+        }
                                                 
                                                  
   
@@ -143,7 +232,7 @@ class BISAPIController extends Controller
         $uid        = $odoo->getUid();
         $db         = $odoo->getdb();
 
-        $sesi['session_id']  =$session_id;
+        $sesi['session_id'] = $session_id;
         $sesi['user'] = $username;
         $sesi['uid']  = $uid;
         $sesi['db']   = $db;

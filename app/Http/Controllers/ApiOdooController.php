@@ -56,7 +56,7 @@ class ApiOdooController extends Controller
                 $rowCount++;   
             }         
 
-        return($Do_Detail);         
+         
     }
 
     public function get_moveid($picking_id, $product_id, $product_uom)//, $product_id)
