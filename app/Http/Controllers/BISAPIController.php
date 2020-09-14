@@ -12,6 +12,7 @@ use App\in_delivery_flag_wms_model;
 use App\ms_barang_satuan_model;
 use App\in_stock_opname_model;
 use App\in_stock_opname_selisih_model;
+use App\in_kartu_stok_detail_model;
 use Session;
 
 use Illuminate\Http\Request;
@@ -70,7 +71,6 @@ class BISAPIController extends Controller
       'and mbs.kode_barang=iso.kode_barang '+
       'and mbs.level=iso.level '+
       'group by so.no_kertas_kerja, so.kode_gudang, iso.kode_barang, iso.no_batch, so.status_barang, iso.kadaluarsa, iso.level';
-
         */
         
         $no_ref = substr($request->no_kertas_kerja,0,5).'/'.substr($request->no_kertas_kerja,5,6).'/'.substr($request->no_kertas_kerja,11,5);
@@ -99,8 +99,6 @@ class BISAPIController extends Controller
                                         'when "BERMASALAH" then "PENDING" '.
                                         'when "HOLD" then "HOLD" '.
                                         'end as Status_Barang'),
-                                        //'in_stock_opname.Tanggal',                                                                                  
-                                       // 'in_stock_opname_selisih.No_Kertas_Kerja',     
                                         'in_stock_opname_selisih.Kode_Barang',  
                                         'in_stock_opname_selisih.No_Batch',    
                                         'in_stock_opname_selisih.Kadaluarsa',
@@ -138,29 +136,36 @@ class BISAPIController extends Controller
         foreach ($opname as  $opnameItem)
         {
                 $OpnameData[$rowCount]['Periode']         =  $opnameItem['Periode'];
-                $OpnameData[$rowCount]['No_Transaksi'] =  $opnameItem['No_Kertas_Kerja'];
+                $OpnameData[$rowCount]['No_Transaksi']    =  $opnameItem['No_Kertas_Kerja'];
                 $OpnameData[$rowCount]['Jenis_Transaksi'] =  $opnameItem['Jenis_Transaksi'];
                 $OpnameData[$rowCount]['Tgl_Transaksi']   =  $opnameItem['Tgl_Transaksi'];    
-                $OpnameData[$rowCount]['Barang'] =  $opnameItem['Kode_Barang'];        
-                $OpnameData[$rowCount]['Gudang'] =  $opnameItem['Kode_Gudang'];  
-                $OpnameData[$rowCount]['STATUS'] =  $opnameItem['Status_Barang'];
-                $OpnameData[$rowCount]['Batch'] =  $opnameItem['No_Batch'];
-                $OpnameData[$rowCount]['Level_Asal'] =  $opnameItem['Level'];
-                $OpnameData[$rowCount]['Net'] =  $opnameItem['Jumlah'];
-                $OpnameData[$rowCount]['Harga_Beli'] =  $opnameItem['Harga_Beli'];
-                $OpnameData[$rowCount]['Keterangan'] =  'LAINLAIN';
+                $OpnameData[$rowCount]['Barang']          =  $opnameItem['Kode_Barang'];        
+                $OpnameData[$rowCount]['Gudang']          =  $opnameItem['Kode_Gudang'];  
+                $OpnameData[$rowCount]['STATUS']          =  $opnameItem['Status_Barang'];
+                $OpnameData[$rowCount]['Batch']           =  $opnameItem['No_Batch'];
+                $OpnameData[$rowCount]['Level_Asal']      =  $opnameItem['Level'];
+                $OpnameData[$rowCount]['Net']             =  $opnameItem['Jumlah'];
+                $OpnameData[$rowCount]['Harga_Beli']      =  $opnameItem['Harga_Beli'];
+                $OpnameData[$rowCount]['Keterangan']         =  'LAINLAIN';
                 $OpnameData[$rowCount]['ID_Program_Promosi'] =  '';
-                $OpnameData[$rowCount]['Expired'] =  $opnameItem['Kadaluarsa'];
-                $OpnameData[$rowCount]['TimeStamp'] =  $opnameItem['TimeStamp'];
-              
+                $OpnameData[$rowCount]['Expired']            =  $opnameItem['Kadaluarsa'];
+                if($OpnameData[$rowCount]['Expired']!="0000-00-00") {
+                    $OpnameData[$rowCount]['Expired']        =  $opnameItem['Kadaluarsa'];
+                }
+                else {
+                    $OpnameData[$rowCount]['Expired']        = '1999-09-09';
+                }
+             
+                
+                $OpnameData[$rowCount]['TimeStamp']          =  $opnameItem['TimeStamp'];
                 $rowCount++;
-
         }
         
        // return($OpnameData);
         if (count($OpnameData)>0) 
-        { 
-           $saved=in_stock_opname_detail_model::insert($OpnameData);
+        {  
+            
+            $saved=in_kartu_stok_detail_model::insert($OpnameData);
             if($saved)
             {
             response()->json([ 
@@ -169,6 +174,17 @@ class BISAPIController extends Controller
                         'nomor'=>$no_ref                        
                         ])->send();  
             } 
+            else 
+            {
+                
+               response()->json([ 
+                'success'=>0,                       
+                'data'=>$OpnameData,
+                'nomor'=>$no_ref                        
+                ])->send();
+                exit;
+            }             
+             
         } 
         else
         {   
@@ -179,46 +195,7 @@ class BISAPIController extends Controller
         }
                                                 
                                                  
-  
-        # 'insert into in_kartu_stok_detail '.             
-        /*
-          $stock_opname2 = select(DB::raw(                     
-            'select  '.
-            'date_format(so.tanggal,"%Y%m"),  '.
-            'so.no_kertas_kerja,  '.
-            '"ADJUSTMENT",  '.
-            'so.tanggal, '.
-            'iso.kode_barang,  '.
-            'so.kode_gudang,  '.
-            'case so.status_barang '.
-            'when "BAIK" then "AVAILABLE" '.
-            'when "SEMI RUSAK" then "DEFECT" '.
-            'when "RUSAK" then "REJECT" '.
-            'when "BERMASALAH" then "PENDING" '.
-            'when "HOLD" then "HOLD" '.
-            'end,'.
-            'iso.no_batch,'.
-            'iso.level,  '.
-            'sum(iso.jumlah),  '.
-            'mbs.harga_beli,  '.
-            '"LAINLAIN",'+
-            '"", '.
-            'iso.kadaluarsa, '.
-            'so.time_stamp '.
-            'from '.
-
-            'in_stock_opname so,'.
-            'in_stock_opname_selisih iso,'.
-            'ms_barang_satuan mbs '.
-
-            'where  '.
-            'so.no_kertas_kerja="'.$no_ref.'" '.
-            'and iso.no_kertas_kerja=so.no_kertas_kerja '.
-            'and mbs.kode_barang=iso.kode_barang '.
-            'and mbs.level=iso.level '.
-            'group by so.no_kertas_kerja, so.kode_gudang, iso.kode_barang,'.
-            'iso.no_batch, so.status_barang, iso.kadaluarsa, iso.level';     
-            */   
+   
 
     }
 
