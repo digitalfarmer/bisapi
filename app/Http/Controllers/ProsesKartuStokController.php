@@ -11,11 +11,9 @@ use Illuminate\Http\Request;
 
 class ProsesKartuStokController extends Controller
 {
-
     public function KartuStokAdjustment($no_kertas_kerja)
     {      
-        
-        
+
         $no_ref = substr($no_kertas_kerja,0,5).'/'.substr($no_kertas_kerja,5,6).'/'.substr($no_kertas_kerja,11,5);
                                     
         $opname = in_stock_opname_model::where('in_stock_opname.no_kertas_kerja',$no_ref) 
