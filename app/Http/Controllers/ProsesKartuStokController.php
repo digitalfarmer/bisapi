@@ -4,9 +4,9 @@ use Illuminate\Support\Facades\DB;
 
 use App\ms_barang_satuan_model;
 use App\in_stock_opname_model;
-use App\in_stock_opname_awal_model;
-use App\in_stock_opname_hasil_model;
-use App\in_stock_opname_selisih_model;
+use App\stockopname\in_stock_opname_awal;
+use App\stockopname\in_stock_opname_hasil;
+use App\stockopname\in_stock_opname_selisih;
 use App\in_kartu_stok_detail_model;
 use App\sy_konfigurasi_model;
 use App\mapping\ms_odoo_map_uom_product_model;
@@ -532,6 +532,7 @@ class ProsesKartuStokController extends Controller
         $Sudah_Pernah=StockOpnameMapping::select('no_kertas_kerja') 
                                         ->where('inventory_id','=',(int)$request->adjustment_id)
                                         ->get();
+        #return($Sudah_Pernah);
         if(count($Sudah_Pernah)>0)
         {
             response()->json(['success'=>0,
@@ -601,7 +602,7 @@ class ProsesKartuStokController extends Controller
                                     ->fields('name')                                                                   
                                     ->get('product.category'); 
 
-        $kode_gudang = 
+        $Kode_Gudang =$result['warehouse_code']; 
 
                 
         $opname=[];    
@@ -611,7 +612,7 @@ class ProsesKartuStokController extends Controller
         $opname['No_Kertas_Kerja']    = $no_kj;
         $opname['Kode_Principal']     = $Kode_Principal;
         $opname['Kode_Divisi_Produk'] = $Kode_Divisi_Produk;
-        $opname['Kode_Gudang']        = $result['warehouse_code'];;        
+        $opname['Kode_Gudang']        = $Kode_Gudang;       
         $opname['Tanggal']            = $result['date'];
         $opname['Status_Barang']      = 'BAIK';               
         $opname['Status']             = 'POST';                        
@@ -679,28 +680,39 @@ class ProsesKartuStokController extends Controller
             $row++;
         };
 
-        try {
+        try 
+        {
             DB::beginTransaction();
-            $saved         = in_stock_opname_model::insert($opname);  
-            $saved_awal    = in_stock_opname_awal_model::insert($opname_awal);
-            $saved_hasil   = in_stock_opname_hasil_model::insert($opname_hasil);
-            $saved_selisih = in_stock_opname_selisih_model::insert($opname_selisih);                        
+            $saved         = in_stock_opname_model::insert($opname);            
+            $saved_awal    = in_stock_opname_awal::insert($opname_awal);                        
+            $saved_hasil   = in_stock_opname_hasil::insert($opname_hasil);
+            $saved_selisih = in_stock_opname_selisih::insert($opname_selisih);   
                 
             $opname_mapping['no_kertas_kerja']= $no_kj;
             $opname_mapping['inventory_id']   = $result['inventory_id'];
             $opname_mapping['created_at']     = Carbon::now('Asia/Jakarta'); 
             StockOpnameMapping::insert($opname_mapping);                                                         
+            $updated=in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
+                                                    ->update([
+                                                     'no_kkso'=>$no_kj,                                                     
+                                                     'Kode_Gudang'=>$Kode_Gudang,
+                                                     'Kode_Principal'=>$Kode_Principal,
+                                                     'Kode_Divisi_Produk'=>$Kode_Divisi_Produk,
+                                                     'Status_Adjustment'=>'done',
+                                                     'Tgl_Akhir'=>Carbon::now('Asia/Jakarta')
+                                                     ]);         
+                 
                                 response()->json([
                                     'success'=>1,
                                     'code'=>200,
                                     'kkso_number'=>$no_kj,
                                     'message'=>'No KKSO Berhasil dibuat di BISMySQL dengan Nomor : '.$no_kj 
                                 ])->send(); 
-            DB::commit();                             
+           DB::commit();                             
         } catch(\Exception $e)
         {
-            DB::rollback();
-            response()->json([
+           DB::rollback();
+           response()->json([
                    'success'=>0,
                    'code'=>400,
                    'message'=>'Inventory Adjustment dengan ID : '.$request->adjustment_id.' Gagal di Proses ! '])->send(); 
@@ -713,9 +725,9 @@ class ProsesKartuStokController extends Controller
     public function FlagBlockingStock(Request $request)   
     {
         $data['adjustment_id']       = $request['adjustment_id'] ;   
-        $sudah_ada=in_stock_opname_blocking_model::where('adjustment_id','=', $data['adjustment_id'])
-                                                  ->select('adjustment_id')
-                                                  ->get();  
+        $sudah_ada = in_stock_opname_blocking_model::where('adjustment_id','=', $data['adjustment_id'])
+                                                     ->select('adjustment_id')
+                                                     ->get();  
         
         if(count($sudah_ada)<=0) {           
             if ($data['adjustment_id']) 

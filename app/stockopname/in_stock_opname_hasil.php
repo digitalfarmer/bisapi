@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class in_stock_opname_hasil extends Model
 {
     protected $table='in_stock_opname_hasil';
-    protected $id='no_kertas_kerja';
+    #protected $id='no_kertas_kerja';
     protected $fillable =[
         'No_Kertas_Kerja',
         'Kode_Barang'   ,
