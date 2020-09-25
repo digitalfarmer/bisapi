@@ -329,12 +329,12 @@ class ProsesKartuStokController extends Controller
     }
 
 
-    public function sendStockAdjustment(request $request)
+    public function sendStockAdjustmentx(request $request)
     {
 
         $Sudah_Pernah=StockOpnameMapping::select('no_kertas_kerja') 
-                                        ->where('inventory_id','=',(int)$request->adjustment_id)
-                                        ->get();
+                                         ->where('inventory_id','=',(int)$request->adjustment_id)
+                                         ->get();
         if(count($Sudah_Pernah)>0)
         {
             response()->json(['success'=>0,
@@ -343,8 +343,6 @@ class ProsesKartuStokController extends Controller
                               ' Sudah Pernah di Proses Sebelumnya dengan No KKSO : '.$Sudah_Pernah[0]['no_kertas_kerja']])->send(); 
             exit;
         }
-
-
 
         $odoo   = new \Edujugon\Laradoo\Odoo();
         $odoo   = $odoo->connect();   
@@ -526,7 +524,7 @@ class ProsesKartuStokController extends Controller
 
 
 
-    public function sendStockAdjustment2(request $request)
+    public function sendStockAdjustment(request $request)
     {
 
         $Sudah_Pernah=StockOpnameMapping::select('no_kertas_kerja') 
@@ -541,8 +539,6 @@ class ProsesKartuStokController extends Controller
                               ' Sudah Pernah di Proses Sebelumnya dengan No KKSO : '.$Sudah_Pernah[0]['no_kertas_kerja']])->send(); 
             exit;
         }
-
-
 
         $odoo   = new \Edujugon\Laradoo\Odoo();
         $odoo   = $odoo->connect();   
@@ -572,8 +568,7 @@ class ProsesKartuStokController extends Controller
                                 ->whereRaw('YEAR(Tanggal) = ?',$year)                                
                                 ->orderBy('no_kertas_kerja','desc')     
                                 ->limit('1')
-                                ->get();
-        
+                                ->get();        
         
         if (count($NoKJ_BIS)>0)
         {                       
@@ -717,8 +712,7 @@ class ProsesKartuStokController extends Controller
                    'code'=>400,
                    'message'=>'Inventory Adjustment dengan ID : '.$request->adjustment_id.' Gagal di Proses ! '])->send(); 
                     exit;
-        }                      
-          
+        }                            
           
     }
 
