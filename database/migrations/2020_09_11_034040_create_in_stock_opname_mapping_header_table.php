@@ -16,7 +16,7 @@ class CreateInStockOpnameMappingHeaderTable extends Migration
         Schema::create('in_stock_opname_mapping_header', function (Blueprint $table) {
             $table->increments('id');
             $table->string('no_kertas_kerja');
-            $table->string('id_adjustment');
+            $table->string('inventory_id');
             $table->timestamps();
         });
     }

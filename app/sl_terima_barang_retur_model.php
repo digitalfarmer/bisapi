@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class sl_terima_barang_retur_model extends Model
 {
-    protected $table = 'sl_terima_barang_retur';     
-    protected $id='No_TBR';   
+    protected $table ='sl_terima_barang_retur';     
+    protected $id    ='No_TBR';   
     protected $fillable=
                         [
                         'No_BRB_Manual',   
@@ -22,5 +22,4 @@ class sl_terima_barang_retur_model extends Model
                         'User_ID'
                         ] ;                        
     public $timestamps=False;                        
-
 }

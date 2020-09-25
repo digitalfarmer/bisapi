@@ -11,7 +11,9 @@ class StockOpnameMapping extends Model
     protected $fillable =[
         'id'           ,    
         'no_kertas_kerja',  
-        'id_adjustment' 
+        'inventory_id',
+        'created_at',
+        'updated_at'
     ];
-    public $timestamps = false;
+    #public $timestamps = false;
 }

@@ -6,7 +6,7 @@ return [
     //Credentials
      
     //'host'       => 'http://192.168.21.21',  // should contain 'http://' or 'https://'
-    'host'       => 'http://192.168.21.21',  // should contain 'http://' or 'https://'
+    'host'       => 'http://192.168.21.21:8069',  // should contain 'http://' or 'https://'
     //'db'         => 'wms_blg_testing_20200901',
     //'db'         => 'wms_blg_testing_20200901',
     'db'         => 'wms_blg_testing_20200901',

@@ -24,7 +24,7 @@ class delivery extends Controller
         $doDetail = DoDetail::where('no_delivery',$no);
         $doDetail->update($doUpdate);
 
-        $res['message']='Succsess';
+        $res['message']='Success';
         $res['code']='200';
         return $res;        
     }

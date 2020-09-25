@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+ 
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -12,16 +13,16 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-//Route::get('students2','StudentsController@students2');
-//Route::get('getstock_move_line/{no_delivery}','ApiOdooController@get_rqStockMoveLine');
-//Route::get('bismysql/getStockMoveLineRow/{picking_id}','BISAPIController@getStockMoveLineRow');
-
+ 
 //route module stock picking
-Route::get('bismysql/getUpdatePickingItem/{picking_id}','BISAPIController@getUpdatePickingItem');  
-Route::get('bismysql/sentStockAdjusment/{adjustment_id}','BISAPIController@sentStockAdjusment');   
-Route::get('bismysql/getSessionID','BISAPIController@getSessionID');  
+  
+ Route::get('bismysql/getUpdatePickingItem/{picking_id}','BISAPIController@getUpdatePickingItem');  
+ Route::get('bismysql/getStockOpname/{adjustment_id}','ProsesKartuStokController@getStockOpname'); 
+ Route::get('bismysql/get_stock/{adjustment_id}','ProsesKartuStokController@get_stock');   
+ Route::get('bismysql/sendStockAdjustment/{adjustment_id}','ProsesKartuStokController@sendStockAdjustment');   
+ Route::get('bismysql/sendStockAdjustment2/{adjustment_id}','ProsesKartuStokController@sendStockAdjustment2');   
+   
+ 
+ //create kkso
+Route::get('/createadjustment','StockOpnameController@createkkso');
 
-//route module kartu stock
-Route::get('bismysql/kartuStok/{no_kertas_kerja}','BISAPIController@kartuStok');  
-Route::get('stockopname','StockOpnameController@index');
-Route::post('stockopname','StockOpnameController@store');
