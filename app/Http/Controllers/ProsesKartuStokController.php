@@ -8,14 +8,14 @@ use App\in_stock_opname_awal_model;
 use App\in_stock_opname_hasil_model;
 use App\in_stock_opname_selisih_model;
 use App\in_kartu_stok_detail_model;
-use App\mapping\ms_odoo_map_uom_product_model;
 use App\sy_konfigurasi_model;
+use App\mapping\ms_odoo_map_uom_product_model;
+use App\mapping\in_stock_opname_blocking_model; 
+use App\mapping\ms_mapping_wh_odoo_model;
 use App\stockopname\StockOpname; 
 use App\stockopname\StockOpnameMapping; 
-use App\mapping\ms_mapping_wh_odoo_model;
 use Carbon\Carbon;
 use Session;
-
 use Illuminate\Http\Request;
 
 class ProsesKartuStokController extends Controller
@@ -705,9 +705,45 @@ class ProsesKartuStokController extends Controller
                    'code'=>400,
                    'message'=>'Inventory Adjustment dengan ID : '.$request->adjustment_id.' Gagal di Proses ! '])->send(); 
                     exit;
-        }              
-            
+        }                      
           
           
     }
+
+    public function FlagBlockingStock(Request $request)   
+    {
+        $data['adjustment_id']       = $request['adjustment_id'] ;   
+        $sudah_ada=in_stock_opname_blocking_model::where('adjustment_id','=', $data['adjustment_id'])
+                                                  ->select('adjustment_id')
+                                                  ->get();  
+        
+        if(count($sudah_ada)<=0) {           
+            if ($data['adjustment_id']) 
+            {                            
+                $data['location_id']         = $request['location_id'] ;      
+                $data['principal_id']        = $request['principal_id'] ;             
+                $data['product_division_id'] = $request['product_division_id'] ;      
+                $data['Status_Adjustment']   = $request['state'];     
+                $data['Tgl_Awal']            = Carbon::now('Asia/Jakarta');          
+                $data['Tgl_Akhir']           = Carbon::now('Asia/Jakarta');      
+                in_stock_opname_blocking_model::insert($data);
+
+                response()->json([
+                                'success'=>1,
+                                'code'=>200,
+                                'adjustment_id'=>$data['adjustment_id'],
+                                'message'=>'Adjustment ID '.$data['adjustment_id'].' Sukses Booking Opname di BISMySQL !' 
+                ])->send(); 
+            }  
+        }  else
+        {
+            response()->json([
+                'success'=>0,
+                'code'=>400,
+                'adjustment_id'=>$data['adjustment_id'],
+                'message'=>'Adjustment ID '.$data['adjustment_id'].' Sudah pernah Booking Opname di BISMySQL !' 
+                ])->send(); 
+        }          
+    }
+        
 }

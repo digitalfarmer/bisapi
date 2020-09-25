@@ -21,6 +21,8 @@ use Illuminate\Support\Facades\Route;
  Route::get('bismysql/get_stock/{adjustment_id}','ProsesKartuStokController@get_stock');   
  Route::get('bismysql/sendStockAdjustment/{adjustment_id}','ProsesKartuStokController@sendStockAdjustment');   
  Route::get('bismysql/sendStockAdjustment2/{adjustment_id}','ProsesKartuStokController@sendStockAdjustment2');   
+ Route::post('bismysql/flagBlockingStock/{adjustment_id}','ProsesKartuStokController@FlagBlockingStock');   
+ 
    
  
  //create kkso

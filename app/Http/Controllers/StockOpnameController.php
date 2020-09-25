@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use Illuminate\Http\Request;
 use App\stockopname\StockOpname;
 use App\stockopname\in_stock_opname_awal;
@@ -47,7 +46,7 @@ class StockOpnameController extends Controller
         
         //build KJ from odoo
         $prefix_kj='KJBLG';
-                $postfix=$cupangserit+1;
+        $postfix=$cupangserit+1;
         $pr_id = sprintf("%05d", $postfix);
         $kj_odoo=$prefix_kj.'/'.$th.$mont.'/'.$pr_id;
         //$no_kertas_kerja=$prefix_kj.'/'.$th.$mont.'/'.$postfix;
@@ -126,7 +125,7 @@ class StockOpnameController extends Controller
        }
        $save_selisih=in_stock_opname_selisih::insert($stockopnameselisih);
 
-        return $stockopnameawal;
+       return $stockopnameawal;
     }
 
     /**
