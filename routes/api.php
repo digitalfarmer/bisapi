@@ -23,10 +23,14 @@ use Illuminate\Support\Facades\Route;
  Route::get('bismysql/get_stock/{adjustment_id}','ProsesKartuStokController@get_stock');     
  Route::post('bismysql/flagBlockingStock/{adjustment_id}','ProsesKartuStokController@FlagBlockingStock');   
 
- // BISMySQL numbering
- Route::post('bismysql/getNewNumber/{type_nomor}','BISMySQLController@getNewNumber');
+ //Cek Status Adjustment
  Route::post('bismysql/cekOpnameStatus','BISMySQLController@cekOpnameStatus');
  Route::get('bismysql/cekDivisiProdukOpname/{Kode_Divisi_Produk}','BISMySQLController@cekDivisiProdukOpname');
+ 
+
+ //BISMySQL numbering
+ Route::post('bismysql/getNewNumber/{type_nomor}','BISMySQLController@getNewNumber');
+ 
  
    
  

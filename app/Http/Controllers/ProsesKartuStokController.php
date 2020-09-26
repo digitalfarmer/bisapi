@@ -502,7 +502,7 @@ class ProsesKartuStokController extends Controller
             StockOpnameMapping::insert($opname_mapping);                                                         
 
             $updated = in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
-                                                    ->update([
+                                                      ->update([
                                                      'no_kkso'=>$no_kj,                                                     
                                                      'Kode_Gudang'=>$Kode_Gudang,
                                                      'Kode_Principal'=>$Kode_Principal,
@@ -552,7 +552,7 @@ class ProsesKartuStokController extends Controller
                 $data['Status_Adjustment']   = $request['state'];     
                 $data['Tgl_Awal']            = Carbon::now('Asia/Jakarta');          
                 $data['Tgl_Akhir']           = Carbon::now('Asia/Jakarta');   
-                   
+
                 in_stock_opname_blocking_model::insert($data);
 
                 response()->json([
