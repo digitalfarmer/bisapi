@@ -4,11 +4,11 @@ use Illuminate\Support\Facades\DB;
 
 use App\ms_barang_satuan_model;
 use App\in_stock_opname_model;
+use App\in_kartu_stok_detail_model;
+use App\sy_konfigurasi_model;
 use App\stockopname\in_stock_opname_awal;
 use App\stockopname\in_stock_opname_hasil;
 use App\stockopname\in_stock_opname_selisih;
-use App\in_kartu_stok_detail_model;
-use App\sy_konfigurasi_model;
 use App\mapping\ms_odoo_map_uom_product_model;
 use App\mapping\in_stock_opname_blocking_model; 
 use App\mapping\ms_mapping_wh_odoo_model;
@@ -320,10 +320,8 @@ class ProsesKartuStokController extends Controller
                 response()->json(['success'=>0,
                 'code'=>400,
                 'message'=>'No KKSO Gagal di proses di BISMYSQL  !'])->send(); 
-            }
-            
-        }     
-
+            }            
+        }    
       
     }
 
@@ -352,15 +350,14 @@ class ProsesKartuStokController extends Controller
                               'get_stock',
                               [(int)$request->adjustment_id]             
                             );                                
-                   
-       
+                          
         if (count($result)<=2)
         {
             response()->json([
-            'success'=>0,
-            'code'=>400,
-            'message'=>'Inventory Adjustment dengan ID : '.$request->adjustment_id.' Tidak di temukan ! '])->send(); 
-            exit;
+                        'success'=>0,
+                        'code'=>400,
+                        'message'=>'Inventory Adjustment dengan ID : '.$request->adjustment_id.' Tidak di temukan ! '])->send(); 
+                        exit;
         }
 
        
@@ -538,6 +535,7 @@ class ProsesKartuStokController extends Controller
           
     }
 
+    //Blocking Transaksi Ketika Opname
     public function FlagBlockingStock(Request $request)   
     {
         $data['adjustment_id']       = $request['adjustment_id'] ;   
@@ -553,7 +551,8 @@ class ProsesKartuStokController extends Controller
                 $data['product_division_id'] = $request['product_division_id'] ;      
                 $data['Status_Adjustment']   = $request['state'];     
                 $data['Tgl_Awal']            = Carbon::now('Asia/Jakarta');          
-                $data['Tgl_Akhir']           = Carbon::now('Asia/Jakarta');      
+                $data['Tgl_Akhir']           = Carbon::now('Asia/Jakarta');   
+                   
                 in_stock_opname_blocking_model::insert($data);
 
                 response()->json([

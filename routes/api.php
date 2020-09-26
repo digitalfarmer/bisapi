@@ -20,8 +20,14 @@ use Illuminate\Support\Facades\Route;
 //route module Stock Adjustment
  Route::get('bismysql/sendStockAdjustment/{adjustment_id}','ProsesKartuStokController@sendStockAdjustment');   
  Route::get('bismysql/getStockOpname/{adjustment_id}','ProsesKartuStokController@getStockOpname'); 
- Route::get('bismysql/get_stock/{adjustment_id}','ProsesKartuStokController@get_stock');    
+ Route::get('bismysql/get_stock/{adjustment_id}','ProsesKartuStokController@get_stock');     
  Route::post('bismysql/flagBlockingStock/{adjustment_id}','ProsesKartuStokController@FlagBlockingStock');   
+
+ // BISMySQL numbering
+ Route::post('bismysql/getNewNumber/{type_nomor}','BISMySQLController@getNewNumber');
+ Route::post('bismysql/cekOpnameStatus','BISMySQLController@cekOpnameStatus');
+ Route::get('bismysql/cekDivisiProdukOpname/{Kode_Divisi_Produk}','BISMySQLController@cekDivisiProdukOpname');
+ 
    
  
  //create kkso
