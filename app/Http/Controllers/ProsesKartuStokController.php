@@ -538,28 +538,35 @@ class ProsesKartuStokController extends Controller
     //Blocking Transaksi Ketika Opname
     public function FlagBlockingStock(Request $request)   
     {
-        $data['adjustment_id']       = $request['adjustment_id'] ;   
-        $sudah_ada = in_stock_opname_blocking_model::where('adjustment_id','=', $data['adjustment_id'])
+        $data=[];
+
+        $data['adjustment_id']       = $request->adjustment_id ;   
+        $sudah_ada = in_stock_opname_blocking_model::where('adjustment_id','=', (int)$data['adjustment_id'])
                                                      ->select('adjustment_id')
                                                      ->get();  
+        #return($data['adjustment_id']);
+
         
         if(count($sudah_ada)<=0) {           
             if ($data['adjustment_id']) 
-            {                            
-                $data['location_id']         = $request['location_id'] ;      
-                $data['principal_id']        = $request['principal_id'] ;             
-                $data['product_division_id'] = $request['product_division_id'] ;      
-                $data['Status_Adjustment']   = $request['state'];     
+            {   
+                $data['adjustment_id']       = (int)$data['adjustment_id'] ;                               
+                $data['location_id']         = $request->location_id ;      
+                $data['principal_id']        = $request->principal_id ;             
+                $data['product_division_id'] = $request->product_division_id ;      
+                $data['Status_Adjustment']   = $request->state;  
+
                 $data['Tgl_Awal']            = Carbon::now('Asia/Jakarta');          
-                $data['Tgl_Akhir']           = Carbon::now('Asia/Jakarta');   
+                $data['Tgl_Akhir']           = Carbon::now('Asia/Jakarta'); 
+                #return($data);  
 
                 in_stock_opname_blocking_model::insert($data);
 
                 response()->json([
                                 'success'=>1,
                                 'code'=>200,
-                                'adjustment_id'=>$data['adjustment_id'],
-                                'message'=>'Adjustment ID '.$data['adjustment_id'].' Sukses Booking Opname di BISMySQL !' 
+                                'adjustment_id'=>(int)$data['adjustment_id'],
+                                'message'=>'Adjustment ID '.$data['adjustment_id'].' Sukses Blocking Stok di BISMySQL !' 
                 ])->send(); 
             }  
         }  else
@@ -567,8 +574,8 @@ class ProsesKartuStokController extends Controller
             response()->json([
                             'success'=>0,
                             'code'=>400,
-                            'adjustment_id'=>$data['adjustment_id'],
-                            'message'=>'Adjustment ID '.$data['adjustment_id'].' Sudah pernah Booking Opname di BISMySQL !' 
+                            'adjustment_id'=>(int)$data['adjustment_id'],
+                            'message'=>'Blocking Stock untuk Adjustment ID '.$data['adjustment_id'].' Sudah Pernah dilakukan !' 
                             ])->send(); 
         }          
     }
