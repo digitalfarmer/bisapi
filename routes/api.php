@@ -28,3 +28,4 @@ use Illuminate\Support\Facades\Route;
  //create kkso BLG
 Route::get('blg/createadjustment','StockOpnameController@createkkso');
 
+//Test MARkotest
