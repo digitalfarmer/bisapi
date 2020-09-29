@@ -554,7 +554,7 @@ class ProsesKartuStokController extends Controller
                 $data['location_id']         = $request->location_id ;      
                 $data['principal_id']        = $request->principal_id ;             
                 $data['product_division_id'] = $request->product_division_id ;      
-                $data['Status_Adjustment']   = $request->state;  
+                $data['Status_Adjustment']   = 'progress';  
 
                 $data['Tgl_Awal']            = Carbon::now('Asia/Jakarta');          
                 $data['Tgl_Akhir']           = Carbon::now('Asia/Jakarta'); 
