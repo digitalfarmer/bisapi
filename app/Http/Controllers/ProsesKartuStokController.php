@@ -4,11 +4,11 @@ use Illuminate\Support\Facades\DB;
 
 use App\ms_barang_satuan_model;
 use App\in_stock_opname_model;
-use App\in_stock_opname_awal_model;
-use App\in_stock_opname_hasil_model;
-use App\in_stock_opname_selisih_model;
 use App\in_kartu_stok_detail_model;
 use App\sy_konfigurasi_model;
+use App\stockopname\in_stock_opname_awal;
+use App\stockopname\in_stock_opname_hasil;
+use App\stockopname\in_stock_opname_selisih;
 use App\mapping\ms_odoo_map_uom_product_model;
 use App\mapping\in_stock_opname_blocking_model; 
 use App\mapping\ms_mapping_wh_odoo_model;
@@ -86,9 +86,9 @@ class ProsesKartuStokController extends Controller
     public function KartuStokAdjustment($no_kertas_kerja)
     {      
 
+        #$no_ref = substr($no_kertas_kerja,0,5).'/'.substr($no_kertas_kerja,5,6).'/'.substr($no_kertas_kerja,11,5);
 
-        $no_ref = substr($no_kertas_kerja,0,5).'/'.substr($n-o_kertas_kerja,5,6).'/'.substr($no_kertas_kerja,11,5);
-                                    
+        $no_ref = $no_kertas_kerja;                         
         $opname = in_stock_opname_model::where('in_stock_opname.no_kertas_kerja',$no_ref) 
                                         ->where('in_stock_opname.Status','POST')
                                         ->join('in_stock_opname_selisih','in_stock_opname.no_kertas_kerja','=','in_stock_opname_selisih.no_kertas_kerja')
@@ -320,21 +320,19 @@ class ProsesKartuStokController extends Controller
                 response()->json(['success'=>0,
                 'code'=>400,
                 'message'=>'No KKSO Gagal di proses di BISMYSQL  !'])->send(); 
-            }
-            
+            }            
         }    
-    
-
       
     }
 
+    
 
     public function sendStockAdjustment(request $request)
     {
-
         $Sudah_Pernah=StockOpnameMapping::select('no_kertas_kerja') 
                                         ->where('inventory_id','=',(int)$request->adjustment_id)
-                                        ->get();
+                                        ->get();        
+         
         if(count($Sudah_Pernah)>0)
         {
             response()->json(['success'=>0,
@@ -344,8 +342,6 @@ class ProsesKartuStokController extends Controller
             exit;
         }
 
-
-
         $odoo   = new \Edujugon\Laradoo\Odoo();
         $odoo   = $odoo->connect();   
 
@@ -354,15 +350,14 @@ class ProsesKartuStokController extends Controller
                               'get_stock',
                               [(int)$request->adjustment_id]             
                             );                                
-                   
-       
+                          
         if (count($result)<=2)
         {
             response()->json([
-            'success'=>0,
-            'code'=>400,
-            'message'=>'Inventory Adjustment dengan ID : '.$request->adjustment_id.' Tidak di temukan ! '])->send(); 
-            exit;
+                        'success'=>0,
+                        'code'=>400,
+                        'message'=>'Inventory Adjustment dengan ID : '.$request->adjustment_id.' Tidak di temukan ! '])->send(); 
+                        exit;
         }
 
        
@@ -374,8 +369,7 @@ class ProsesKartuStokController extends Controller
                                 ->whereRaw('YEAR(Tanggal) = ?',$year)                                
                                 ->orderBy('no_kertas_kerja','desc')     
                                 ->limit('1')
-                                ->get();
-        
+                                ->get();        
         
         if (count($NoKJ_BIS)>0)
         {                       
@@ -403,17 +397,28 @@ class ProsesKartuStokController extends Controller
         $kode_divisi_produks = $odoo->Where('id','=',$result['product_division_id'])
                                     ->fields('name')                                                                   
                                     ->get('product.category'); 
-
-                
-        $opname=[];    
         
+        $warehouse_code =$result['warehouse_code']; 
+        
+        #$Kode_Gudang =$result['warehouse_code']; 
+
+        $Mapping_Kode_Gudang=ms_mapping_wh_odoo_model::where('wh_code','=',$warehouse_code)
+                                                      ->select('kode_gudang')
+                                                      ->get();
+
+        $Kode_Gudang=$Mapping_Kode_Gudang[0]['kode_gudang'];        
         $Kode_Principal               = $kode_principals[0]['barcode'];        
         $Kode_Divisi_Produk           = $kode_divisi_produks[0]['name'];        
+        
+
+       # return($Kode_Gudang);
+                
+        $opname=[];            
         $opname['No_Kertas_Kerja']    = $no_kj;
         $opname['Kode_Principal']     = $Kode_Principal;
         $opname['Kode_Divisi_Produk'] = $Kode_Divisi_Produk;
-        $opname['Kode_Gudang']        = $result['warehouse_code'];;        
-        $opname['Tanggal']            = $result['date'];
+        $opname['Kode_Gudang']        = $Kode_Gudang;       
+        $opname['Tanggal']            = $result['date'];#Tanggal Opname Sama dengan Tanggal Adjustment Odoo
         $opname['Status_Barang']      = 'BAIK';               
         $opname['Status']             = 'POST';                        
         $opname['User_ID']            = 'OdooWMS';                                
@@ -424,205 +429,7 @@ class ProsesKartuStokController extends Controller
         $opname_selisih = []; /*'No_Kertas_Kerja','Kode_Barang','No_Batch','Kadaluarsa','Level','Jumlah','Referensi' */
         
         $row            = 0;                   
-        foreach($result['adjustment_summary'] as $details[]) 
-        {
-            $satuan = ms_odoo_map_uom_product_model::where('product_code',$details[$row]['product_code']) 
-                                                   ->where('uom_short_name',$details[$row]['uom'])
-                                                   ->select('uom_long_name','product_id')
-                                                   ->limit(1)
-                                                   ->get();
 
-            $level = ms_barang_satuan_model::where('kode_barang',$details[$row]['product_code']) 
-                                           ->where('satuan',$satuan[0]['uom_long_name'])
-                                           ->select('level')
-                                           ->limit(1)
-                                           ->get();      
-            
-
-            #return($satuan[0]['product_id']);
-
-            $lot_id = $details[$row]['batch_id'];
-            #return($lot_id);
-
-            $expire_date  = $odoo->Where('id','=',$lot_id)
-                                 ->where('product_id','=',$satuan[0]['product_id'])                                     
-                                 ->fields('expiry_date')                                                                   
-                                 ->get('stock.production.lot'); 
-            #return($expire_date);                      
-
-            #Awal
-            $kadaluarsa=$expire_date[0]['expiry_date']; #substr($details[$row]['batch_number'],0,4).'-'.substr($details[$row]['batch_number'],4,2).'-'.substr($details[$row]['batch_number'],6,2);
-
-            #return($kadaluarsa);
-            $opname_awal[$row]['No_Kertas_Kerja'] = $no_kj;
-            $opname_awal[$row]['Kode_Barang']     = $details[$row]['product_code'];
-            $opname_awal[$row]['No_Batch']        = $details[$row]['batch_number'];
-            $opname_awal[$row]['Kadaluarsa']      = $kadaluarsa;
-            $opname_awal[$row]['Level']           = $level[0]['level'];
-            $opname_awal[$row]['Jumlah']          = $details[$row]['theoretical_qty'];
-            $opname_awal[$row]['booked']          = 0;
-
-            #Hasil
-            $opname_hasil[$row]['No_Kertas_Kerja'] = $no_kj;
-            $opname_hasil[$row]['Kode_Barang']     = $details[$row]['product_code'];
-            $opname_hasil[$row]['No_Batch']        = $details[$row]['batch_number'];
-            $opname_hasil[$row]['Kadaluarsa']      = $kadaluarsa;
-            $opname_hasil[$row]['Level']           = $level[0]['level'];
-            $opname_hasil[$row]['Jumlah']          = $details[$row]['real_qty'];
-            
-            #Selisih
-            #Jika diff_qyy>0
-            if ((int)$details[$row]['diff_qty']>0)
-            {
-                $opname_selisih[$row]['No_Kertas_Kerja'] = $no_kj;
-                $opname_selisih[$row]['Kode_Barang']     = $details[$row]['product_code'];
-                $opname_selisih[$row]['No_Batch']        = $details[$row]['batch_number'];
-                $opname_selisih[$row]['Kadaluarsa']      = $kadaluarsa;
-                $opname_selisih[$row]['Level']           = $level[0]['level'];
-                $opname_selisih[$row]['Jumlah']          = $details[$row]['diff_qty']; 
-                $opname_selisih[$row]['Referensi']       = $details[$row]['reason'];                                            
-            }
-            $row++;
-        };
-
-       
-        $saved = in_stock_opname_model::insert($opname);
-        if($saved) 
-        {
-            $saved_awal    = in_stock_opname_awal_model::insert($opname_awal);
-            $saved_hasil   = in_stock_opname_hasil_model::insert($opname_hasil);
-            $saved_selisih = in_stock_opname_selisih_model::insert($opname_selisih);            
-            #$kjno_underscore = substr($no_kj
-            if (($saved) & ($saved_awal))  {
-               /* 
-               $updated = $odoo->where('id', $result['inventory_id'])
-                               ->update('stock.inventory',['kkso_number' => $no_kj]);
-             
-              */    
-                $opname_mapping['no_kertas_kerja']= $no_kj;
-                $opname_mapping['inventory_id']   = $result['inventory_id'];
-                $opname_mapping['created_at']     = Carbon::now('Asia/Jakarta'); 
-                StockOpnameMapping::insert($opname_mapping);                                                         
-                response()->json([
-                    'success'=>1,
-                    'code'=>200,
-                    'kkso_number'=>$no_kj,
-                    'message'=>'No KKSO Berhasil dibuat di BISMySQL dengan Nomor : '.$no_kj 
-                ])->send(); 
-                exit;            
-            }
-            else
-            {
-                response()->json(['success'=>0,
-                                  'code'=>400,
-                                  'message'=>'No KKSO Gagal di proses di BISMYSQL  !'
-                                 ])->send(); 
-                exit;
-            }
-            
-        }    
-          
-    }
-
-
-
-    public function sendStockAdjustment2(request $request)
-    {
-
-        $Sudah_Pernah=StockOpnameMapping::select('no_kertas_kerja') 
-                                        ->where('inventory_id','=',(int)$request->adjustment_id)
-                                        ->get();
-        if(count($Sudah_Pernah)>0)
-        {
-            response()->json(['success'=>0,
-                              'code'=>400,
-                              'message'=>'Inventory Adjustment dengan ID : '.$request->adjustment_id.
-                              ' Sudah Pernah di Proses Sebelumnya dengan No KKSO : '.$Sudah_Pernah[0]['no_kertas_kerja']])->send(); 
-            exit;
-        }
-
-
-
-        $odoo   = new \Edujugon\Laradoo\Odoo();
-        $odoo   = $odoo->connect();   
-
-        $result = $odoo->call(
-                              'stock.inventory', 
-                              'get_stock',
-                              [(int)$request->adjustment_id]             
-                            );                                
-                   
-       
-        if (count($result)<=2)
-        {
-            response()->json([
-            'success'=>0,
-            'code'=>400,
-            'message'=>'Inventory Adjustment dengan ID : '.$request->adjustment_id.' Tidak di temukan ! '])->send(); 
-            exit;
-        }
-
-       
-        $year  =substr($result['date'],0,4);
-        $month =substr($result['date'],5,2);
-                
-        $NoKJ_BIS = StockOpname::select('no_kertas_kerja')    
-                                ->whereRaw('MONTH(Tanggal) = ?',$month)
-                                ->whereRaw('YEAR(Tanggal) = ?',$year)                                
-                                ->orderBy('no_kertas_kerja','desc')     
-                                ->limit('1')
-                                ->get();
-        
-        
-        if (count($NoKJ_BIS)>0)
-        {                       
-            $TLast_Number = substr($NoKJ_BIS,-8,5);
-        } else        
-        {
-            $TLast_Number = 0; 
-        }       
-    
-        $lastNumber = $TLast_Number+1;      
-
-        $pr_id = sprintf("%05d", $lastNumber);
-   
-        $branchCode = sy_konfigurasi_model::where('Item','nocabang')
-                                            ->select('Nilai')
-                                            ->get();
-        $prefix_kj=$branchCode[0]['Nilai'];
-                
-        $no_kj='KJ'.$prefix_kj.'/'.$year.$month.'/'.$pr_id;
-
-        $kode_principals  = $odoo->Where('id','=',$result['principal_id'])                                
-                                 ->fields('barcode','internal_code')                                                                   
-                                 ->get('res.partner'); 
-
-        $kode_divisi_produks = $odoo->Where('id','=',$result['product_division_id'])
-                                    ->fields('name')                                                                   
-                                    ->get('product.category'); 
-
-        $kode_gudang = 
-
-                
-        $opname=[];    
-        
-        $Kode_Principal               = $kode_principals[0]['barcode'];        
-        $Kode_Divisi_Produk           = $kode_divisi_produks[0]['name'];        
-        $opname['No_Kertas_Kerja']    = $no_kj;
-        $opname['Kode_Principal']     = $Kode_Principal;
-        $opname['Kode_Divisi_Produk'] = $Kode_Divisi_Produk;
-        $opname['Kode_Gudang']        = $result['warehouse_code'];;        
-        $opname['Tanggal']            = $result['date'];
-        $opname['Status_Barang']      = 'BAIK';               
-        $opname['Status']             = 'POST';                        
-        $opname['User_ID']            = 'OdooWMS';                                
-        $opname['Time_Stamp']         = Carbon::now('Asia/Jakarta');   
-        
-        $opname_awal    = []; /*'No_Kertas_Kerja','Kode_Barang','No_Batch','Kadaluarsa','Level','Jumlah','booked'*/
-        $opname_hasil   = []; /*'No_Kertas_Kerja','Kode_Barang','No_Batch','Kadaluarsa','Level','Jumlah'*/
-        $opname_selisih = []; /*'No_Kertas_Kerja','Kode_Barang','No_Batch','Kadaluarsa','Level','Jumlah','Referensi' */
-        
-        $row            = 0;                   
         foreach($result['adjustment_summary'] as $details[]) 
         {
             $satuan = ms_odoo_map_uom_product_model::where('product_code',$details[$row]['product_code']) 
@@ -665,7 +472,8 @@ class ProsesKartuStokController extends Controller
             $opname_hasil[$row]['Jumlah']          = $details[$row]['real_qty'];
             
             #Selisih
-            #Jika diff_qyy>0
+            #Cek Ada Selisih Gak gak ?, diff_Qty  > 0            
+            #hanya yang ada selisih yang Masuk ke table in_stock_opname_selisih
             if ((int)$details[$row]['diff_qty']>0)
             {
                 $opname_selisih[$row]['No_Kertas_Kerja'] = $no_kj;
@@ -679,70 +487,96 @@ class ProsesKartuStokController extends Controller
             $row++;
         };
 
-        try {
+        try 
+        {  
             DB::beginTransaction();
-            $saved         = in_stock_opname_model::insert($opname);  
-            $saved_awal    = in_stock_opname_awal_model::insert($opname_awal);
-            $saved_hasil   = in_stock_opname_hasil_model::insert($opname_hasil);
-            $saved_selisih = in_stock_opname_selisih_model::insert($opname_selisih);                        
+            // Block Transaction
+            $saved         = in_stock_opname_model::insert($opname);            
+            $saved_awal    = in_stock_opname_awal::insert($opname_awal);                        
+            $saved_hasil   = in_stock_opname_hasil::insert($opname_hasil);
+            $saved_selisih = in_stock_opname_selisih::insert($opname_selisih);   
                 
             $opname_mapping['no_kertas_kerja']= $no_kj;
             $opname_mapping['inventory_id']   = $result['inventory_id'];
             $opname_mapping['created_at']     = Carbon::now('Asia/Jakarta'); 
             StockOpnameMapping::insert($opname_mapping);                                                         
+
+            $updated = in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
+                                                      ->update([
+                                                     'no_kkso'=>$no_kj,                                                     
+                                                     'Kode_Gudang'=>$Kode_Gudang,
+                                                     'Kode_Principal'=>$Kode_Principal,
+                                                     'Kode_Divisi_Produk'=>$Kode_Divisi_Produk,
+                                                     'Status_Adjustment'=>'done',
+                                                     'Tgl_Akhir'=>Carbon::now('Asia/Jakarta')
+                                                     ]);         
+                 
                                 response()->json([
-                                    'success'=>1,
-                                    'code'=>200,
-                                    'kkso_number'=>$no_kj,
-                                    'message'=>'No KKSO Berhasil dibuat di BISMySQL dengan Nomor : '.$no_kj 
+                                                'success'=>1,
+                                                'code'=>200,
+                                                'kkso_number'=>$no_kj,
+                                                'message'=>'No KKSO Berhasil dibuat di BISMySQL dengan Nomor : '.$no_kj 
                                 ])->send(); 
-            DB::commit();                             
+          // Jika Table table diatas Berhasil di Insert
+          // Maka Simpan Semua Datanya, Kommat Kommit
+           DB::commit();                             
         } catch(\Exception $e)
         {
-            DB::rollback();
-            response()->json([
+           // Jika ada error / Salah Satu Model Gagal di insert 
+           // Maka Rollback, Semua data di batalkan (Tidak jadi di Insert)
+           // Berlaku untuk model yang ada di Block Transaction
+           DB::rollback();
+           response()->json([
                    'success'=>0,
                    'code'=>400,
                    'message'=>'Inventory Adjustment dengan ID : '.$request->adjustment_id.' Gagal di Proses ! '])->send(); 
                     exit;
-        }                      
-          
+        }                            
           
     }
 
+    //Blocking Transaksi Ketika Opname
     public function FlagBlockingStock(Request $request)   
     {
-        $data['adjustment_id']       = $request['adjustment_id'] ;   
-        $sudah_ada=in_stock_opname_blocking_model::where('adjustment_id','=', $data['adjustment_id'])
-                                                  ->select('adjustment_id')
-                                                  ->get();  
+        $data=[];
+
+        $data['adjustment_id']       = $request->adjustment_id ;   
+        $sudah_ada = in_stock_opname_blocking_model::where('adjustment_id','=', (int)$data['adjustment_id'])
+                                                     ->select('adjustment_id')
+                                                     ->get();  
+        #return($data['adjustment_id']);
+
         
         if(count($sudah_ada)<=0) {           
             if ($data['adjustment_id']) 
-            {                            
-                $data['location_id']         = $request['location_id'] ;      
-                $data['principal_id']        = $request['principal_id'] ;             
-                $data['product_division_id'] = $request['product_division_id'] ;      
-                $data['Status_Adjustment']   = $request['state'];     
+            {   
+                $data['adjustment_id']       = (int)$data['adjustment_id'] ;                               
+                $data['location_id']         = $request->location_id ;      
+                $data['principal_id']        = $request->principal_id ;             
+                $data['product_division_id'] = $request->product_division_id ;      
+                $data['Status_Adjustment']   = $request->state;  
+
                 $data['Tgl_Awal']            = Carbon::now('Asia/Jakarta');          
-                $data['Tgl_Akhir']           = Carbon::now('Asia/Jakarta');      
+                $data['Tgl_Akhir']           = Carbon::now('Asia/Jakarta'); 
+                #return($data);  
+
                 in_stock_opname_blocking_model::insert($data);
 
                 response()->json([
                                 'success'=>1,
                                 'code'=>200,
-                                'adjustment_id'=>$data['adjustment_id'],
-                                'message'=>'Adjustment ID '.$data['adjustment_id'].' Sukses Booking Opname di BISMySQL !' 
+                                'adjustment_id'=>(int)$data['adjustment_id'],
+                                'message'=>'Adjustment ID '.$data['adjustment_id'].' Sukses Blocking Stok di BISMySQL !' 
                 ])->send(); 
             }  
         }  else
         {
             response()->json([
-                'success'=>0,
-                'code'=>400,
-                'adjustment_id'=>$data['adjustment_id'],
-                'message'=>'Adjustment ID '.$data['adjustment_id'].' Sudah pernah Booking Opname di BISMySQL !' 
-                ])->send(); 
+                            'success'=>0,
+                            'code'=>400,
+                            'adjustment_id'=>(int)$data['adjustment_id'],
+                            'message'=>'Blocking Stock untuk Adjustment ID '.$data['adjustment_id'].' Sudah Pernah dilakukan !' 
+                            ])->send(); 
         }          
     }
         

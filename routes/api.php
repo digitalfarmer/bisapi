@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
  
@@ -14,17 +13,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
  
-//route module stock picking
-  
- Route::get('bismysql/getUpdatePickingItem/{picking_id}','BISAPIController@getUpdatePickingItem');  
- Route::get('bismysql/getStockOpname/{adjustment_id}','ProsesKartuStokController@getStockOpname'); 
- Route::get('bismysql/get_stock/{adjustment_id}','ProsesKartuStokController@get_stock');   
- Route::get('bismysql/sendStockAdjustment/{adjustment_id}','ProsesKartuStokController@sendStockAdjustment');   
- Route::get('bismysql/sendStockAdjustment2/{adjustment_id}','ProsesKartuStokController@sendStockAdjustment2');   
- Route::post('bismysql/flagBlockingStock/{adjustment_id}','ProsesKartuStokController@FlagBlockingStock');   
- 
-   
- 
- //create kkso
-Route::get('/createadjustment','StockOpnameController@createkkso');
+//route module stock picking BLG
+ Route::get('blg/getUpdatePickingItem/{picking_id}','BISAPIController@getUpdatePickingItem');   
+//route module Stock Adjustment BLG
+ Route::get('blg/sendStockAdjustment/{adjustment_id}','ProsesKartuStokController@sendStockAdjustment');   
+ Route::get('blg/getStockOpname/{adjustment_id}','ProsesKartuStokController@getStockOpname'); 
+ Route::get('blg/get_stock/{adjustment_id}','ProsesKartuStokController@get_stock');     
+ Route::post('blg/flagBlockingStock/{adjustment_id}','ProsesKartuStokController@FlagBlockingStock');   
+ //Cek Status Adjustment BLG
+ Route::post('blg/cekOpnameStatus','BISMySQLController@cekOpnameStatus');
+ Route::get('blg/cekDivisiProdukOpname/{Kode_Divisi_Produk}','BISMySQLController@cekDivisiProdukOpname');
+ //BISMySQL numbering BLG
+ Route::post('blg/getNewNumber/{type_nomor}','BISMySQLController@getNewNumber');
+ //create kkso BLG
+Route::get('blg/createadjustment','StockOpnameController@createkkso');
 
