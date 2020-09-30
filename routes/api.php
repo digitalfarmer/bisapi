@@ -27,6 +27,4 @@ use Illuminate\Support\Facades\Route;
  Route::post('blg/getNewNumber/{type_nomor}','BISMySQLController@getNewNumber');
  //create kkso BLG
 Route::get('blg/createadjustment','StockOpnameController@createkkso');
-
-//Test MARkotest
-//Test Jenkins Crot
+//------------2020-09-30
