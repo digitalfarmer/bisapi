@@ -29,3 +29,4 @@ use Illuminate\Support\Facades\Route;
 Route::get('blg/createadjustment','StockOpnameController@createkkso');
 
 //Test MARkotest
+//Test Jenkins Crot
