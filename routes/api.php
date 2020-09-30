@@ -28,5 +28,4 @@ Route::post('blg/getNewNumber/{type_nomor}','BISMySQLController@getNewNumber');
  //create kkso BLG
 Route::get('blg/createadjustment','StockOpnameController@createkkso');
 //------------2020-09-30 11:05
-
-//test automation
+//------------2020-09-30 13:42

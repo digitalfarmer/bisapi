@@ -66,17 +66,17 @@ class StockOpnameController extends Controller
         //$items= $inventorys['inventory_name'];
          $opname = new StockOpname();
          $opname->no_kertas_kerja = $kj_odoo;
-         $opname->kode_principal = substr($princ_code,0,3);
-         $opname->kode_gudang = $inventorys['warehouse_code'];
-         $opname->tanggal = $inventorys['date'];
+         $opname->kode_principal  = substr($princ_code,0,3);
+         $opname->kode_gudang     = $inventorys['warehouse_code'];
+         $opname->tanggal         = $inventorys['date'];
          $opname->save();
         
         //=================//
         //stock_opname_awal//
         //=================//
         $inventorys=$inventorys['adjustment_details'];
-        $rowItems=0;
-        $inventory=[];
+        $rowItems  =0;
+        $inventory =[];
         foreach ($inventorys as $inventory[]) {
             # code...
             $stockopnameawal[$rowItems]['no_kertas_kerja']=$kj_odoo;
@@ -88,7 +88,7 @@ class StockOpnameController extends Controller
             $stockopnameawal[$rowItems]['booked']='';
             $rowItems++;
         }
-        $save_awal=in_stock_opname_awal::insert($stockopnameawal);
+        $save_awal = in_stock_opname_awal::insert($stockopnameawal);
 
         //=================//
         //stock_opname_hasil//
@@ -100,10 +100,10 @@ class StockOpnameController extends Controller
             # code...
             $stockopnamehasil[$rowItems]['no_kertas_kerja']=$kj_odoo;
             $stockopnamehasil[$rowItems]['kode_barang']=$inventory[$rowItems]['product_code'];
-            $stockopnamehasil[$rowItems]['no_batch']=$inventory[$rowItems]['batch_number'];
-            $stockopnamehasil[$rowItems]['kadaluarsa']=Carbon::now('Asia/Jakarta');
-            $stockopnamehasil[$rowItems]['level']='';
-            $stockopnamehasil[$rowItems]['jumlah']=$inventory[$rowItems]['real_qty'];
+            $stockopnamehasil[$rowItems]['no_batch']   =$inventory[$rowItems]['batch_number'];
+            $stockopnamehasil[$rowItems]['kadaluarsa'] =Carbon::now('Asia/Jakarta');
+            $stockopnamehasil[$rowItems]['level']      ='';
+            $stockopnamehasil[$rowItems]['jumlah']     =$inventory[$rowItems]['real_qty'];
             $rowItems++;
         }
         $save_hasil=in_stock_opname_hasil::insert($stockopnamehasil);
@@ -116,11 +116,11 @@ class StockOpnameController extends Controller
        foreach ($inventorys as $inventory[]) {
            # code...
            $stockopnameselisih[$rowItems]['no_kertas_kerja']=$kj_odoo;
-           $stockopnameselisih[$rowItems]['kode_barang']=$inventory[$rowItems]['product_code'];
-           $stockopnameselisih[$rowItems]['no_batch']=$inventory[$rowItems]['batch_number'];
-           $stockopnameselisih[$rowItems]['kadaluarsa']=Carbon::now('Asia/Jakarta');
-           $stockopnameselisih[$rowItems]['level']='';
-           $stockopnameselisih[$rowItems]['jumlah']=$inventory[$rowItems]['diff_qty'];
+           $stockopnameselisih[$rowItems]['kode_barang']    =$inventory[$rowItems]['product_code'];
+           $stockopnameselisih[$rowItems]['no_batch']       =$inventory[$rowItems]['batch_number'];
+           $stockopnameselisih[$rowItems]['kadaluarsa']     =Carbon::now('Asia/Jakarta');
+           $stockopnameselisih[$rowItems]['level']          ='';
+           $stockopnameselisih[$rowItems]['jumlah']         =$inventory[$rowItems]['diff_qty'];
            $rowItems++;
        }
        $save_selisih=in_stock_opname_selisih::insert($stockopnameselisih);
