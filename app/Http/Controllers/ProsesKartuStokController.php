@@ -583,19 +583,38 @@ class ProsesKartuStokController extends Controller
 
     public function CancelBlockingStock(Request $request)   
     {
-        $data['adjustment_id']       = $request->adjustment_id ;  
-        $updated = in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
-                                                  ->update(['Status_Adjustment'=>'cancel',
-                                                            'Tgl_Akhir'=>Carbon::now('Asia/Jakarta')
-                                                           ]);    
-        if($updated){
-            response()->json([
-                            'success'=>1,
-                            'code'=>200,
-                            'adjustment_id'=>(int)$data['adjustment_id'],
-                            'message'=>'Blocking Stok untuk Adjustment ID '.$data['adjustment_id'].' Sudah di batalkan !' 
-                            ])->send(); 
-        }  
+
+        $currentdata=in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
+                                        ->where('Status_Adjustment','progress')
+                                        ->get();
+
+
+        if(count($currentdata)>0)                                          
+        {
+        
+                $data['adjustment_id']       = $request->adjustment_id ;  
+                $updated = in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
+                                                          ->update(['Status_Adjustment'=>'cancel',
+                                                                    'Tgl_Akhir'=>Carbon::now('Asia/Jakarta')
+                                                                ]);    
+
+                if($updated){
+                    response()->json([
+                                    'success'=>1,
+                                    'code'=>200,
+                                    'adjustment_id'=>(int)$data['adjustment_id'],
+                                    'message'=>'Blocking Stok untuk Adjustment ID '.$data['adjustment_id'].' Sudah di batalkan !' 
+                                    ])->send(); 
+                }  
+                else
+                {
+                    response()->json([
+                        'success'=>0,
+                        'code'=>400,                
+                        'message'=>'Tidak ada Adjustment yang perlu di batalkan !' 
+                        ])->send(); 
+                }
+        }        
         else
         {
             response()->json([
