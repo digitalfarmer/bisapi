@@ -54,7 +54,7 @@ class BISMySQLController extends Controller
     {
         $OnOpnameStock = in_stock_opname_blocking_model::where('Status_Adjustment','=','progress')                                                      
                                                         ->where('Kode_Divisi_Produk','=',$request->Kode_Divisi_Produk)                                            
-                                                        ->select('no_kkso','adjustment_id','Kode_Principal','Kode_Divisi_Produk','Status_Adjustment')
+                                                        ->select('no_kkso','adjustment_id', 'Kode_Divisi_Produk','Status_Adjustment')
                                                         ->get();
                             
         if (count($OnOpnameStock)>0) {
