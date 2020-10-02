@@ -595,7 +595,16 @@ class ProsesKartuStokController extends Controller
                             'adjustment_id'=>(int)$data['adjustment_id'],
                             'message'=>'Blocking Stok untuk Adjustment ID '.$data['adjustment_id'].' Sudah di batalkan !' 
                             ])->send(); 
-        }     
+        }  
+        else
+        {
+            response()->json([
+                'success'=>0,
+                'code'=>400,                
+                'message'=>'Tidak ada Adjustment yang perlu di batalkan !' 
+                ])->send(); 
+        }
+
     }
         
 }

@@ -21,7 +21,7 @@ Route::get('blg/getStockOpname/{adjustment_id}','ProsesKartuStokController@getSt
 Route::get('blg/get_stock/{adjustment_id}','ProsesKartuStokController@get_stock');     
 //Blocking Stok BISMySQL from Odoo
 Route::post('blg/flagBlockingStock/{adjustment_id}','ProsesKartuStokController@FlagBlockingStock');   
-Route::post('blg/cancelBlockingStock','ProsesKartuStokController@CancelBlockingStock');   
+Route::post('blg/cancelBlockingStock/{adjustment_id}','ProsesKartuStokController@CancelBlockingStock');   
  //Cek Status Adjustment BLG
 Route::post('blg/cekOpnameStatus','BISMySQLController@cekOpnameStatus');
 Route::get('blg/cekDivisiProdukOpname/{Kode_Divisi_Produk}','BISMySQLController@cekDivisiProdukOpname');
