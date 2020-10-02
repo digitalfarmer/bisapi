@@ -579,5 +579,23 @@ class ProsesKartuStokController extends Controller
                             ])->send(); 
         }          
     }
+
+
+    public function CancelBlockingStock(Request $request)   
+    {
+        $data['adjustment_id']       = $request->adjustment_id ;  
+        $updated = in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
+                                                  ->update(['Status_Adjustment'=>'cancel',
+                                                            'Tgl_Akhir'=>Carbon::now('Asia/Jakarta')
+                                                           ]);    
+        if($updated){
+            response()->json([
+                            'success'=>1,
+                            'code'=>200,
+                            'adjustment_id'=>(int)$data['adjustment_id'],
+                            'message'=>'Blocking Stok untuk Adjustment ID '.$data['adjustment_id'].' Sudah di batalkan !' 
+                            ])->send(); 
+        }     
+    }
         
 }
