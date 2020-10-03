@@ -8,6 +8,8 @@ class SpreadingController extends Controller
 {
     public function postPickingSpreading(Request $request)
     {
-        # code... opo
+        response()->json([           
+                         'result'=>$request->picking_id
+                        ])->send();          
     }
 }
