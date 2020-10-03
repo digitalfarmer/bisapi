@@ -31,3 +31,4 @@ Route::post('blg/getNewNumber/{type_nomor}','BISMySQLController@getNewNumber');
 Route::get('blg/createadjustment','StockOpnameController@createkkso');
 //------------2020-09-30 11:05
 //2020-10-02 08:33 
+Route::post('blg/postPickingSpreading/{picking_id}','SpreadingController@postPickingSpreading');

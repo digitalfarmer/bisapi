@@ -584,8 +584,8 @@ class ProsesKartuStokController extends Controller
     {
 
         $currentdata=in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
-                                                     ->where('Status_Adjustment','progress')
-                                                     ->get();
+                                                    ->where('Status_Adjustment','progress')
+                                                    ->get();
 
 
         if(count($currentdata)>0)                                          
