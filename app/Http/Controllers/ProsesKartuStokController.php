@@ -555,7 +555,6 @@ class ProsesKartuStokController extends Controller
                 $data['principal_id']        = $request->principal_id ;             
                 $data['product_division_id'] = $request->product_division_id ;      
                 $data['Status_Adjustment']   = 'progress';  
-
                 $data['Tgl_Awal']            = Carbon::now('Asia/Jakarta');          
                 $data['Tgl_Akhir']           = Carbon::now('Asia/Jakarta'); 
                 #return($data);  
@@ -578,6 +577,51 @@ class ProsesKartuStokController extends Controller
                             'message'=>'Blocking Stock untuk Adjustment ID '.$data['adjustment_id'].' Sudah Pernah dilakukan !' 
                             ])->send(); 
         }          
+    }
+
+
+    public function CancelBlockingStock(Request $request)   
+    {
+
+        $currentdata=in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
+                                                     ->where('Status_Adjustment','progress')
+                                                     ->get();
+
+
+        if(count($currentdata)>0)                                          
+        {
+                $data['adjustment_id']       = $request->adjustment_id ;  
+                $updated = in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
+                                                          ->update(['Status_Adjustment'=>'cancel',
+                                                                    'Tgl_Akhir'=>Carbon::now('Asia/Jakarta')
+                                                                ]);    
+
+                if($updated){
+                    response()->json([
+                                    'success'=>1,
+                                    'code'=>200,
+                                    'adjustment_id'=>(int)$data['adjustment_id'],
+                                    'message'=>'Blocking Stok untuk Adjustment ID '.$data['adjustment_id'].' Sudah di batalkan !' 
+                                    ])->send(); 
+                }  
+                else
+                {
+                    response()->json([
+                        'success'=>0,
+                        'code'=>400,                
+                        'message'=>'Tidak ada Adjustment yang perlu di batalkan !' 
+                        ])->send(); 
+                }
+        }        
+        else
+        {
+            response()->json([
+                'success'=>0,
+                'code'=>400,                
+                'message'=>'Tidak ada Adjustment yang perlu di batalkan !' 
+                ])->send(); 
+        }
+
     }
         
 }

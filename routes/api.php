@@ -19,7 +19,9 @@ Route::get('blg/getUpdatePickingItem/{picking_id}','BISAPIController@getUpdatePi
 Route::get('blg/sendStockAdjustment/{adjustment_id}','ProsesKartuStokController@sendStockAdjustment');   
 Route::get('blg/getStockOpname/{adjustment_id}','ProsesKartuStokController@getStockOpname'); 
 Route::get('blg/get_stock/{adjustment_id}','ProsesKartuStokController@get_stock');     
+//Blocking Stok BISMySQL from Odoo
 Route::post('blg/flagBlockingStock/{adjustment_id}','ProsesKartuStokController@FlagBlockingStock');   
+Route::post('blg/cancelBlockingStock/{adjustment_id}','ProsesKartuStokController@CancelBlockingStock');   
  //Cek Status Adjustment BLG
 Route::post('blg/cekOpnameStatus','BISMySQLController@cekOpnameStatus');
 Route::get('blg/cekDivisiProdukOpname/{Kode_Divisi_Produk}','BISMySQLController@cekDivisiProdukOpname');
@@ -28,9 +30,13 @@ Route::post('blg/getNewNumber/{type_nomor}','BISMySQLController@getNewNumber');
  //create kkso BLG
 Route::get('blg/createadjustment','StockOpnameController@createkkso');
 //------------2020-09-30 11:05
+<<<<<<< HEAD
 
 
 //test automation
 //continuous integration and continuous  delivery
 
 
+=======
+//2020-10-02 08:33 
+>>>>>>> 24c31c2d4922c48d4793b4ed46b0e11c40c20443

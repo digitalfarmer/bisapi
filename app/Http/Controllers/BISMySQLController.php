@@ -8,22 +8,21 @@ use App\stockopname\StockOpname;
 use App\sy_konfigurasi_model;
 use App\mapping\in_stock_opname_blocking_model; 
 
-
 class BISMySQLController extends Controller
 {
     public function getNewNumber(Request $request)
     {   
         $type_nomor = $request->type_nomor;
-        $tanggal = New Carbon($request->tanggal_transaksi);
-        $thn     = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
-        $bln     = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;             
+        $tanggal    = New Carbon($request->tanggal_transaksi);
+        $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
+        $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;             
         
-        $NoKJ_BIS = StockOpname::select('no_kertas_kerja')    
-                                ->whereRaw('MONTH(Tanggal) = ?',$bln)
-                                ->whereRaw('YEAR(Tanggal) = ?', $thn)                                
-                                ->orderBy('no_kertas_kerja','desc')     
-                                ->limit('1')
-                                ->get();
+        $NoKJ_BIS   = StockOpname::select('no_kertas_kerja')    
+                                  ->whereRaw('MONTH(Tanggal) = ?',$bln)
+                                  ->whereRaw('YEAR(Tanggal) = ?', $thn)                                
+                                  ->orderBy('no_kertas_kerja','desc')     
+                                  ->limit('1')
+                                  ->get();
 
         if (count($NoKJ_BIS)>0){                       
             $TLast_Number = substr($NoKJ_BIS,-8,5);
@@ -53,10 +52,9 @@ class BISMySQLController extends Controller
 
     public  function cekOpnameStatus(Request $request)
     {
-        $OnOpnameStock = in_stock_opname_blocking_model::where('Status_Adjustment','=','progress')
-                                                      #  ->where('Kode_Principal','=',$request->Kode_Principal)    
+        $OnOpnameStock = in_stock_opname_blocking_model::where('Status_Adjustment','=','progress')                                                      
                                                         ->where('Kode_Divisi_Produk','=',$request->Kode_Divisi_Produk)                                            
-                                                        ->select('no_kkso','adjustment_id','Kode_Principal','Kode_Divisi_Produk','Status_Adjustment')
+                                                        ->select('no_kkso','adjustment_id', 'Kode_Divisi_Produk','Status_Adjustment')
                                                         ->get();
                             
         if (count($OnOpnameStock)>0) {
@@ -87,8 +85,7 @@ class BISMySQLController extends Controller
                              'kkso_status'=> $OnOpnameStock
                              ])->send();        
         } 
-        else
-        {    
+        else{    
             response()->json(['opname_status'=>0])->send();       
         }       
 
