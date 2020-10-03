@@ -555,7 +555,6 @@ class ProsesKartuStokController extends Controller
                 $data['principal_id']        = $request->principal_id ;             
                 $data['product_division_id'] = $request->product_division_id ;      
                 $data['Status_Adjustment']   = 'progress';  
-
                 $data['Tgl_Awal']            = Carbon::now('Asia/Jakarta');          
                 $data['Tgl_Akhir']           = Carbon::now('Asia/Jakarta'); 
                 #return($data);  
@@ -585,13 +584,12 @@ class ProsesKartuStokController extends Controller
     {
 
         $currentdata=in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
-                                        ->where('Status_Adjustment','progress')
-                                        ->get();
+                                                     ->where('Status_Adjustment','progress')
+                                                     ->get();
 
 
         if(count($currentdata)>0)                                          
         {
-        
                 $data['adjustment_id']       = $request->adjustment_id ;  
                 $updated = in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
                                                           ->update(['Status_Adjustment'=>'cancel',

@@ -85,8 +85,7 @@ class BISMySQLController extends Controller
                              'kkso_status'=> $OnOpnameStock
                              ])->send();        
         } 
-        else
-        {    
+        else{    
             response()->json(['opname_status'=>0])->send();       
         }       
 
