@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class PurchaseOrderController extends Controller
 {
+    public function jenkins()
+    {
+      # code...
+      return 'this is automation';
+    }
     public function index()
     {
         
