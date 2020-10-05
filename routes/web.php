@@ -46,7 +46,7 @@ Route::get('/bisgateway','PurchaseOrderController@index');
 Route::resource('students','StudentsController');
 
 //test data pipeline
-Route::get('/jenkins', function ()
-{
-    return 'Test Automation Successfull';
+Route::get('/jenkinstest', function (){
+    $value ='Test Automation Successfull';
+    return $value;
 });
