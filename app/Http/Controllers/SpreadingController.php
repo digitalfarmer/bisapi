@@ -29,9 +29,10 @@ class SpreadingController extends Controller
         $spreading_header     = [];
         $spreading_detail     = [];
         $spreading_subdetail  = [];        
-        $NomorSpreading       = $this->SequenceController->getNewOCNumber($request);
+        #$NomorSpreading       = $this->SequenceController->getNewOCNumber($request);
 
-        return($NomorSpreading);
+
+        return($request);
 
         //return($NomorSpreading);
 
