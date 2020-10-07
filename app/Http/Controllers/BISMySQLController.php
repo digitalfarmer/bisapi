@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -14,6 +13,7 @@ class BISMySQLController extends Controller
     {   
         $type_nomor = $request->type_nomor;
         $tanggal    = New Carbon($request->tanggal_transaksi);
+        #return($tanggal);
         $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
         $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;             
         
@@ -23,7 +23,50 @@ class BISMySQLController extends Controller
                                   ->orderBy('no_kertas_kerja','desc')     
                                   ->limit('1')
                                   ->get();
+#       return($NoKJ_BIS);
+        if (count($NoKJ_BIS)>0){                       
+            $TLast_Number = substr($NoKJ_BIS,-8,5);
+        } else{
+            $TLast_Number = 0; 
+        }       
+    
+        $lastNumber = $TLast_Number+1;      
 
+        $pr_id = sprintf("%05d", $lastNumber);
+
+
+        $branchCode = sy_konfigurasi_model::where('Item','nocabang')
+                                            ->select('Nilai')
+                                            ->get();
+        $prefix_kj = $branchCode[0]['Nilai'];
+        $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
+
+        $no_kj     ='KJ'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;
+               
+        response()->json([
+                       # 'success'=>1,
+                       # 'code'=>200,
+                        'new_kkso_number'=>$no_kj
+                        ])->send();    
+                        
+        
+    }
+
+    public function getNewOCNumber(Request $request)
+    {   
+        $type_nomor = $request->type_nomor;
+        $tanggal    = New Carbon($request->tanggal_transaksi);
+        #return($tanggal);
+        $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
+        $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;             
+        
+        $NoKJ_BIS   = StockOpname::select('no_kertas_kerja')    
+                                  ->whereRaw('MONTH(Tanggal) = ?',$bln)
+                                  ->whereRaw('YEAR(Tanggal) = ?', $thn)                                
+                                  ->orderBy('no_kertas_kerja','desc')     
+                                  ->limit('1')
+                                  ->get();
+#       return($NoKJ_BIS);
         if (count($NoKJ_BIS)>0){                       
             $TLast_Number = substr($NoKJ_BIS,-8,5);
         } else{
@@ -46,8 +89,10 @@ class BISMySQLController extends Controller
         response()->json([
                        # 'success'=>1,
                        # 'code'=>200,
-                        'kkso_new_number'=>$no_kj
-                        ])->send();         
+                        'new_oc_number'=>$no_kj
+                        ])->send();    
+                        
+        
     }
 
     public  function cekOpnameStatus(Request $request)

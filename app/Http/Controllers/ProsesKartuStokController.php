@@ -329,9 +329,9 @@ class ProsesKartuStokController extends Controller
 
     public function sendStockAdjustment(request $request)
     {
-        $Sudah_Pernah=StockOpnameMapping::select('no_kertas_kerja') 
-                                        ->where('inventory_id','=',(int)$request->adjustment_id)
-                                        ->get();        
+        $Sudah_Pernah = StockOpnameMapping::select('no_kertas_kerja') 
+                                            ->where('inventory_id','=',(int)$request->adjustment_id)
+                                            ->get();        
          
         if(count($Sudah_Pernah)>0)
         {
@@ -390,6 +390,7 @@ class ProsesKartuStokController extends Controller
                 
         $no_kj='KJ'.$prefix_kj.'/'.$year.$month.'/'.$pr_id;
 
+
         $kode_principals  = $odoo->Where('id','=',$result['principal_id'])                                
                                  ->fields('barcode','internal_code')                                                                   
                                  ->get('res.partner'); 
@@ -402,11 +403,11 @@ class ProsesKartuStokController extends Controller
         
         #$Kode_Gudang =$result['warehouse_code']; 
 
-        $Mapping_Kode_Gudang=ms_mapping_wh_odoo_model::where('wh_code','=',$warehouse_code)
-                                                      ->select('kode_gudang')
-                                                      ->get();
+        $Mapping_Kode_Gudang          = ms_mapping_wh_odoo_model::where('wh_code','=',$warehouse_code)
+                                                                 ->select('kode_gudang')
+                                                                 ->get();
 
-        $Kode_Gudang=$Mapping_Kode_Gudang[0]['kode_gudang'];        
+        $Kode_Gudang                  = $Mapping_Kode_Gudang[0]['kode_gudang'];        
         $Kode_Principal               = $kode_principals[0]['barcode'];        
         $Kode_Divisi_Produk           = $kode_divisi_produks[0]['name'];        
         
@@ -444,7 +445,7 @@ class ProsesKartuStokController extends Controller
                                            ->limit(1)
                                            ->get();      
                         
-            $lot_id = $details[$row]['batch_id'];
+            $lot_id       = $details[$row]['batch_id'];
             
             $expire_date  = $odoo->Where('id','=',$lot_id)
                                  ->where('product_id','=',$satuan[0]['product_id'])                                     
