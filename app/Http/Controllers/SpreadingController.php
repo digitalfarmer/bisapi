@@ -7,20 +7,15 @@ use Carbon\Carbon;
 use App\Http\Controllers\SequenceController;
 
 class SpreadingController extends Controller
-{
+{   
     protected $SequenceController;
 
     public function __construct(SequenceController $SequenceController)
     {
         $this->SequenceController = $SequenceController;
     }
-
-    public function ucox(Request $request)
-    {
-        $data= $this->SequenceController->getNewOCNumber($request);
-        return($data);
-    }
-
+ 
+ 
     public function postPickingSpreading(Request $request)
     {
         $odoo   = new \Edujugon\Laradoo\Odoo();
@@ -29,9 +24,16 @@ class SpreadingController extends Controller
         $spreading_header     = [];
         $spreading_detail     = [];
         $spreading_subdetail  = [];        
-        #$NomorSpreading       = $this->SequenceController->getNewOCNumber($request);
+        $NomorSpreading       = $this->SequenceController->getNewOCNumber($request);
         
+         
+        $Data=json_decode($NomorSpreading, True);
+        
+        return $Data->new_number;         
+       # return redirect('blg/postPickingSpreading/'.$request);
+ 
         response()->json([
+                         'spreading'=>$spreading_header['No_Peminjaman'],
                          'ware_house_id'=>(int)$request->ware_house_id,
                          'id'=>(int)$request->id
                          ])->send(); 

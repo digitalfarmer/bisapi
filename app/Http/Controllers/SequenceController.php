@@ -90,10 +90,8 @@ class SequenceController extends Controller
             $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
             $no_oc='OC'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;
-                
-            response()->json([                   
-                            'new_number'=>$no_oc
-                            ])->send();                
+            #return $no_oc;   
+            response()->json(['new_number'=>$no_oc])->send();                
         }            
         
     }
