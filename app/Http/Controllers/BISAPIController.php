@@ -292,7 +292,9 @@ class BISAPIController extends Controller
                 }                                     
                                     
                                           
-                if( ($c_data_delivery>0) && ($c_stock_move_line>0) && ($c_no_sp>0) ) { 
+                if( ($c_data_delivery>0) && 
+                    ($c_stock_move_line>0) && 
+                    ($c_no_sp>0) )   { 
                         $rowCount=0;
                         
                         //delete in_delivery_subdetail row first base on no_delivery                         
@@ -389,7 +391,7 @@ class BISAPIController extends Controller
                         } 
 
                          //then replace with new Record from Odoo
-                        $is_saved=in_delivery_subdetail_model::insert($Do_Detail);
+                        $is_saved = in_delivery_subdetail_model::insert($Do_Detail);
                         if($is_saved)
                         {   
                             $mapping['No_Delivery'] =$no_delivery[0]['origin'];   

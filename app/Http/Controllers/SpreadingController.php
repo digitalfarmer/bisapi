@@ -24,13 +24,15 @@ class SpreadingController extends Controller
         $spreading_header     = [];
         $spreading_detail     = [];
         $spreading_subdetail  = [];        
-        $nomor_oc =  $this->SequenceController->getNewOCNumber($request);
-        $nomor_ds =  $this->SequenceController->getNewDSNumber($request);
+        $nomor_oc             = $this->SequenceController->getNewOCNumber($request);
+        $nomor_ds             = $this->SequenceController->getNewDSNumber($request);
         #$data= $data1->toArray();               
         $new_number['oc_number'] = $nomor_oc['new_number']; 
         $new_number['ds_number'] = $nomor_ds['new_number']; 
         $new_number['status']    = 1; 
         $new_number['message']   = 'Data Peminjaman Berhasil di Transfer'; 
+        $new_number['success']   = 1;
+        $new_number['code']      = 200;
 
         #$Data=json_decode($NomorSpreading, True);        
         
@@ -49,7 +51,7 @@ class SpreadingController extends Controller
 
         // header      
         /*
-        $spreading_header['No_Peminjaman']    = $new_number;
+        $spreading_header['No_Peminjaman']    = $new_number['oc_number'];
         $spreading_header['ID_Spreading']     = $ID_Spreading;
         $spreading_header['Tanggal_Pinjam']   = $Tanggal_Pinjam;
         $spreading_header['Kode_Rayon']       = '';
@@ -61,7 +63,7 @@ class SpreadingController extends Controller
         $row  = 0; 
         foreach($result['spreading_detail'] as $details[]) 
         {
-            $spreading_subdetail[$row]['No_Peminjaman']  = $details[$row]['No_Peminjaman']; 
+            $spreading_subdetail[$row]['No_Peminjaman']  = $new_number['oc_number'];
             $spreading_subdetail[$row]['Kode_Barang']    = $details[$row]['Kode_Barang']; 
             $spreading_subdetail[$row]['No_Detail']      = $details[$row]['No_Detail']; 
             $spreading_subdetail[$row]['Satuan']         = $details[$row]['Satuan'];             

@@ -7,6 +7,7 @@ use App\stockopname\StockOpname;
 use App\sy_konfigurasi_model;
 use App\mapping\in_stock_opname_blocking_model; 
 use App\Spreading\sr_peminjaman_model;
+use App\Spreading\sr_pengembalian_model;
 use App\in_delivery_model;
 
 class SequenceController extends Controller
@@ -132,6 +133,48 @@ class SequenceController extends Controller
             $no_oc='OC'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;
             $Data['new_number'] = $no_oc;
             $Data['type_nomor'] = 'OC' ;
+             
+            return $Data;
+        }                    
+    }
+
+    public function getNewKCNumber(Request $request)
+    {           
+        $type_nomor = $request->type_nomor;
+        if($type_nomor='KC'){
+            $tanggal    = New Carbon($request->tanggal_transaksi);
+            #========================================================================
+            $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
+            $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;             
+            #=========================================================================
+            $No_Pengembalian = sr_pengembalian_model::select('No_Pengembalian')    
+                                                      ->whereRaw('MONTH(Tanggal_Pelaporan) = ?',$bln)
+                                                      ->whereRaw('YEAR(Tanggal_Pelaporan) = ?', $thn)                                
+                                                      ->orderBy('No_Pengembalian','desc')     
+                                                      ->limit('1')
+                                                      ->get();
+             
+
+            if (count($No_Pengembalian)>0){                       
+                $TLast_Number = substr($No_Pengembalian,-8,5);
+            } else {
+                $TLast_Number = 0; 
+            }       
+        
+            $lastNumber = $TLast_Number+1;      
+
+            $pr_id = sprintf("%05d", $lastNumber);
+
+
+            $branchCode = sy_konfigurasi_model::where('Item','nocabang')
+                                                ->select('Nilai')
+                                                ->get();
+            $prefix_kj = $branchCode[0]['Nilai'];
+            $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
+
+            $no_oc='KC'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;
+            $Data['new_number'] = $no_oc;
+            $Data['type_nomor'] = 'KC' ;
              
             return $Data;
         }                    
