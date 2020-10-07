@@ -7,6 +7,7 @@ use App\stockopname\StockOpname;
 use App\sy_konfigurasi_model;
 use App\mapping\in_stock_opname_blocking_model; 
 use App\Spreading\sr_peminjaman_model;
+use App\in_delivery_model;
 
 class SequenceController extends Controller
 {
@@ -43,19 +44,59 @@ class SequenceController extends Controller
             $prefix_kj = $branchCode[0]['Nilai'];
             $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
-            $no_kj     ='KJ'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;
-                
-            response()->json([                     
-                            'new_number'=>$no_kj
-                            ])->send();    
-        }
-                        
+            $no_kj              ='KJ'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;            
+            $Data['new_number'] = $no_kj ;
+            $Data['type_nomor'] ='KJ';
+            return $no_kj;//response()->json([$no_kj])->send();    
+        }                        
+        
+    }
+
+    public function getNewDSNumber(Request $request)
+    {   
+        $type_nomor = $request->type_nomor;
+        if($type_nomor='DS'){
+            $tanggal    = New Carbon($request->tanggal_transaksi);
+            #return($tanggal);
+            $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
+            $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;             
+            
+            $No_DS      = in_delivery_model::select('no_delivery')    
+                                            ->where('Jenis_referensi','=','SR')
+                                            ->whereRaw('MONTH(Tgl_Delivery) = ?',$bln)
+                                            ->whereRaw('YEAR(Tgl_Delivery) = ?', $thn)                                
+                                            ->orderBy('no_delivery','desc')     
+                                            ->limit('1')
+                                            ->get();
+          #  return($No_DS);
+            if (count($No_DS)>0){                       
+                $TLast_Number = substr($No_DS,-8,5);
+            } else{
+                $TLast_Number = 0; 
+            }       
+        
+            $lastNumber = $TLast_Number+1;      
+            #return $lastNumber;
+
+            $pr_id = sprintf("%05d", $lastNumber);
+
+
+            $branchCode = sy_konfigurasi_model::where('Item','nocabang')
+                                                ->select('Nilai')
+                                                ->get();
+            $prefix_kj = $branchCode[0]['Nilai'];
+            $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
+
+            $no_ds              ='DS'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;            
+            $Data['new_number'] = $no_ds ;
+            $Data['type_nomor'] ='DS';
+            return $Data;//response()->json([$no_kj])->send();    
+        }                        
         
     }
 
     public function getNewOCNumber(Request $request)
-    {   
-        
+    {           
         $type_nomor = $request->type_nomor;
         if($type_nomor='OC'){
             $tanggal    = New Carbon($request->tanggal_transaksi);
@@ -69,12 +110,11 @@ class SequenceController extends Controller
                                                 ->orderBy('No_Peminjaman','desc')     
                                                 ->limit('1')
                                                 ->get();
-
              
 
             if (count($No_Peminjaman)>0){                       
                 $TLast_Number = substr($No_Peminjaman,-8,5);
-            } else{
+            } else {
                 $TLast_Number = 0; 
             }       
         
@@ -90,10 +130,11 @@ class SequenceController extends Controller
             $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
             $no_oc='OC'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;
-            #return $no_oc;   
-            response()->json(['new_number'=>$no_oc])->send();                
-        }            
-        
+            $Data['new_number'] = $no_oc;
+            $Data['type_nomor'] = 'OC' ;
+             
+            return $Data;
+        }                    
     }
 
     public  function cekOpnameStatus(Request $request)

@@ -27,7 +27,7 @@ Route::get('blg/cekDivisiProdukOpname/{Kode_Divisi_Produk}','BISMySQLController@
 //BISMySQL numbering BLG
 Route::post('blg/getNewKJNumber/{type_nomor}','SequenceController@getNewKJNumber');
 Route::post('blg/getNewOCNumber/{type_nomor}','SequenceController@getNewOCNumber');
-Route::post('blg/ucox/{type_nomor}','SpreadingController@ucox');
+Route::post('blg/getNewDSNumber/{type_nomor}','SequenceController@getNewDSNumber');
 
 
 //create kkso BLG

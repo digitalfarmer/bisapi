@@ -16,7 +16,7 @@ class SpreadingController extends Controller
     }
  
  
-    public function postPickingSpreading(Request $request)
+    public function postPickingSpreading(Request $request) 
     {
         $odoo   = new \Edujugon\Laradoo\Odoo();
         $odoo   = $odoo->connect();   
@@ -24,19 +24,24 @@ class SpreadingController extends Controller
         $spreading_header     = [];
         $spreading_detail     = [];
         $spreading_subdetail  = [];        
-        $NomorSpreading       = $this->SequenceController->getNewOCNumber($request);
+        $nomor_oc =  $this->SequenceController->getNewOCNumber($request);
+        $nomor_ds =  $this->SequenceController->getNewDSNumber($request);
+        #$data= $data1->toArray();               
+        $new_number['oc_number'] = $nomor_oc['new_number']; 
+        $new_number['ds_number'] = $nomor_ds['new_number']; 
+        $new_number['status']    = 1; 
+        $new_number['message']   = 'Data Peminjaman Berhasil di Transfer'; 
+
+        #$Data=json_decode($NomorSpreading, True);        
         
-         
-        $Data=json_decode($NomorSpreading, True);
         
-        return $Data->new_number;         
        # return redirect('blg/postPickingSpreading/'.$request);
- 
+ /*
         response()->json([
                          'spreading'=>$spreading_header['No_Peminjaman'],
                          'ware_house_id'=>(int)$request->ware_house_id,
                          'id'=>(int)$request->id
-                         ])->send(); 
+                         ])->send(); */
 
         //return($NomorSpreading);
 
@@ -44,7 +49,7 @@ class SpreadingController extends Controller
 
         // header      
         /*
-        $spreading_header['No_Peminjaman']    = $No_Peminjaman;
+        $spreading_header['No_Peminjaman']    = $new_number;
         $spreading_header['ID_Spreading']     = $ID_Spreading;
         $spreading_header['Tanggal_Pinjam']   = $Tanggal_Pinjam;
         $spreading_header['Kode_Rayon']       = '';
@@ -74,9 +79,12 @@ class SpreadingController extends Controller
             $spreading_subdetail[$row]['Kadaluarsa']     = $subdetails[$row]['Kadaluarsa']; 
             $spreading_subdetail[$row]['Jumlah']         = $subdetails[$row]['Jumlah']; 
             $row++;    
-        }      
-        response()->json(['opname_status'=>0])->send();   
-        */
+        }   */   
+        response()->json([
+           
+            $new_number
+            ])->send();   
+    
     }
    
 
