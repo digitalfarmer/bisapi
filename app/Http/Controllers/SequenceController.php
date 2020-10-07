@@ -11,11 +11,32 @@ use App\Spreading\sr_pengembalian_model;
 use App\in_delivery_model;
 
 class SequenceController extends Controller
-{
+{   
+    
+    public  function getNewNumber(Request $request)
+    {
+        $type_nomor = $request->type_nomor;     
+        #return $type_nomor;
+        if($type_nomor=='KJ'){
+            $nomor = $this->getNewKJNumber($request);
+        } 
+        else if($type_nomor=='OC'){
+            $nomor = $this->getNewOCNumber($request);
+        } 
+        else if(($type_nomor=='DS') || ($type_nomor=='DM') || ($type_nomor=='DO') )  {
+            $nomor = $this->getNewDeliveryNumber($request);
+        } 
+        else if($type_nomor=='KC'){
+            $nomor = $this->getNewKCNumber($request);
+        }
+        return $nomor;
+
+    }
+
     public function getNewKJNumber(Request $request)
     {   
         $type_nomor = $request->type_nomor;
-        if($type_nomor='KJ'){
+        if($type_nomor=='KJ'){
             $tanggal    = New Carbon($request->tanggal_transaksi);
             #return($tanggal);
             $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
@@ -48,33 +69,50 @@ class SequenceController extends Controller
             $no_kj              ='KJ'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;            
             $Data['new_number'] = $no_kj ;
             $Data['type_nomor'] ='KJ';
-            return $no_kj;//response()->json([$no_kj])->send();    
+            return $Data;//response()->json([$no_kj])->send();    
         }                        
         
     }
 
-    public function getNewDSNumber(Request $request)
+    public function getNewDeliveryNumber(Request $request)
     {   
         $type_nomor = $request->type_nomor;
-        if($type_nomor='DS'){
-            $tanggal    = New Carbon($request->tanggal_transaksi);
+        $tanggal    = New Carbon($request->tanggal_transaksi);
             #return($tanggal);
-            $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
-            $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;             
-            
-            $No_DS      = in_delivery_model::select('no_delivery')    
+        $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
+        $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;             
+
+        if($type_nomor=='DS'){    
+            $No_DO      = in_delivery_model::select('no_delivery')    
                                             ->where('Jenis_referensi','=','SR')
                                             ->whereRaw('MONTH(Tgl_Delivery) = ?',$bln)
                                             ->whereRaw('YEAR(Tgl_Delivery) = ?', $thn)                                
                                             ->orderBy('no_delivery','desc')     
                                             ->limit('1')
                                             ->get();
+        } else if($type_nomor=='DO'){   
+            $No_DO      = in_delivery_model::select('no_delivery')    
+                                            ->where('Jenis_referensi','=','SP')
+                                            ->whereRaw('MONTH(Tgl_Delivery) = ?',$bln)
+                                            ->whereRaw('YEAR(Tgl_Delivery) = ?', $thn)                                
+                                            ->orderBy('no_delivery','desc')     
+                                            ->limit('1')
+                                            ->get();    
+        } else if($type_nomor=='DM'){   
+            $No_DO      = in_delivery_model::select('no_delivery')    
+                                            ->where('Jenis_referensi','=','MC')
+                                            ->whereRaw('MONTH(Tgl_Delivery) = ?',$bln)
+                                            ->whereRaw('YEAR(Tgl_Delivery) = ?', $thn)                                
+                                            ->orderBy('no_delivery','desc')     
+                                            ->limit('1')
+                                            ->get();    
+        }
           #  return($No_DS);
-            if (count($No_DS)>0){                       
-                $TLast_Number = substr($No_DS,-8,5);
-            } else{
-                $TLast_Number = 0; 
-            }       
+        if (count($No_DO)>0){                       
+            $TLast_Number = substr($No_DO,-8,5);
+        } else{
+            $TLast_Number = 0; 
+        }       
         
             $lastNumber = $TLast_Number+1;      
             #return $lastNumber;
@@ -88,18 +126,18 @@ class SequenceController extends Controller
             $prefix_kj = $branchCode[0]['Nilai'];
             $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
-            $no_ds              ='DS'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;            
+            $no_ds              = $type_nomor.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;            
             $Data['new_number'] = $no_ds ;
-            $Data['type_nomor'] ='DS';
+            $Data['type_nomor'] = $type_nomor;
             return $Data;//response()->json([$no_kj])->send();    
-        }                        
+               
         
     }
 
     public function getNewOCNumber(Request $request)
     {           
         $type_nomor = $request->type_nomor;
-        if($type_nomor='OC'){
+        if($type_nomor =='OC'){
             $tanggal    = New Carbon($request->tanggal_transaksi);
             #========================================================================
             $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
@@ -141,7 +179,7 @@ class SequenceController extends Controller
     public function getNewKCNumber(Request $request)
     {           
         $type_nomor = $request->type_nomor;
-        if($type_nomor='KC'){
+        if($type_nomor=='KC'){
             $tanggal    = New Carbon($request->tanggal_transaksi);
             #========================================================================
             $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
