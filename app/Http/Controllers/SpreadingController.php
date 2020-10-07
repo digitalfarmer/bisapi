@@ -30,10 +30,11 @@ class SpreadingController extends Controller
         $spreading_detail     = [];
         $spreading_subdetail  = [];        
         #$NomorSpreading       = $this->SequenceController->getNewOCNumber($request);
-
-
-        #response()->json(['data'=>$request])->send(); 
-        response()->json(['ware_house_id'=>(int)$request->ware_house_id])->send(); 
+        
+        response()->json([
+                         'ware_house_id'=>(int)$request->ware_house_id,
+                         'id'=>(int)$request->id
+                         ])->send(); 
 
         //return($NomorSpreading);
 
