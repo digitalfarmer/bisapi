@@ -4,9 +4,23 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Http\Controllers\SequenceController;
 
 class SpreadingController extends Controller
 {
+    protected $SequenceController;
+
+    public function __construct(SequenceController $SequenceController)
+    {
+        $this->SequenceController = $SequenceController;
+    }
+
+    public function ucox(Request $request)
+    {
+        $data= $this->SequenceController->getNewOCNumber($request);
+        return($data);
+    }
+
     public function postPickingSpreading(Request $request)
     {
         $odoo   = new \Edujugon\Laradoo\Odoo();
@@ -14,9 +28,17 @@ class SpreadingController extends Controller
 
         $spreading_header     = [];
         $spreading_detail     = [];
-        $spreading_subdetail  = [];
+        $spreading_subdetail  = [];        
+        $NomorSpreading       = $this->SequenceController->getNewOCNumber($request);
+
+        return($NomorSpreading);
+
+        //return($NomorSpreading);
+
+        #return($this->BISMySQLController->getNewOCNumber('KJ'));
 
         // header      
+        /*
         $spreading_header['No_Peminjaman']    = $No_Peminjaman;
         $spreading_header['ID_Spreading']     = $ID_Spreading;
         $spreading_header['Tanggal_Pinjam']   = $Tanggal_Pinjam;
@@ -49,6 +71,7 @@ class SpreadingController extends Controller
             $row++;    
         }      
         response()->json(['opname_status'=>0])->send();   
+        */
     }
    
 

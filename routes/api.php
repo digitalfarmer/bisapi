@@ -25,7 +25,11 @@ Route::post('blg/cancelBlockingStock/{adjustment_id}','ProsesKartuStokController
 Route::post('blg/cekOpnameStatus','BISMySQLController@cekOpnameStatus');
 Route::get('blg/cekDivisiProdukOpname/{Kode_Divisi_Produk}','BISMySQLController@cekDivisiProdukOpname');
 //BISMySQL numbering BLG
-Route::post('blg/getNewNumber/{type_nomor}','BISMySQLController@getNewNumber');
+Route::post('blg/getNewKJNumber/{type_nomor}','SequenceController@getNewKJNumber');
+Route::post('blg/getNewOCNumber/{type_nomor}','SequenceController@getNewOCNumber');
+Route::post('blg/ucox/{type_nomor}','SpreadingController@ucox');
+
+
 //create kkso BLG
 Route::get('blg/createadjustment','StockOpnameController@createkkso');
 //BISMySQL Peminjaman/Spreading dari Odoo 
