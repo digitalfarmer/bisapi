@@ -46,3 +46,4 @@ Route::get('/bisgateway','PurchaseOrderController@index');
 Route::resource('students','StudentsController');
 
 //test data pipeline
+Route::get('/jenkinstest', 'PurchaseOrderController@jenkins');
