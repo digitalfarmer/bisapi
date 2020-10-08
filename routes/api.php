@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 */ 
 //route module stock picking BLG
 Route::get('blg/getUpdatePickingItem/{picking_id}','BISAPIController@getUpdatePickingItem');   
+
 //route module Stock Adjustment BLG
 Route::get('blg/sendStockAdjustment/{adjustment_id}','ProsesKartuStokController@sendStockAdjustment');   
 Route::get('blg/getStockOpname/{adjustment_id}','ProsesKartuStokController@getStockOpname'); 
@@ -27,11 +28,15 @@ Route::post('blg/cancelBlockingStock/{adjustment_id}','ProsesKartuStokController
 Route::post('blg/cekOpnameStatus','SequenceController@cekOpnameStatus');
 Route::get('blg/cekDivisiProdukOpname/{Kode_Divisi_Produk}','SequenceController@cekDivisiProdukOpname');
 
-//Sequence numbering
+//Sequence numbering BISMySQL Version
 Route::get('blg/getNewKJNumber/{tanggal_transaksi}','SequenceController@getNewKJNumber');
 Route::get('blg/getNewOCNumber/{tanggal_transaksi}','SequenceController@getNewOCNumber');
+//Khusus Untuk getNewDeliveryNumber, ada tambahan Parameter type_nomor 
+//DO:Delivery Regular, DS:Delivery Peminjaman, DM:Delivery Mutasi  
 Route::get('blg/getNewDeliveryNumber/{type_nomor}/{tanggal_transaksi}','SequenceController@getNewDeliveryNumber');
 Route::get('blg/getNewKCNumber/{tanggal_transaksi}','SequenceController@getNewKCNumber');
+//All Sequence Numbering, Semua Fungsi di Gabung disini, Tinggal isi Parameter 
+//type_nomor & tanggal_transaksi
 Route::get('blg/getNewNumber/{type_nomor}/{tanggal_transaksi}','SequenceController@getNewNumber');
 
 //create kkso BLG

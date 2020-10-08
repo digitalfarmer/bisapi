@@ -11,11 +11,9 @@ use App\in_delivery_model;
 use Illuminate\Support\Facades\DB;
 
 class SequenceController extends Controller
-{   
-  
+{    
     public  function getNewNumber($type_nomor, $tanggal_transaksi)
-    {
-        
+    {       
         if($type_nomor=='KJ'){
             $nomor = $this->getNewKJNumber($tanggal_transaksi);            
         } 
@@ -51,10 +49,7 @@ class SequenceController extends Controller
             }       
         
             $lastNumber = $TLast_Number+1;      
-
-            $pr_id = sprintf("%05d", $lastNumber);
-
-
+            $pr_id      = sprintf("%05d", $lastNumber);
             $branchCode = sy_konfigurasi_model::where('Item','nocabang')
                                                 ->select('Nilai')
                                                 ->get();
@@ -104,7 +99,6 @@ class SequenceController extends Controller
         } else{
             $TLast_Number = 0; 
         }       
-        
             $lastNumber = $TLast_Number+1;                  
 
             $pr_id = sprintf("%05d", $lastNumber);
@@ -164,8 +158,7 @@ class SequenceController extends Controller
     }
 
     public function getNewKCNumber($tanggal_transaksi)
-    {           
-       
+    {                
         
             $tanggal    = New Carbon($tanggal_transaksi);
             #========================================================================
@@ -237,7 +230,7 @@ class SequenceController extends Controller
                              'kkso_status'=> $OnOpnameStock
                              ])->send();        
         } 
-        else{    
+        else {    
             response()->json(['opname_status'=>0])->send();       
         }       
 
