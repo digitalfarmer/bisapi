@@ -8,7 +8,6 @@ use App\mapping\in_stock_opname_blocking_model;
 use App\Spreading\sr_peminjaman_model;
 use App\Spreading\sr_pengembalian_model;
 use App\in_delivery_model;
-use Haruncpi\LaravelIdGenerator\IdGenerator;
 use Illuminate\Support\Facades\DB;
 
 class SequenceController extends Controller
@@ -16,8 +15,7 @@ class SequenceController extends Controller
   
     public  function getNewNumber($type_nomor, $tanggal_transaksi)
     {
-        #$type_nomor = $request->type_nomor;     
-        #return $type_nomor;
+        
         if($type_nomor=='KJ'){
             $nomor = $this->getNewKJNumber($tanggal_transaksi);            
         } 
@@ -29,17 +27,13 @@ class SequenceController extends Controller
         } 
         else if($type_nomor=='KC'){
             $nomor =  $this->getNewKCNumber($tanggal_transaksi);            
-        }
-        
-        return  $nomor;   
-         
+        }        
+        return  $nomor;           
     }
 
     public function getNewKJNumber($tanggal_transaksi)
-    {         
-         
-            $tanggal    = New Carbon($tanggal_transaksi);
-            #return($tanggal);
+    {        
+            $tanggal    = New Carbon($tanggal_transaksi);    
             $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
             $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;             
             
@@ -49,7 +43,7 @@ class SequenceController extends Controller
                                       ->orderBy('no_kertas_kerja','desc')     
                                       ->limit('1')
                                       ->get();
-    #       return($NoKJ_BIS);
+    
             if (count($NoKJ_BIS)>0){                       
                 $TLast_Number = substr($NoKJ_BIS,-8,5);
             } else{
@@ -67,21 +61,15 @@ class SequenceController extends Controller
             $prefix_kj = $branchCode[0]['Nilai'];
             $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
-            $no_kj              ='KJ'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;            
-            #$Data['new_number'] = $no_kj ;
-            return  $no_kj ;  
-            #$Data['type_nomor'] ='KJ';
-            #return $no_kj;//response()->json([$no_kj])->send();    
-            #response()->json(['data'=>$Data])->send();   
-                            
-        
+            $no_kj     = 'KJ'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;                        
+            return  $no_kj ;                     
     }
 
     public function getNewDeliveryNumber($type_nomor,$tanggal_transaksi)
     {   
          
         $tanggal    = New Carbon($tanggal_transaksi);
-            #return($tanggal);
+            
         $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
         $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;             
 
@@ -110,18 +98,16 @@ class SequenceController extends Controller
                                             ->limit('1')
                                             ->get();    
         }
-          #  return($No_DS);
+          
         if (count($No_DO)>0){                       
             $TLast_Number = substr($No_DO,-8,5);
         } else{
             $TLast_Number = 0; 
         }       
         
-            $lastNumber = $TLast_Number+1;      
-            #return $lastNumber;
+            $lastNumber = $TLast_Number+1;                  
 
             $pr_id = sprintf("%05d", $lastNumber);
-
 
             $branchCode = sy_konfigurasi_model::where('Item','nocabang')
                                                 ->select('Nilai')
@@ -131,11 +117,9 @@ class SequenceController extends Controller
 
             $no_ds              = $type_nomor.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;            
             $Data['new_number'] = $no_ds ;
-         #   $Data['type_nomor'] = $type_nomor;
-            #return $no_ds;//response()->json([$no_kj])->send();    
-            #return response()->json($Data, 200)->send();  
+         
             return $no_ds ;      
-            #response()->json(['data'=>$Data])->send();   
+            
     }
 
     public function getNewOCNumber($tanggal_transaksi)
@@ -173,12 +157,9 @@ class SequenceController extends Controller
             $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
             $no_oc='OC'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;
-            $Data['new_number'] = $no_oc;
-           # $Data['type_nomor'] = 'OC' ;
-             
-            #return $no_oc;
-            return  $no_oc ;   
-            #response()->json(['data'=>$Data])->send();   
+            $Data['new_number'] = $no_oc;           
+            
+            return  $no_oc ;             
                        
     }
 
@@ -217,12 +198,8 @@ class SequenceController extends Controller
             $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
             $no_oc='KC'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;
-            $Data['new_number'] = $no_oc;
-           # $Data['type_nomor'] = 'KC' ;
-             
-            #return response()->json($Data, 200)->send();   
-            return  $no_oc ;   
-                    
+            $Data['new_number'] = $no_oc;            
+            return  $no_oc ;                       
     }
 
     public  function cekOpnameStatus(Request $request)
