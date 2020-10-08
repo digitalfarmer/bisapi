@@ -22,8 +22,8 @@ Route::get('blg/get_stock/{adjustment_id}','ProsesKartuStokController@get_stock'
 Route::post('blg/flagBlockingStock/{adjustment_id}','ProsesKartuStokController@FlagBlockingStock');   
 Route::post('blg/cancelBlockingStock/{adjustment_id}','ProsesKartuStokController@CancelBlockingStock');   
 //Cek Status Adjustment BLG
-Route::post('blg/cekOpnameStatus','BISMySQLController@cekOpnameStatus');
-Route::get('blg/cekDivisiProdukOpname/{Kode_Divisi_Produk}','BISMySQLController@cekDivisiProdukOpname');
+Route::post('blg/cekOpnameStatus','SequenceController@cekOpnameStatus');
+Route::get('blg/cekDivisiProdukOpname/{Kode_Divisi_Produk}','SequenceController@cekDivisiProdukOpname');
 
 //Sequence numbering
 #Route::post('blg/getNewKJNumber/{type_nomor}','SequenceController@getNewKJNumber');

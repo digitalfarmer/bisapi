@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Http\Controllers\SequenceController;
+#use GuzzleHttp\ Request;
+use GuzzleHttp\Client;
+
+
 
 class SpreadingController extends Controller
 {   
@@ -18,15 +22,36 @@ class SpreadingController extends Controller
  
     public function postPickingSpreading(Request $request) 
     {
-        $odoo   = new \Edujugon\Laradoo\Odoo();
-        $odoo   = $odoo->connect();   
-
+        #$odoo   = new \Edujugon\Laradoo\Odoo();
+        #$odoo   = $odoo->connect();   
         $spreading_header     = [];
         $spreading_detail     = [];
-        $spreading_subdetail  = [];        
-        $nomor_oc             = $this->SequenceController->getNewOCNumber($request);
-        $nomor_ds             = $this->SequenceController->getNewDSNumber($request);
+        $spreading_subdetail  = [];                
+
+        $client = new Client();
+        #$res = $client->request('POST', 'http://192.168.21.175/api/blg/postPickingSpreading/74'
+        #);
+        #return($request->tanggal_transaksi);
+      #  return  $request;//->tanggal_transaksi . '  '.$request->type_nomor;
+
+    
+
+        $response = $client->request('POST', 'http://192.168.21.175/api/blg/getNewNumber', [
+            'form_params' => [
+                'tanggal_transaksi' => $request->tanggal_transaksi,
+                'type_nomor' => $request->type_nomor
+            ]
+        ]);
+        
+
+ 
+        #$nomor_oc             = $this->SequenceController->getNewNumber($request);        
+        #$nomor_ds             = $this->SequenceController->getNewNumber($request);
+
+        return  $response;
         #$data= $data1->toArray();               
+
+
         $new_number['oc_number'] = $nomor_oc['new_number']; 
         $new_number['ds_number'] = $nomor_ds['new_number']; 
         $new_number['status']    = 1; 
