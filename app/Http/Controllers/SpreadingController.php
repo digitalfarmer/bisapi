@@ -8,6 +8,7 @@ use App\in_delivery_subdetail_model;
 use App\Spreading\sr_peminjaman_model;
 use App\Spreading\sr_peminjaman_detail_model;
 use App\mapping\ms_odoo_map_uom_product_model;
+use App\mapping\sr_peminjaman_mapping_odoo_model;
 use App\mapping\ms_mapping_wh_odoo_model;
 use Illuminate\Support\Facades\DB;
 
@@ -25,19 +26,43 @@ class SpreadingController extends Controller
         //Kalo Ambil dari request berbentuk Object
         #$odoo   = new \Edujugon\Laradoo\Odoo();
         #$odoo   = $odoo->connect();  
-
         $data   = $request->all();
+        $ada_peminjaman=sr_peminjaman_mapping_odoo_model::where('picking_id',$data['spreading_header']['id'])
+                                                          ->select('picking_id','No_Peminjaman','No_Delivery')
+                                                          ->get();
+        #return $peminjaman;
+        if(count($ada_peminjaman)>0) 
+        {
+            response()->json([
+                'success'=>0,
+                'code'=>400,
+                'message'=>'Peminjaman Dengan Referensi Picking ID : '.$data['spreading_header']['id'].' Sudah Pernah di Proses Dengan No Peminjaman '.$ada_peminjaman[0]['No_Peminjaman'].' !'
+                ])->send(); 
+            exit;
+        }
+
+        
+
+       // return($data);
+        /*
+        response()->json([                                      
+                         'data'=>$data,             
+                         'success'=>0,
+                         'code'=>400,                                   
+                         'message'=>$data['spreading_header'] 
+                        ])->send();  */ 
 
         #return $data['spreading_header']['date'];
         //Kalo Ambil dari sini berbentuk Array
-
         
         #return $Peminjaman_Detail;
-
-        $warehouse_code = $data['spreading_header']['warehouse_code'];
-        #return  $warehouse_code;        
         
-        $Picking_ID         = $request->picking_id;
+        #return $data['spreading_header'];
+        $warehouse_code = $data['spreading_header']['warehouse_code'];
+        $picking_id     = $data['spreading_header']['id'];
+        #return  $warehouse_code;                
+        #$Picking_ID         = $request->picking_id;
+
         #OC
         $Peminjaman_Header  = [];
         $Peminjaman_Detail  = [];        
@@ -52,7 +77,7 @@ class SpreadingController extends Controller
         #return $nomor_ds;        
 
         $Peminjaman_Header['No_Peminjaman']   = $nomor_oc;         
-        $Peminjaman_Header['ID_Spreading']    = '';         
+        $Peminjaman_Header['ID_Spreading']    = $data['spreading_header']['salesman_code'];         
         $Peminjaman_Header['Tanggal_Pinjam']  = $data['spreading_header']['date'];                                 
         $Peminjaman_Header['Kode_Rayon']      = '';                                 
         $Peminjaman_Header['Status_Tercetak'] = 'N';                                 
@@ -65,9 +90,7 @@ class SpreadingController extends Controller
         $Delivery_Header['Jenis_referensi']     = 'SR';                   
         $Delivery_Header['Tgl_Delivery']        = $data['spreading_header']['date'];       
         $Delivery_Header['Tgl_Permintaan_Kirim']= $data['spreading_header']['date'];  
-        $Delivery_Header['Nama_Tujuan']         = '';  //83320021  IMAN NASRULOH     
-       # $Delivery_Header['Alamat_Tujuan']       = '';        
-        #$Delivery_Header['Kota_Tujuan']         = '';                  
+        $Delivery_Header['Nama_Tujuan']         = $data['spreading_header']['salesman_code'];                      
         $Delivery_Header['Time_Stamp']          = Carbon::now('Asia/Jakarta');
         $Delivery_Header['User_ID']             = 'OdooWMS';              
         $Delivery_Header['Status_Tercetak']     = 'N';   
@@ -125,19 +148,28 @@ class SpreadingController extends Controller
             #$Delivery_Subdetail[$row]['ID_Program_Promosi'] = $Subdetails[$row]['ID_Program_Promosi'];                                    
             $row++;    
         }   
-  
+        
+    
         
         try 
         {  
             DB::beginTransaction();
             // Transaction Peminjaman (OC)
+            $mapping_peminjaman=[];
+            $mapping_peminjaman['picking_id']   =$picking_id;
+            $mapping_peminjaman['No_Peminjaman']=$nomor_oc;
+            $mapping_peminjaman['No_Delivery']  =$nomor_ds;                
+
+            
             $Saved_Peminjaman_Header  = sr_peminjaman_model::insert($Peminjaman_Header);            
             $Saved_Peminjaman_Detail  = sr_peminjaman_detail_model::insert($Peminjaman_Detail);    
 
             // Transaction DO Peminjaman (DS)
             $Saved_Delivery_Header    = in_delivery_model::insert($Delivery_Header);                        
             $Saved_Delivery_Detail    = in_delivery_detail_model::insert($Delivery_Detail);
-            $Saved_Delivery_Subdetail = in_delivery_subdetail_model::insert($Delivery_Subdetail);                                
+            $Saved_Delivery_Subdetail = in_delivery_subdetail_model::insert($Delivery_Subdetail);   
+            
+            $Saved_peminjaman_mapping_odoo =sr_peminjaman_mapping_odoo_model::insert($mapping_peminjaman);
 
             response()->json([                            
                              'No_Peminjaman'=>$nomor_oc,
@@ -160,7 +192,7 @@ class SpreadingController extends Controller
            response()->json([
                             'success'=>0,
                             'code'=>400,
-                            'message'=>'Peminjaman Dengan Referensi Picking ID : '.$Picking_ID.' Gagal di Proses ! '
+                            'message'=>'Peminjaman Dengan Referensi Picking ID : '.$picking_id.' Gagal di Proses ! '
                             ])->send(); 
            exit; 
         }                  
