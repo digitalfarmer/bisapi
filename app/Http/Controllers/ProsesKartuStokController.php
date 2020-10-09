@@ -14,6 +14,7 @@ use App\mapping\in_stock_opname_blocking_model;
 use App\mapping\ms_mapping_wh_odoo_model;
 use App\stockopname\StockOpname; 
 use App\stockopname\StockOpnameMapping; 
+use App\stockopname\in_stok_barang_model; 
 use Carbon\Carbon;
 use Session;
 use Illuminate\Http\Request;
@@ -21,6 +22,13 @@ use Illuminate\Http\Request;
 class ProsesKartuStokController extends Controller
 {  
     
+    public function getLastStock(request $request)
+    {
+        in_stok_barang_model::where('Kode_Gudang',$request->Kode_Gudang)
+                             ->select('Kode_Barang')
+                             ->get();
+    }
+
     public function get_stock(request $request)
     {
         $odoo   = new \Edujugon\Laradoo\Odoo();
