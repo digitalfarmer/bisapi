@@ -7,6 +7,8 @@ use App\in_delivery_detail_model;
 use App\in_delivery_subdetail_model;
 use App\Spreading\sr_peminjaman_model;
 use App\Spreading\sr_peminjaman_detail_model;
+use App\Spreading\sr_pengembalian_model;
+use App\Spreading\sr_pengembalian_detail_model;
 use App\mapping\ms_odoo_map_uom_product_model;
 use App\mapping\sr_peminjaman_mapping_odoo_model;
 use App\mapping\ms_mapping_wh_odoo_model;
@@ -26,10 +28,10 @@ class SpreadingController extends Controller
         //Kalo Ambil dari request berbentuk Object
         #$odoo   = new \Edujugon\Laradoo\Odoo();
         #$odoo   = $odoo->connect();  
-        $data   = $request->all();
-        $ada_peminjaman=sr_peminjaman_mapping_odoo_model::where('picking_id',$data['spreading_header']['id'])
-                                                          ->select('picking_id','No_Peminjaman','No_Delivery')
-                                                          ->get();
+        $data           = $request->all();
+        $ada_peminjaman = sr_peminjaman_mapping_odoo_model::where('picking_id',$data['spreading_header']['id'])
+                                                           ->select('picking_id','No_Peminjaman','No_Delivery')
+                                                           ->get();
         #return $peminjaman;
         if(count($ada_peminjaman)>0) 
         {
@@ -110,6 +112,7 @@ class SpreadingController extends Controller
             $Peminjaman_Detail[$row]['No_Detail']       = $row+1;
             $Peminjaman_Detail[$row]['Satuan']          = $satuan[0]['uom_long_name'];             
             $Peminjaman_Detail[$row]['Jumlah']          = $Details[$row]['qty']; 
+        
             $Delivery_Detail[$row]['No_Delivery']       = $nomor_ds;
             $Delivery_Detail[$row]['Kode_Barang']       = $Details[$row]['product_code'];       
             $Delivery_Detail[$row]['Jumlah']            = $Details[$row]['qty'];                      
@@ -196,6 +199,113 @@ class SpreadingController extends Controller
                             ])->send(); 
            exit; 
         }                  
-    }                         
+    }   
+    
+    
+    public function postPengembalianBarang(Request $request) 
+    {
+        $data             = $request->all();
+
+        //mapping pengembalian sama dengan mapping peminjaman
+        $ada_pengembalian = sr_peminjaman_mapping_odoo_model::where('picking_id',$data['pengembalian_header']['id'])
+                                                             ->select('picking_id','No_Peminjaman','No_Delivery')
+                                                             ->get();
+
+        if(count($ada_pengembalian)>0) 
+        {
+            response()->json([
+                            'success'=>0,
+                            'code'=>400,
+                            'message'=>'Pengembalian Barang Dengan Referensi Picking ID : '.$data['pengembalian_header']['id'].' Sudah Pernah di Proses Dengan No Pengembalian '.$ada_pengembalian[0]['No_Peminjaman'].' !'
+                            ])->send(); 
+            exit;
+        }
+
+        $warehouse_code = $data['pengembalian_header']['warehouse_code'];
+        $Mapping_Kode_Gudang   = ms_mapping_wh_odoo_model::where('wh_code','=',$warehouse_code)
+                                                          ->select('kode_gudang')
+                                                          ->get();
+
+        $picking_id     = $data['pengembalian_header']['id'];
+        $nomor_kc       = $this->SequenceController->getNewKCNumber($data['pengembalian_header']['date']);
+
+        $Pengembalian_Header = [];
+        $Pengembalian_Detail = [];
+
+        #KC
+        $Pengembalian_Header['No_Pengembalian']  = $nomor_kc;
+        $Pengembalian_Header['ID_Spreading']     = $data['pengembalian_header']['salesman_code'];;
+        $Pengembalian_Header['Tanggal_Pelaporan']= $data['pengembalian_header']['date'];    ;
+        $Pengembalian_Header['Kode_Rayon']       = '';
+        $Pengembalian_Header['Kode_Gudang']      = $Mapping_Kode_Gudang[0]['kode_gudang'];
+        $Pengembalian_Header['Posted']           = 'Y';
+        $Pengembalian_Header['Time_Stamp']       = Carbon::now('Asia/Jakarta');
+        $Pengembalian_Header['User_ID']          = 'OdooWMS';    
+
+
+        $row = 0; 
+        #$row++;
+        foreach($data['pengembalian_detail'] as $Details[]) 
+        {
+            $Pengembalian_Detail[$row]['No_Pengembalian']= $nomor_kc;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+            $Pengembalian_Detail[$row]['No_Detail']      = $row+1;
+            $Pengembalian_Detail[$row]['Kode_Barang']    = $Details[$row]['product_code'];  ;
+            $Pengembalian_Detail[$row]['No_Batch']       = $Details[$row]['lot_name']; 
+            $satuan = ms_odoo_map_uom_product_model::where('product_id',$Details[$row]['product_id']) 
+                                                    ->where('uom_id',$Details[$row]['uom_id'])
+                                                    ->select('uom_long_name')
+                                                    ->get();
+
+            $Pengembalian_Detail[$row]['Satuan']         = $satuan[0]['uom_long_name'];;
+            $Pengembalian_Detail[$row]['Jumlah']         = $Details[$row]['qty']; ;
+            $Pengembalian_Detail[$row]['Kadaluarsa']     = $Details[$row]['expired']; ;
+            $Pengembalian_Detail[$row]['Status']         = 'AVAILABLE';
+            $row++;
+        }        
+
+
+ 
+        try 
+        {  
+            DB::beginTransaction();
+
+            // Transaction Pengembalian (KC)
+            $mapping_pengembalian=[];
+            $mapping_pengembalian['picking_id']    = $picking_id;
+            $mapping_pengembalian['No_Peminjaman'] = $nomor_kc;
+            $mapping_pengembalian['No_Delivery']   = $nomor_kc;                
+
+            
+            $Saved_Pengembalian_Header  = sr_pengembalian_model::insert($Pengembalian_Header);            
+            $Saved_Pengembalian_Detail  = sr_pengembalian_detail_model::insert($Pengembalian_Detail);    
+             
+            $Saved_pengembalian_mapping_odoo = sr_peminjaman_mapping_odoo_model::insert($mapping_pengembalian);
+
+            response()->json([                            
+                             'No_Pengembalian'=>$nomor_kc,                               
+                             'success'=>1,
+                             'code'=>200,                                   
+                             'message'=>'Pengembalian Barang Berhasil dibuat di BISMySQL !'
+                            ])->send();    
+
+          // Jika Table table diatas Berhasil di Insert
+          // Maka Simpan Semua Datanya, Kommat Kommit
+      
+          DB::commit();                             
+        } catch(\Exception $e)
+        {
+           // Jika ada error / Salah Satu Model Gagal di insert 
+           // Maka Rollback, Semua data di batalkan (Tidak jadi di Insert)
+           // Berlaku untuk model yang ada di Transaction        
+           DB::rollback();
+           response()->json([
+                            'success'=>0,
+                            'code'=>400,
+                            'message'=>'Pengembalian Dengan Referensi Picking ID : '.$picking_id.' Gagal di Proses ! '
+                            ])->send(); 
+           exit; 
+        }     
+                                                    
+    }
 }       
 

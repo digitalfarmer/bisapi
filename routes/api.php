@@ -43,4 +43,5 @@ Route::get('blg/getNewNumber/{type_nomor}/{tanggal_transaksi}','SequenceControll
 Route::get('blg/createadjustment','StockOpnameController@createkkso');
 //BISMySQL Peminjaman/Spreading dari Odoo 
 Route::post('blg/postPickingSpreading/{picking_id}','SpreadingController@postPickingSpreading');
+Route::post('blg/postPengembalianBarang/{picking_id}','SpreadingController@postPengembalianBarang');
  
