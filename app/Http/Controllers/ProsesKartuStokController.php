@@ -26,7 +26,7 @@ class ProsesKartuStokController extends Controller
     {
         in_stok_barang_model::where('Kode_Gudang',$request->Kode_Gudang)
                              ->select('Kode_Barang')
-                             ->get();
+                             ->get('');
     }
 
     public function get_stock(request $request)
@@ -547,7 +547,7 @@ class ProsesKartuStokController extends Controller
     //Blocking Transaksi Ketika Opname
     public function FlagBlockingStock(Request $request)   
     {
-        $data=[];
+        $data = [];
 
         $data['adjustment_id']       = $request->adjustment_id ;   
         $sudah_ada = in_stock_opname_blocking_model::where('adjustment_id','=', (int)$data['adjustment_id'])
@@ -592,19 +592,18 @@ class ProsesKartuStokController extends Controller
     public function CancelBlockingStock(Request $request)   
     {
 
-        $currentdata=in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
-                                                    ->where('Status_Adjustment','progress')
-                                                    ->get();
+        $currentdata = in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
+                                                      ->where('Status_Adjustment','progress')
+                                                      ->get();
 
 
         if(count($currentdata)>0)                                          
         {
-                $data['adjustment_id']       = $request->adjustment_id ;  
+                $data['adjustment_id'] = $request->adjustment_id ;  
                 $updated = in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
                                                           ->update(['Status_Adjustment'=>'cancel',
                                                                     'Tgl_Akhir'=>Carbon::now('Asia/Jakarta')
-                                                                ]);    
-
+                                                                   ]);    
                 if($updated){
                     response()->json([
                                     'success'=>1,
@@ -616,19 +615,19 @@ class ProsesKartuStokController extends Controller
                 else
                 {
                     response()->json([
-                        'success'=>0,
-                        'code'=>400,                
-                        'message'=>'Tidak ada Adjustment yang perlu di batalkan !' 
-                        ])->send(); 
+                                    'success'=>0,
+                                    'code'=>400,                
+                                    'message'=>'Tidak ada Adjustment yang perlu di batalkan !' 
+                                    ])->send(); 
                 }
         }        
         else
         {
             response()->json([
-                'success'=>0,
-                'code'=>400,                
-                'message'=>'Tidak ada Adjustment yang perlu di batalkan !' 
-                ])->send(); 
+                            'success'=>0,
+                            'code'=>400,                
+                            'message'=>'Tidak ada Adjustment yang perlu di batalkan !' 
+                            ])->send(); 
         }
 
     }

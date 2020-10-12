@@ -44,4 +44,5 @@ Route::get('blg/createadjustment','StockOpnameController@createkkso');
 //BISMySQL Peminjaman/Spreading dari Odoo 
 Route::post('blg/postPickingSpreading/{picking_id}','SpreadingController@postPickingSpreading');
 Route::post('blg/postPengembalianBarang/{picking_id}','SpreadingController@postPengembalianBarang');
+Route::post('blg/postPemfakturanKanvas/{order_id}','SpreadingController@postPemfakturanKanvas');
  
