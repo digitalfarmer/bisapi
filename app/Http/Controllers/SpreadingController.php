@@ -14,6 +14,7 @@ use App\Spreading\sr_pengembalian_detail_model;
 
 use App\Spreading\sr_pemfakturan_model;
 use App\Spreading\sr_pemfakturan_detail_model;
+use App\Spreading\sr_pemfakturan_salesman_model;
 
 use App\mapping\ms_odoo_map_uom_product_model;
 use App\mapping\sr_peminjaman_mapping_odoo_model;
@@ -325,9 +326,10 @@ class SpreadingController extends Controller
         $nomor_fc      = $this->SequenceController->getNewFCNumber($data['pemfakturan_header']['tgl_pemfakturan']);
 
         $Pemfakturan_Header = [];
+        $Pemfakturan_Salesman = [];
         $Pemfakturan_Detail = [];
 
-        #KC
+        #Header
         $Pemfakturan_Header['No_Pemfakturan']      = $nomor_fc;             
         $Pemfakturan_Header['ID_Spreading']        = $data['pemfakturan_header']['kode_salesman'] ;                     
         $Pemfakturan_Header['Kode_Jenis_Jual']     = $data['pemfakturan_header']['jenis_penjualan'];             
@@ -342,14 +344,16 @@ class SpreadingController extends Controller
         $Pemfakturan_Header['Total_Harga']         = $data['pemfakturan_header']['total_harga'];                       
         #$Pemfakturan_Header['Exclusive']          = $data['kode_pelanggan'];                          
         $Pemfakturan_Header['Time_Stamp']          = Carbon::now('Asia/Jakarta');                     
-        $Pemfakturan_Header['User_ID']             = 'OdooWMS';             
+        $Pemfakturan_Header['User_ID']             = 'OdooWMS';   
+        
+        #Pemfakturan_Salesman
+        $Pemfakturan_Salesman['no_pemfakturan']    =  $nomor_fc; 
+        $Pemfakturan_Salesman['kode_salesman']     =  $data['pemfakturan_header']['kode_salesman'] ;     
  
-
         $row = 0; 
         #$row++;
         foreach($data['pemfakturan_detail'] as $Details[]) 
         {          
-
             $Pemfakturan_Detail[$row]['No_Pemfakturan']  = $nomor_fc;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
             $Pemfakturan_Detail[$row]['No_Detail']       = $row+1;
             $Pemfakturan_Detail[$row]['Kode_Barang']     = $Details[$row]['product_code'];   
@@ -381,6 +385,7 @@ class SpreadingController extends Controller
             $Saved_Pemfakturan_Header       = sr_pemfakturan_model::insert($Pemfakturan_Header);            
             $Saved_Pemfakturan_Detail       = sr_pemfakturan_detail_model::insert($Pemfakturan_Detail);                 
             $Saved_pemfakturan_mapping_odoo = sr_pemfakturan_mapping_odoo_model::insert($mapping_pemfakturan);
+            $Saved_pemfakturan_salesman     = sr_pemfakturan_salesman_model::insert($Pemfakturan_Salesman);
 
             response()->json([                         
                              'order_id'=> $Order_ID,  
@@ -393,7 +398,7 @@ class SpreadingController extends Controller
           // Jika Table table diatas Berhasil di Insert
           // Maka Simpan Semua Datanya, Kommat Kommit
       
-          DB::commit();                             
+        DB::commit();                             
         } catch(\Exception $e)
         {
            // Jika ada error / Salah Satu Model Gagal di insert 
