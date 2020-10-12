@@ -22,7 +22,7 @@ class SequenceController extends Controller
             $nomor =  $this->getNewOCNumber($tanggal_transaksi);            
         } 
         else if(($type_nomor=='DS') || ($type_nomor=='DM') || ($type_nomor=='DO') )  {
-            $nomor =  $this->getNewDeliveryNumber($type_nomor,$tanggal_transaksi);  
+            $nomor =  $this->getNewDeliveryNumber($type_nomor, $tanggal_transaksi);  
         } 
         else if($type_nomor=='KC'){
             $nomor =  $this->getNewKCNumber($tanggal_transaksi);            
@@ -196,7 +196,6 @@ class SequenceController extends Controller
 
     public function getNewKCNumber($tanggal_transaksi)
     {                
-        
             $tanggal    = New Carbon($tanggal_transaksi);
             #========================================================================
             $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
