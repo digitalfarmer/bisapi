@@ -99,11 +99,11 @@ class StockOpnameController extends Controller
         foreach ($inventorys as $inventory[]) {
             # code...
             $stockopnamehasil[$rowItems]['no_kertas_kerja']=$kj_odoo;
-            $stockopnamehasil[$rowItems]['kode_barang']=$inventory[$rowItems]['product_code'];
-            $stockopnamehasil[$rowItems]['no_batch']   =$inventory[$rowItems]['batch_number'];
-            $stockopnamehasil[$rowItems]['kadaluarsa'] =Carbon::now('Asia/Jakarta');
-            $stockopnamehasil[$rowItems]['level']      ='';
-            $stockopnamehasil[$rowItems]['jumlah']     =$inventory[$rowItems]['real_qty'];
+            $stockopnamehasil[$rowItems]['kode_barang']= $inventory[$rowItems]['product_code'];
+            $stockopnamehasil[$rowItems]['no_batch']   = $inventory[$rowItems]['batch_number'];
+            $stockopnamehasil[$rowItems]['kadaluarsa'] = Carbon::now('Asia/Jakarta');
+            $stockopnamehasil[$rowItems]['level']      = '';
+            $stockopnamehasil[$rowItems]['jumlah']     = $inventory[$rowItems]['real_qty'];
             $rowItems++;
         }
         $save_hasil=in_stock_opname_hasil::insert($stockopnamehasil);
