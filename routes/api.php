@@ -41,8 +41,8 @@ Route::get('blg/getNewNumber/{type_nomor}/{tanggal_transaksi}','SequenceControll
 
 //create kkso BLG
 Route::get('blg/createadjustment','StockOpnameController@createkkso');
-
-//Briging BISMySQL Peminjaman, Pengembalian & Pemfakturan Kanvas dari Odoo 
+//Test
+//Bridging BISMySQL Peminjaman, Pengembalian & Pemfakturan Kanvas dari Odoo 
 Route::post('blg/postPickingSpreading/{picking_id}','SpreadingController@postPickingSpreading');
 Route::post('blg/postPengembalianBarang/{picking_id}','SpreadingController@postPengembalianBarang');
 Route::post('blg/postPemfakturanKanvas/{order_id}','SpreadingController@postPemfakturanKanvas');
