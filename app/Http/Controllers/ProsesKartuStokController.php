@@ -631,5 +631,61 @@ class ProsesKartuStokController extends Controller
         }
 
     }
+
+    public function getStockOpnameUpdate($tgl_transaksi,$divisi_produk)
+    {
+        $tgl_timestamp = Carbon::parse($tgl_transaksi)->format('Y-m-d H:i:s');
+        $YYMM = Carbon::parse($tgl_transaksi)->format('Ym');
+        
+        $data = in_kartu_stok_detail_model::where('Tgl_Transaksi',$tgl_transaksi)                                         
+                                            ->where('TimeStamp','>=',$tgl_timestamp)   
+                                            ->where('periode',$YYMM)    
+                                            ->join('ms_barang','ms_barang.Kode_Barang','=','in_kartu_stok_detail.barang')
+                                            ->where('ms_barang.kode_divisi_produk',$divisi_produk)
+                                            ->distinct()                                         
+                                            ->get(['Barang','Batch','Gudang']);
+        
+        $row = 0;         
+        $data_response = [];
+        foreach($data as $Details[]) 
+        {  
+            $data_response[$row]['product_code'] = $Details[$row]['Barang'];
+            $data_response[$row]['batch_number'] = $Details[$row]['Batch'];   
+            $qty = in_stok_barang_model::where('in_stok_barang.Kode_Barang',$data_response[$row]['product_code'])
+                                        ->where('in_stok_barang.No_Batch', $data_response[$row]['batch_number'])
+                                        ->where('in_stok_barang.Kode_Gudang', $Details[$row]['Gudang'])
+                                        ->where('in_stok_barang.Status','AVAILABLE')                                        
+                                        ->select(                                                        
+                                                    DB::raw(
+                                                            'SUM( '.
+                                                            ' IFNULL( '.
+                                                            '    ufn_konversi_stok_level(in_stok_barang.Kode_Barang,Stok,in_stok_barang.Level,ufn_level_satuan_terkecil(in_stok_barang.Kode_Barang)),0 '.
+                                                            '   ) '.
+                                                            ') as Stok '
+                                                           )                                                                                                                                                                                          
+
+                                                )
+                                        ->groupBy('in_stok_barang.Kode_Barang','in_stok_barang.No_Batch','in_stok_barang.Kode_Gudang')
+                                        ->get();
+                if(count($qty)>0)
+                {
+                   $data_response[$row]['qty'] =  (int)$qty[0]['Stok'];  
+                }
+                else
+                {
+                   $data_response[$row]['qty'] =  0;    
+                }
+
+            $warehouse_code = ms_mapping_wh_odoo_model::where('kode_gudang',$Details[$row]['Gudang'])
+                                                       ->get('wh_code');
+            
+            $level = DB::select('SELECT ufn_level_satuan_terkecil("'.$data_response[$row]['product_code'].'") as level ')[0]->level;
+            $data_response[$row]['uom_level'] = $level;  
+            $data_response[$row]['warehouse_code'] = $warehouse_code[0]['wh_code'];                      
+            $row++;
+        }                                              
+        
+        return  $data_response;        
+    }
         
 }

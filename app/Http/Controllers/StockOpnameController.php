@@ -31,9 +31,9 @@ class StockOpnameController extends Controller
         //stok opname//
         // get last nomor KJ BIS
         $kj_bis = StockOpname::select('no_kertas_kerja')
-                                ->orderBy('no_kertas_kerja','desc')
-                                ->limit('1')
-                                ->get();
+                               ->orderBy('no_kertas_kerja','desc')
+                               ->limit('1')
+                               ->get();
         $cupangserit= substr($kj_bis,-8,5);
         
         //=================//
