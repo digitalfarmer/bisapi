@@ -10,7 +10,7 @@ class PurchaseOrderController extends Controller
     public function jenkins()
     {
       # code...
-      return 'this is automation';
+      return 'this is automation Server Update succesfully';
     }
     public function index()
     {
