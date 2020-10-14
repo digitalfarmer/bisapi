@@ -591,7 +591,6 @@ class ProsesKartuStokController extends Controller
 
     public function CancelBlockingStock(Request $request)   
     {
-
         $currentdata = in_stock_opname_blocking_model::where('adjustment_id',$request->adjustment_id)
                                                       ->where('Status_Adjustment','progress')
                                                       ->get();
@@ -643,8 +642,7 @@ class ProsesKartuStokController extends Controller
                                             ->join('ms_barang','ms_barang.Kode_Barang','=','in_kartu_stok_detail.barang')
                                             ->where('ms_barang.kode_divisi_produk',$divisi_produk)
                                             ->distinct()                                         
-                                            ->get(['Barang','Batch','Gudang']);
-        
+                                            ->get(['Barang','Batch','Gudang']);        
         $row = 0;         
         $data_response = [];
         foreach($data as $Details[]) 
@@ -656,13 +654,13 @@ class ProsesKartuStokController extends Controller
                                         ->where('in_stok_barang.Kode_Gudang', $Details[$row]['Gudang'])
                                         ->where('in_stok_barang.Status','AVAILABLE')                                        
                                         ->select(                                                        
-                                                    DB::raw(
-                                                            'SUM( '.
-                                                            ' IFNULL( '.
-                                                            '    ufn_konversi_stok_level(in_stok_barang.Kode_Barang,Stok,in_stok_barang.Level,ufn_level_satuan_terkecil(in_stok_barang.Kode_Barang)),0 '.
-                                                            '   ) '.
-                                                            ') as Stok '
-                                                           )                                                                                                                                                                                          
+                                                 DB::raw(
+                                                        'SUM( '.
+                                                        ' IFNULL( '.
+                                                        '    ufn_konversi_stok_level(in_stok_barang.Kode_Barang,Stok,in_stok_barang.Level,ufn_level_satuan_terkecil(in_stok_barang.Kode_Barang)),0 '.
+                                                        '   ) '.
+                                                        ') as Stok '
+                                                        )                                                                                                                                                                                          
 
                                                 )
                                         ->groupBy('in_stok_barang.Kode_Barang','in_stok_barang.No_Batch','in_stok_barang.Kode_Gudang')
@@ -684,7 +682,6 @@ class ProsesKartuStokController extends Controller
             $data_response[$row]['warehouse_code'] = $warehouse_code[0]['wh_code'];                      
             $row++;
         }                                              
-        
         return  $data_response;        
     }
         

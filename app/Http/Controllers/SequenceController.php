@@ -8,6 +8,8 @@ use App\mapping\in_stock_opname_blocking_model;
 use App\Spreading\sr_peminjaman_model;
 use App\Spreading\sr_pengembalian_model;
 use App\Spreading\sr_pemfakturan_model;
+use App\Sales\sl_faktur_model;
+use App\Sales\sl_surat_pesanan_model;
 use App\in_delivery_model;
 use Illuminate\Support\Facades\DB;
 
@@ -29,9 +31,82 @@ class SequenceController extends Controller
         } 
         else if($type_nomor=='FC'){
             $nomor =  $this->getNewFCNumber($tanggal_transaksi);            
-        }        
+        } 
+        else if($type_nomor=='FK'){
+            $nomor =  $this->getNewFKNumber($tanggal_transaksi);            
+        }   
+        else if($type_nomor=='SP'){
+            $nomor =  $this->getNewSPNumber($tanggal_transaksi);            
+        }      
         return  $nomor;           
     }
+
+    public function getNewSPNumber($tanggal_transaksi)
+    {
+        $tanggal    = New Carbon($tanggal_transaksi);    
+        $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
+        $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;       
+
+
+        $NoSP_BIS   = sl_surat_pesanan_model::select('No_SP')    
+                                            ->whereRaw('MONTH(Tgl_SP) = ?',$bln)
+                                            ->whereRaw('YEAR(Tgl_SP) = ?', $thn)                                
+                                            ->orderBy('No_SP','desc')     
+                                            ->limit('1')
+                                            ->get();
+                            
+        if (count($NoSP_BIS)>0){                       
+            $TLast_Number = substr($NoSP_BIS,-8,5);
+        } else{
+            $TLast_Number = 0; 
+        }       
+                            
+        $lastNumber = $TLast_Number+1;      
+        $pr_id      = sprintf("%05d", $lastNumber);
+        $branchCode = sy_konfigurasi_model::where('Item','nocabang')
+                                            ->select('Nilai')
+                                            ->get();
+        
+        $prefix_cabang = $branchCode[0]['Nilai'];
+        $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
+
+        $no_sp     = 'SP'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
+        return  $no_sp ; 
+    }
+
+    public function getNewFKNumber($tanggal_transaksi)
+    {
+        $tanggal    = New Carbon($tanggal_transaksi);    
+        $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
+        $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;       
+
+
+        $NoFK_BIS   = sl_faktur_model::select('No_Faktur')    
+                                       ->whereRaw('MONTH(Tgl_Faktur) = ?',$bln)
+                                       ->whereRaw('YEAR(Tgl_Faktur) = ?', $thn)                                
+                                       ->orderBy('No_Faktur','desc')     
+                                       ->limit('1')
+                                       ->get();
+                    
+        if (count($NoFK_BIS)>0){                       
+            $TLast_Number = substr($NoFK_BIS,-8,5);
+        } else{
+            $TLast_Number = 0; 
+        }       
+                            
+        $lastNumber = $TLast_Number+1;      
+        $pr_id      = sprintf("%05d", $lastNumber);
+        $branchCode = sy_konfigurasi_model::where('Item','nocabang')
+                                            ->select('Nilai')
+                                            ->get();
+        
+        $prefix_cabang = $branchCode[0]['Nilai'];
+        $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
+
+        $no_fk     = 'FK'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
+        return  $no_fk ; 
+    }
+
 
     public function getNewFCNumber($tanggal_transaksi)
     {
@@ -59,10 +134,10 @@ class SequenceController extends Controller
                                             ->select('Nilai')
                                             ->get();
         
-        $prefix_kj = $branchCode[0]['Nilai'];
+        $prefix_cabang = $branchCode[0]['Nilai'];
         $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
-        $no_fc     = 'FC'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;                        
+        $no_fc     = 'FC'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
         return  $no_fc ; 
     }
 
@@ -143,10 +218,10 @@ class SequenceController extends Controller
             $branchCode = sy_konfigurasi_model::where('Item','nocabang')
                                                 ->select('Nilai')
                                                 ->get();
-            $prefix_kj = $branchCode[0]['Nilai'];
+            $prefix_cabang = $branchCode[0]['Nilai'];
             $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
-            $no_ds              = $type_nomor.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;            
+            $no_ds              = $type_nomor.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;            
             $Data['new_number'] = $no_ds ;
          
             return $no_ds ;      
@@ -184,10 +259,10 @@ class SequenceController extends Controller
             $branchCode = sy_konfigurasi_model::where('Item','nocabang')
                                                 ->select('Nilai')
                                                 ->get();
-            $prefix_kj = $branchCode[0]['Nilai'];
+            $prefix_cabang = $branchCode[0]['Nilai'];
             $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
-            $no_oc='OC'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;
+            $no_oc='OC'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;
             $Data['new_number'] = $no_oc;           
             
             return  $no_oc ;             
@@ -222,10 +297,10 @@ class SequenceController extends Controller
             $branchCode = sy_konfigurasi_model::where('Item','nocabang')
                                                 ->select('Nilai')
                                                 ->get();
-            $prefix_kj = $branchCode[0]['Nilai'];
+            $prefix_cabang = $branchCode[0]['Nilai'];
             $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
-            $no_oc='KC'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;
+            $no_oc='KC'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;
             $Data['new_number'] = $no_oc;            
             return  $no_oc ;                       
     }
