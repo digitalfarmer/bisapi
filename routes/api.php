@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 */ 
 //route module stock picking BLG
 Route::get('blg/getUpdatePickingItem/{picking_id}','BISAPIController@getUpdatePickingItem');   
+Route::post('blg/postCancelPicking/{no_delivery}','BISAPIController@postCancelPicking');   
+Route::post('blg/postValidatePicking/{no_delivery}','BISAPIController@postValidatePicking');   
 //route module Stock Adjustment BLG
 Route::get('blg/sendStockAdjustment/{adjustment_id}','ProsesKartuStokController@sendStockAdjustment');   
 Route::get('blg/getStockOpname/{adjustment_id}','ProsesKartuStokController@getStockOpname'); 
