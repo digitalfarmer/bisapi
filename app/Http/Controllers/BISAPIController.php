@@ -13,6 +13,7 @@ use App\ms_barang_satuan_model;
 use App\in_stock_opname_model;
 use App\in_stock_opname_selisih_model;
 use App\in_kartu_stok_detail_model;
+use App\in_delivery_subdetail_history_model;
 use Session; ##
 
 use Illuminate\Http\Request;
@@ -470,7 +471,7 @@ class BISAPIController extends Controller
         try
         {
                 $no_delivery = $odoo->where('id','=',$picking_id)
-                                    ->where('state','=','assigned')
+                                    //->where('state','=','assigned')
                                     ->Where('picking_type_id','in',[2,3])
                                    //->orWhere('picking_type_id','=',3)
                                     ->fields('origin','name')
@@ -520,10 +521,34 @@ class BISAPIController extends Controller
                                           
                 if( ($c_data_delivery>0) && ($c_stock_move_line>0) && ($c_no_sp>0) ) { 
                         $rowCount=0;
+                        $item_do=[];
+                      #  $item_do_lama=[];
                         
                         //delete in_delivery_subdetail row first base on no_delivery                         
+                        $item_do_lama =  in_delivery_subdetail_model::where('no_delivery',  $no_delivery[0]['origin'])                               
+                                                                     ->get();  
+                       
+                        $do_row=0;
+                        foreach ($item_do_lama as  $details_do_lama[])      
+                        {
+                            $item_do[$do_row]['No_Delivery']       = $details_do_lama[$do_row]['No_Delivery'];
+                            $item_do[$do_row]['Kode_Gudang']       = $details_do_lama[$do_row]['Kode_Gudang'];
+                            $item_do[$do_row]['Kode_Barang']       = $details_do_lama[$do_row]['Kode_Barang'];
+                            $item_do[$do_row]['No_Batch']          = $details_do_lama[$do_row]['No_Batch'];
+                            $item_do[$do_row]['Jumlah']            = $details_do_lama[$do_row]['Jumlah'];  
+                            $item_do[$do_row]['Satuan']            = $details_do_lama[$do_row]['Satuan'];  
+                            $item_do[$do_row]['Kadaluarsa']        = $details_do_lama[$do_row]['Kadaluarsa'];  
+                            $item_do[$do_row]['Terima']            = $details_do_lama[$do_row]['Terima'];  
+                            $item_do[$do_row]['ID_Program_Promosi']= $details_do_lama[$do_row]['ID_Program_Promosi'];  
+                             
+                            $do_row++;
+                        }
+                                                                      
+                         
+
                         $data_delete = in_delivery_subdetail_model::where('no_delivery',  $no_delivery[0]['origin'])                                             
                                                                   ->delete();
+                                                                
                       
                          /*
                         if(!$data_delete){
@@ -653,7 +678,7 @@ class BISAPIController extends Controller
                            
                             $rowCount++;   
                         } 
-
+                        
                          //then replace with new Record from Odoo
                         $is_saved=in_delivery_subdetail_model::insert($Do_Detail);
                         if($is_saved)
@@ -667,6 +692,8 @@ class BISAPIController extends Controller
                                                        'Flag_WMS'=>$mapping['Flag_WMS'],
                                                        'picking_name'=>$mapping['picking_name']         
                                                       ]);
+                            
+                            $save_history = in_delivery_subdetail_history_model::insert($item_do);                          
            
                             //$res['success']=1;                          
                             //$res['code']=200;                          

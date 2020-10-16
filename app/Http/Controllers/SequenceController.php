@@ -45,8 +45,7 @@ class SequenceController extends Controller
     {
         $tanggal    = New Carbon($tanggal_transaksi);    
         $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
-        $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;       
-
+        $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;      
 
         $NoSP_BIS   = sl_surat_pesanan_model::select('No_SP')    
                                             ->whereRaw('MONTH(Tgl_SP) = ?',$bln)
@@ -80,7 +79,6 @@ class SequenceController extends Controller
         $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
         $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;       
 
-
         $NoFK_BIS   = sl_faktur_model::select('No_Faktur')    
                                        ->whereRaw('MONTH(Tgl_Faktur) = ?',$bln)
                                        ->whereRaw('YEAR(Tgl_Faktur) = ?', $thn)                                
@@ -104,7 +102,7 @@ class SequenceController extends Controller
         $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
         $no_fk     = 'FK'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
-        return  $no_fk ; 
+        return  $no_fk; 
     }
 
 
@@ -135,9 +133,8 @@ class SequenceController extends Controller
                                             ->get();
         
         $prefix_cabang = $branchCode[0]['Nilai'];
-        $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
-
-        $no_fc     = 'FC'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
+        $padbln = str_pad($bln,2,"0",STR_PAD_LEFT);
+        $no_fc  = 'FC'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
         return  $no_fc ; 
     }
 
@@ -149,7 +146,7 @@ class SequenceController extends Controller
             
             $NoKJ_BIS   = StockOpname::select('no_kertas_kerja')    
                                       ->whereRaw('MONTH(Tanggal) = ?',$bln)
-                                      ->whereRaw('YEAR(Tanggal) = ?', $thn)                                
+                                      ->whereRaw('YEAR(Tanggal) = ?',$thn)                                
                                       ->orderBy('no_kertas_kerja','desc')     
                                       ->limit('1')
                                       ->get();
@@ -173,8 +170,7 @@ class SequenceController extends Controller
     }
 
     public function getNewDeliveryNumber($type_nomor,$tanggal_transaksi)
-    {   
-         
+    {           
         $tanggal    = New Carbon($tanggal_transaksi);
             
         $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
