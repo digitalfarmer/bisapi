@@ -470,7 +470,7 @@ class BISAPIController extends Controller
         try
         {
                 $no_delivery = $odoo->where('id','=',$picking_id)
-                                    ->where('state','=','assigned')
+                                    //->where('state','=','assigned')
                                     ->Where('picking_type_id','in',[2,3])
                                    //->orWhere('picking_type_id','=',3)
                                     ->fields('origin','name')
