@@ -522,8 +522,14 @@ class BISAPIController extends Controller
                         $rowCount=0;
                         
                         //delete in_delivery_subdetail row first base on no_delivery                         
+                        $item_do_lama =  in_delivery_subdetail_model::where('no_delivery',  $no_delivery[0]['origin'])                               
+                                                                     ->get();        
+                                                                     
+                         
+
                         $data_delete = in_delivery_subdetail_model::where('no_delivery',  $no_delivery[0]['origin'])                                             
                                                                   ->delete();
+                                                                
                       
                          /*
                         if(!$data_delete){
@@ -667,6 +673,8 @@ class BISAPIController extends Controller
                                                        'Flag_WMS'=>$mapping['Flag_WMS'],
                                                        'picking_name'=>$mapping['picking_name']         
                                                       ]);
+                            
+                            $save_history = in_delivery_subdetail_history_model::insert($item_do_lama);                          
            
                             //$res['success']=1;                          
                             //$res['code']=200;                          
