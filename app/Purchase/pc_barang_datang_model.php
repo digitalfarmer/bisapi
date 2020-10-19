@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class pc_barang_datang_model extends Model
 {
-    protected $table='pc_barang_datang';
-    protected $id=['No_BD'];
+    protected $table   ='pc_barang_datang';
+    protected $id      =['No_BD'];
     protected $fillable=[
                     'No_BD',           
                     'Tgl_BD',          
@@ -21,7 +21,7 @@ class pc_barang_datang_model extends Model
                     'Status',          
                     'Jenis_Pengiriman',
                     'User_ID',         
-                    'Time_Stamp'];   
+                    'Time_Stamp'];  
     
     public $timestamps = false;          
 

@@ -19,10 +19,10 @@ class SequenceController extends Controller
     public  function getNewNumber($type_nomor, $tanggal_transaksi)
     {       
         if($type_nomor=='KJ'){
-            $nomor = $this->getNewKJNumber($tanggal_transaksi);            
+            $nomor = $this->getNewKJNumber($type_nomor,$tanggal_transaksi);            
         } 
         else if($type_nomor=='OC'){
-            $nomor =  $this->getNewOCNumber($tanggal_transaksi);            
+            $nomor =  $this->getNewOCNumber($type_nomor,$tanggal_transaksi);            
         } 
         else if(($type_nomor=='DS') || 
                 ($type_nomor=='DM') || 
@@ -30,24 +30,35 @@ class SequenceController extends Controller
             $nomor =  $this->getNewDeliveryNumber($type_nomor, $tanggal_transaksi);  
         } 
         else if($type_nomor=='KC'){
-            $nomor =  $this->getNewKCNumber($tanggal_transaksi);            
+            $nomor =  $this->getNewKCNumber($type_nomor,$tanggal_transaksi);            
         } 
         else if($type_nomor=='FC'){
-            $nomor =  $this->getNewFCNumber($tanggal_transaksi);            
+            $nomor =  $this->getNewFCNumber($type_nomor,$tanggal_transaksi);            
         } 
         else if($type_nomor=='FK'){
-            $nomor =  $this->getNewFKNumber($tanggal_transaksi);            
+            $nomor =  $this->getNewFKNumber($type_nomor,$tanggal_transaksi);            
         }   
         else if($type_nomor=='SP'){
-            $nomor =  $this->getNewSPNumber($tanggal_transaksi);            
+            $nomor =  $this->getNewSPNumber($type_nomor,$tanggal_transaksi);            
         }  
         else if($type_nomor=='BD'){
-            $nomor =  $this->getNewBDNumber($tanggal_transaksi);            
+            $nomor =  $this->getNewBDNumber($type_nomor,$tanggal_transaksi);            
         }    
         return  $nomor;           
     }
 
-    public function getNewSPNumber($tanggal_transaksi)
+    public function getBranchCode()
+    {
+        $branchCode = sy_konfigurasi_model::where('Item','nocabang')
+                                            ->select('Nilai')
+                                            ->get();
+        $prefix_cabang = $branchCode[0]['Nilai'];
+
+        return $prefix_cabang;    
+    }
+
+     
+    public function getNewSPNumber($type_nomor,$tanggal_transaksi)
     {
         $tanggal    = New Carbon($tanggal_transaksi);    
         $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
@@ -67,19 +78,20 @@ class SequenceController extends Controller
         }       
                             
         $lastNumber = $TLast_Number+1;      
-        $pr_id      = sprintf("%05d", $lastNumber);
-        $branchCode = sy_konfigurasi_model::where('Item','nocabang')
-                                            ->select('Nilai')
-                                            ->get();
+        $pr_id      = sprintf("%05d", $lastNumber);        
+        #$branchCode = sy_konfigurasi_model::where('Item','nocabang')
+                                            #->select('Nilai')
+                                            #->get();
         
-        $prefix_cabang = $branchCode[0]['Nilai'];
+        $prefix_cabang = $this->getBranchCode();
+
         $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
-        $no_sp     = 'SP'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
+        $no_sp     = $type_nomor.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
         return  $no_sp ; 
     }
 
-    public function getNewBDNumber($tanggal_transaksi)
+    public function getNewBDNumber($type_nomor,$tanggal_transaksi)
     {
         $tanggal    = New Carbon($tanggal_transaksi);    
         $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
@@ -100,18 +112,19 @@ class SequenceController extends Controller
                             
         $lastNumber = $TLast_Number+1;      
         $pr_id      = sprintf("%05d", $lastNumber);
-        $branchCode = sy_konfigurasi_model::where('Item','nocabang')
-                                            ->select('Nilai')
-                                            ->get();
+        #$branchCode = sy_konfigurasi_model::where('Item','nocabang')
+                                            #->select('Nilai')
+                                            #->get();
         
-        $prefix_cabang = $branchCode[0]['Nilai'];
+        #$prefix_cabang = $branchCode[0]['Nilai'];
+        $prefix_cabang = $this->getBranchCode();
         $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
-        $no_bd     = 'BD'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
+        $no_bd     = $type_nomor.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
         return  $no_bd ; 
     }
 
-    public function getNewFKNumber($tanggal_transaksi)
+    public function getNewFKNumber($type_nomor,$tanggal_transaksi)
     {
         $tanggal    = New Carbon($tanggal_transaksi);    
         $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
@@ -132,19 +145,20 @@ class SequenceController extends Controller
                             
         $lastNumber = $TLast_Number+1;      
         $pr_id      = sprintf("%05d", $lastNumber);
-        $branchCode = sy_konfigurasi_model::where('Item','nocabang')
-                                            ->select('Nilai')
-                                            ->get();
+        #$branchCode = sy_konfigurasi_model::where('Item','nocabang')
+                                            #->select('Nilai')
+                                            #->get();
         
-        $prefix_cabang = $branchCode[0]['Nilai'];
+        #$prefix_cabang = $branchCode[0]['Nilai'];
+        $prefix_cabang = $this->getBranchCode();
         $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
-        $no_fk     = 'FK'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
+        $no_fk     = $type_nomor.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
         return  $no_fk; 
     }
 
 
-    public function getNewFCNumber($tanggal_transaksi)
+    public function getNewFCNumber($type_nomor,$tanggal_transaksi)
     {
         $tanggal    = New Carbon($tanggal_transaksi);    
         $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
@@ -166,17 +180,18 @@ class SequenceController extends Controller
                             
         $lastNumber = $TLast_Number+1;      
         $pr_id      = sprintf("%05d", $lastNumber);
-        $branchCode = sy_konfigurasi_model::where('Item','nocabang')
-                                            ->select('Nilai')
-                                            ->get();
+        #$branchCode = sy_konfigurasi_model::where('Item','nocabang')
+                                            #->select('Nilai')
+                                            #->get();
         
-        $prefix_cabang = $branchCode[0]['Nilai'];
+        #$prefix_cabang = $branchCode[0]['Nilai'];
+        $prefix_cabang = $this->getBranchCode();
         $padbln = str_pad($bln,2,"0",STR_PAD_LEFT);
-        $no_fc  = 'FC'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
+        $no_fc  = $type_nomor.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
         return  $no_fc ; 
     }
 
-    public function getNewKJNumber($tanggal_transaksi)
+    public function getNewKJNumber($type_nomor,$tanggal_transaksi)
     {        
             $tanggal    = New Carbon($tanggal_transaksi);    
             $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
@@ -197,13 +212,14 @@ class SequenceController extends Controller
         
             $lastNumber = $TLast_Number+1;      
             $pr_id      = sprintf("%05d", $lastNumber);
-            $branchCode = sy_konfigurasi_model::where('Item','nocabang')
-                                                ->select('Nilai')
-                                                ->get();
-            $prefix_kj = $branchCode[0]['Nilai'];
+            #$branchCode = sy_konfigurasi_model::where('Item','nocabang')
+            #                                    ->select('Nilai')
+            #                                    ->get();
+            #$prefix_kj = $branchCode[0]['Nilai'];
+            $prefix_cabang = $this->getBranchCode();
             $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
-            $no_kj     = 'KJ'.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;                        
+            $no_kj     = $type_nomor.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;                        
             return  $no_kj ;                     
     }
 
@@ -249,10 +265,11 @@ class SequenceController extends Controller
 
             $pr_id = sprintf("%05d", $lastNumber);
 
-            $branchCode = sy_konfigurasi_model::where('Item','nocabang')
-                                                ->select('Nilai')
-                                                ->get();
-            $prefix_cabang = $branchCode[0]['Nilai'];
+            #$branchCode = sy_konfigurasi_model::where('Item','nocabang')
+            #                                    ->select('Nilai')
+            #                                    ->get();
+            #$prefix_cabang = $branchCode[0]['Nilai'];
+            $prefix_cabang = $this->getBranchCode();
             $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
             $no_ds              = $type_nomor.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;            
@@ -262,7 +279,7 @@ class SequenceController extends Controller
             
     }
 
-    public function getNewOCNumber($tanggal_transaksi)
+    public function getNewOCNumber($type_nomor,$tanggal_transaksi)
     {           
       
    
@@ -290,20 +307,22 @@ class SequenceController extends Controller
             $pr_id = sprintf("%05d", $lastNumber);
 
 
-            $branchCode = sy_konfigurasi_model::where('Item','nocabang')
-                                                ->select('Nilai')
-                                                ->get();
-            $prefix_cabang = $branchCode[0]['Nilai'];
+           # $branchCode = sy_konfigurasi_model::where('Item','nocabang')
+           #                                     ->select('Nilai')
+           #                                     ->get();
+           # $prefix_cabang = $branchCode[0]['Nilai'];
+            $prefix_cabang = $this->getBranchCode();
+
             $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
-            $no_oc='OC'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;
+            $no_oc=$type_nomor.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;
             $Data['new_number'] = $no_oc;           
             
             return  $no_oc ;             
                        
     }
 
-    public function getNewKCNumber($tanggal_transaksi)
+    public function getNewKCNumber($type_nomor,$tanggal_transaksi)
     {                
             $tanggal    = New Carbon($tanggal_transaksi);
             #========================================================================
@@ -328,13 +347,15 @@ class SequenceController extends Controller
             $pr_id = sprintf("%05d", $lastNumber);
 
 
-            $branchCode = sy_konfigurasi_model::where('Item','nocabang')
-                                                ->select('Nilai')
-                                                ->get();
-            $prefix_cabang = $branchCode[0]['Nilai'];
+            #$branchCode = sy_konfigurasi_model::where('Item','nocabang')
+            #                                    ->select('Nilai')
+            #                                    ->get();
+            #$prefix_cabang = $branchCode[0]['Nilai'];
+            $prefix_cabang = $this->getBranchCode();
+
             $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
 
-            $no_oc='KC'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;
+            $no_oc=$type_nomor.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;
             $Data['new_number'] = $no_oc;            
             return  $no_oc ;                       
     }
