@@ -35,7 +35,7 @@ Route::get('blg/getNewOCNumber/{tanggal_transaksi}','SequenceController@getNewOC
 Route::get('blg/getNewDeliveryNumber/{type_nomor}/{tanggal_transaksi}','SequenceController@getNewDeliveryNumber');
 Route::get('blg/getNewKCNumber/{tanggal_transaksi}','SequenceController@getNewKCNumber');
 //All Sequence Numbering, Semua Fungsi di Gabung disini, Tinggal isi Parameter 
-//type_nomor & tanggal_transaksi
+//Type_Nomor & Tanggal_Transaksi
 Route::get('blg/getNewNumber/{type_nomor}/{tanggal_transaksi}','SequenceController@getNewNumber');
 //create kkso BLG
 Route::get('blg/createadjustment','StockOpnameController@createkkso');

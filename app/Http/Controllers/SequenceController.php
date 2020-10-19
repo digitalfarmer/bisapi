@@ -11,6 +11,7 @@ use App\Spreading\sr_pemfakturan_model;
 use App\Sales\sl_faktur_model;
 use App\Sales\sl_surat_pesanan_model;
 use App\in_delivery_model;
+use App\Purchase\pc_barang_datang_model;
 use Illuminate\Support\Facades\DB;
 
 class SequenceController extends Controller
@@ -23,7 +24,9 @@ class SequenceController extends Controller
         else if($type_nomor=='OC'){
             $nomor =  $this->getNewOCNumber($tanggal_transaksi);            
         } 
-        else if(($type_nomor=='DS') || ($type_nomor=='DM') || ($type_nomor=='DO') )  {
+        else if(($type_nomor=='DS') || 
+                ($type_nomor=='DM') || 
+                ($type_nomor=='DO') )  {
             $nomor =  $this->getNewDeliveryNumber($type_nomor, $tanggal_transaksi);  
         } 
         else if($type_nomor=='KC'){
@@ -37,7 +40,10 @@ class SequenceController extends Controller
         }   
         else if($type_nomor=='SP'){
             $nomor =  $this->getNewSPNumber($tanggal_transaksi);            
-        }      
+        }  
+        else if($type_nomor=='BD'){
+            $nomor =  $this->getNewBDNumber($tanggal_transaksi);            
+        }    
         return  $nomor;           
     }
 
@@ -71,6 +77,38 @@ class SequenceController extends Controller
 
         $no_sp     = 'SP'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
         return  $no_sp ; 
+    }
+
+    public function getNewBDNumber($tanggal_transaksi)
+    {
+        $tanggal    = New Carbon($tanggal_transaksi);    
+        $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
+        $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;      
+
+        $NoBD_BIS   = pc_barang_datang_model::select('No_BD')    
+                                            ->whereRaw('MONTH(Tgl_BD) = ?',$bln)
+                                            ->whereRaw('YEAR(Tgl_BD) = ?', $thn)                                
+                                            ->orderBy('No_BD','desc')     
+                                            ->limit('1')
+                                            ->get();
+                            
+        if (count($NoBD_BIS)>0){                       
+            $TLast_Number = substr($NoBD_BIS,-8,5);
+        } else{
+            $TLast_Number = 0; 
+        }       
+                            
+        $lastNumber = $TLast_Number+1;      
+        $pr_id      = sprintf("%05d", $lastNumber);
+        $branchCode = sy_konfigurasi_model::where('Item','nocabang')
+                                            ->select('Nilai')
+                                            ->get();
+        
+        $prefix_cabang = $branchCode[0]['Nilai'];
+        $padbln    = str_pad($bln,2,"0",STR_PAD_LEFT);
+
+        $no_bd     = 'BD'.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
+        return  $no_bd ; 
     }
 
     public function getNewFKNumber($tanggal_transaksi)

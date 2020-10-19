@@ -531,15 +531,15 @@ class BISAPIController extends Controller
                         $do_row=0;
                         foreach ($item_do_lama as  $details_do_lama[])      
                         {
-                            $item_do[$do_row]['No_Delivery']       = $details_do_lama[$do_row]['No_Delivery'];
-                            $item_do[$do_row]['Kode_Gudang']       = $details_do_lama[$do_row]['Kode_Gudang'];
-                            $item_do[$do_row]['Kode_Barang']       = $details_do_lama[$do_row]['Kode_Barang'];
-                            $item_do[$do_row]['No_Batch']          = $details_do_lama[$do_row]['No_Batch'];
-                            $item_do[$do_row]['Jumlah']            = $details_do_lama[$do_row]['Jumlah'];  
-                            $item_do[$do_row]['Satuan']            = $details_do_lama[$do_row]['Satuan'];  
-                            $item_do[$do_row]['Kadaluarsa']        = $details_do_lama[$do_row]['Kadaluarsa'];  
-                            $item_do[$do_row]['Terima']            = $details_do_lama[$do_row]['Terima'];  
-                            $item_do[$do_row]['ID_Program_Promosi']= $details_do_lama[$do_row]['ID_Program_Promosi'];  
+                            $item_do[$do_row]['No_Delivery']        = $details_do_lama[$do_row]['No_Delivery'];
+                            $item_do[$do_row]['Kode_Gudang']        = $details_do_lama[$do_row]['Kode_Gudang'];
+                            $item_do[$do_row]['Kode_Barang']        = $details_do_lama[$do_row]['Kode_Barang'];
+                            $item_do[$do_row]['No_Batch']           = $details_do_lama[$do_row]['No_Batch'];
+                            $item_do[$do_row]['Jumlah']             = $details_do_lama[$do_row]['Jumlah'];  
+                            $item_do[$do_row]['Satuan']             = $details_do_lama[$do_row]['Satuan'];  
+                            $item_do[$do_row]['Kadaluarsa']         = $details_do_lama[$do_row]['Kadaluarsa'];  
+                            $item_do[$do_row]['Terima']             = $details_do_lama[$do_row]['Terima'];  
+                            $item_do[$do_row]['ID_Program_Promosi'] = $details_do_lama[$do_row]['ID_Program_Promosi'];  
                              
                             $do_row++;
                         }
