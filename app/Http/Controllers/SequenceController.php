@@ -25,11 +25,11 @@ class SequenceController extends Controller
 
         $prefix_cabang = $this->getBranchCode();
 
-        if($type_nomor=='KJ'){
-            $nomor = $this->getNewKJNumber($type_nomor,$tanggal_transaksi);            
+        if($type_nomor=='KJ'){            
+            $last_id       = $this->getLastNumber($type_nomor,'in_stock_opname',$tanggal_transaksi,'No_Kertas_Kerja','Tanggal');                                   
         } 
-        else if($type_nomor=='OC'){
-            $nomor =  $this->getNewOCNumber($type_nomor,$tanggal_transaksi);            
+        else if($type_nomor=='OC'){                   
+            $last_id       = $this->getLastNumber($type_nomor,'sr_pengembalian',$tanggal_transaksi,'No_Pengembalian','Tanggal_Pelaporan');                                   
         } 
         else if(($type_nomor=='DS') || 
                 ($type_nomor=='DM') || 
@@ -48,8 +48,7 @@ class SequenceController extends Controller
         else if($type_nomor=='SP'){            
             $last_id       = $this->getLastNumber($type_nomor,'sl_surat_pesanan',$tanggal_transaksi,'No_SP','Tgl_SP');                               
         }  
-        else if($type_nomor=='BD'){
-            
+        else if($type_nomor=='BD'){            
             $last_id       = $this->getLastNumber($type_nomor,'pc_barang_datang',$tanggal_transaksi,'No_BD','Tgl_BD');                               
         }           
         
