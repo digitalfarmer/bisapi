@@ -16,44 +16,45 @@ use Illuminate\Support\Facades\DB;
 
 class SequenceController extends Controller
 {    
-    public  function getNewNumber($type_nomor, $tanggal_transaksi)
+    public  function getNewNumber($type_nomor, $tanggal_transaksi = null)
     {       
         if(!$tanggal_transaksi)
-        {
-            $tanggal_transaksi   = New Carbon($tanggal_transaksi);     
+        {            
+            $tanggal_transaksi   = Carbon::now('Asia/Jakarta');   
         }
 
         $prefix_cabang = $this->getBranchCode();
 
-        if($type_nomor=='KJ'){            
-            $last_id       = $this->getLastNumber($type_nomor,'in_stock_opname',$tanggal_transaksi,'No_Kertas_Kerja','Tanggal');                                   
+        if($type_nomor =='KJ'){            
+            $last_id  = $this->getLastNumber($type_nomor,'in_stock_opname',$tanggal_transaksi,'No_Kertas_Kerja','Tanggal');                                   
         } 
         else if($type_nomor=='OC'){                   
-            $last_id       = $this->getLastNumber($type_nomor,'sr_pengembalian',$tanggal_transaksi,'No_Pengembalian','Tanggal_Pelaporan');                                   
+            $last_id  = $this->getLastNumber($type_nomor,'sr_pengembalian',$tanggal_transaksi,'No_Pengembalian','Tanggal_Pelaporan');                                   
         } 
-        else if(($type_nomor=='DS') || 
-                ($type_nomor=='DM') || 
-                ($type_nomor=='DO') )  {            
-            $last_id       = $this->getLastNumber($type_nomor,'in_delivery',$tanggal_transaksi,'No_Delivery','Tgl_Delivery');                               
+        else if(($type_nomor=='DS') || ($type_nomor=='DM') || ($type_nomor=='DO') )  {            
+            $last_id  = $this->getLastNumber($type_nomor,'in_delivery',$tanggal_transaksi,'No_Delivery','Tgl_Delivery');                               
         } 
         else if($type_nomor=='KC'){            
-            $last_id       = $this->getLastNumber($type_nomor,'sr_peminjaman',$tanggal_transaksi,'No_Peminjaman','Tanggal_Pinjam');                               
+            $last_id  = $this->getLastNumber($type_nomor,'sr_peminjaman',$tanggal_transaksi,'No_Peminjaman','Tanggal_Pinjam');                               
         } 
         else if($type_nomor=='FC'){            
-            $last_id       = $this->getLastNumber($type_nomor,'sr_pemfakturan',$tanggal_transaksi,'No_Pemfakturan','Tanggal_Pemfakturan');                               
+            $last_id  = $this->getLastNumber($type_nomor,'sr_pemfakturan',$tanggal_transaksi,'No_Pemfakturan','Tanggal_Pemfakturan');                               
         } 
         else if($type_nomor=='FK'){            
-            $last_id       = $this->getLastNumber($type_nomor,'sl_faktur',$tanggal_transaksi,'No_Faktur','Tgl_Faktur');                               
+            $last_id  = $this->getLastNumber($type_nomor,'sl_faktur',$tanggal_transaksi,'No_Faktur','Tgl_Faktur');                               
         }   
         else if($type_nomor=='SP'){            
-            $last_id       = $this->getLastNumber($type_nomor,'sl_surat_pesanan',$tanggal_transaksi,'No_SP','Tgl_SP');                               
+            $last_id  = $this->getLastNumber($type_nomor,'sl_surat_pesanan',$tanggal_transaksi,'No_SP','Tgl_SP');                               
         }  
         else if($type_nomor=='BD'){            
-            $last_id       = $this->getLastNumber($type_nomor,'pc_barang_datang',$tanggal_transaksi,'No_BD','Tgl_BD');                               
+            $last_id  = $this->getLastNumber($type_nomor,'pc_barang_datang',$tanggal_transaksi,'No_BD','Tgl_BD');                               
+        } 
+        else if($type_nomor=='TR'){            
+            $last_id  = $this->getLastNumber($type_nomor,'sl_terima_barang_retur',$tanggal_transaksi,'No_TBR','Tgl_TBR');                               
         }           
         
-        $tahun_bulan   = $this->convertTgltoTahunBulan($tanggal_transaksi);
-        $nomor         = $type_nomor.$prefix_cabang.'/'.$tahun_bulan.'/'.$last_id;   
+        $tahun_bulan  = $this->convertTgltoTahunBulan($tanggal_transaksi);
+        $nomor        = $type_nomor.$prefix_cabang.'/'.$tahun_bulan.'/'.$last_id;   
 
         return  $nomor;           
     }
@@ -94,7 +95,8 @@ class SequenceController extends Controller
                                                    ->where('Jenis_referensi','=','SR')
                                                    ->orderBy($number_field_name,'desc')     
                                                    ->limit('1')
-                                                   ->get();                          
+                                                   ->get();   
+
         } else if ($type_nomor=='DM') {
             $Number = DB::table($table_name)->select($number_field_name)
                                                    ->whereRaw('MONTH('.$date_field_name.') =?',$bln)
