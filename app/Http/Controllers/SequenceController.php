@@ -68,6 +68,7 @@ class SequenceController extends Controller
         $branchCode = sy_konfigurasi_model::where('Item','nocabang')
                                             ->select('Nilai')
                                             ->get();
+                                            
         $prefix_cabang = $branchCode[0]['Nilai'];
 
         return $prefix_cabang;    
@@ -87,10 +88,8 @@ class SequenceController extends Controller
                                                    ->where('Jenis_referensi','=','SR')
                                                    ->orderBy($number_field_name,'desc')     
                                                    ->limit('1')
-                                                   ->get();                            
-                                            
-        } else if ($type_nomor=='DM') 
-        {
+                                                   ->get();                          
+        } else if ($type_nomor=='DM') {
             $Number = DB::table($table_name)->select($number_field_name)
                                                    ->whereRaw('MONTH('.$date_field_name.') =?',$bln)
                                                    ->whereRaw('YEAR('.$date_field_name.') =?',$thn)
@@ -99,8 +98,7 @@ class SequenceController extends Controller
                                                    ->limit('1')
                                                    ->get();                             
 
-        } else if ($type_nomor=='DO') 
-        {
+        } else if ($type_nomor=='DO') {
             $Number = DB::table($table_name)->select($number_field_name)
                                                   ->whereRaw('MONTH('.$date_field_name.') =?',$bln)
                                                   ->where('Jenis_referensi','=','SP')
@@ -109,8 +107,7 @@ class SequenceController extends Controller
                                                   ->limit('1')
                                                   ->get();      
 
-        }  else
-        {
+        }  else  {
             $Number = DB::table($table_name)->select($number_field_name)
                                                   ->whereRaw('MONTH('.$date_field_name.') =?',$bln)                                                  
                                                   ->whereRaw('YEAR('.$date_field_name.') =?',$thn)
@@ -121,8 +118,7 @@ class SequenceController extends Controller
 
         if (count($Number)>0){                       
             $TLast_Number = substr($Number,-8,5);
-        } else
-        {
+        } else {
             $TLast_Number = 0; 
         }  
         $lastNumber = $TLast_Number+1;   

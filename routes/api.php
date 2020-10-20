@@ -28,17 +28,17 @@ Route::post('blg/cancelBlockingStock/{adjustment_id}','ProsesKartuStokController
 Route::post('blg/cekOpnameStatus','SequenceController@cekOpnameStatus');
 Route::get('blg/cekDivisiProdukOpname/{Kode_Divisi_Produk}','SequenceController@cekDivisiProdukOpname');
 //Sequence numbering BISMySQL Version
-Route::get('blg/getNewKJNumber/{tanggal_transaksi}','SequenceController@getNewKJNumber');
-Route::get('blg/getNewOCNumber/{tanggal_transaksi}','SequenceController@getNewOCNumber');
+#Route::get('blg/getNewKJNumber/{tanggal_transaksi}','SequenceController@getNewKJNumber');
+#Route::get('blg/getNewOCNumber/{tanggal_transaksi}','SequenceController@getNewOCNumber');
 //Khusus Untuk getNewDeliveryNumber, ada tambahan Parameter type_nomor 
 //DO:Delivery Regular, DS:Delivery Peminjaman, DM:Delivery Mutasi  
-Route::get('blg/getNewDeliveryNumber/{type_nomor}/{tanggal_transaksi}','SequenceController@getNewDeliveryNumber');
-Route::get('blg/getNewKCNumber/{tanggal_transaksi}','SequenceController@getNewKCNumber');
+#Route::get('blg/getNewDeliveryNumber/{type_nomor}/{tanggal_transaksi}','SequenceController@getNewDeliveryNumber');
+#Route::get('blg/getNewKCNumber/{tanggal_transaksi}','SequenceController@getNewKCNumber');
 //All Sequence Numbering, Semua Fungsi di Gabung disini, Tinggal isi Parameter 
 //Type_Nomor & Tanggal_Transaksi
-Route::get('blg/getBranchCode','SequenceController@getBranchCode');
-Route::get('blg/getNewNumber/{type_nomor}/{tanggal_transaksi}','SequenceController@getNewNumber');
+#Route::get('blg/getBranchCode','SequenceController@getBranchCode');
 #Route::get('blg/getLastNumber/{type_nomor}/{table_name}/{tanggal_transaksi}/{number_field_name}/{date_field_name}','SequenceController@getLastNumber');
+Route::get('blg/getNewNumber/{type_nomor}/{tanggal_transaksi}','SequenceController@getNewNumber');
 //create kkso BLG
 Route::get('blg/createadjustment','StockOpnameController@createkkso');
 //Bridging BISMySQL Peminjaman, Pengembalian & Pemfakturan Kanvas dari Odoo 
