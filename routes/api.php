@@ -38,7 +38,7 @@ Route::get('blg/getNewKCNumber/{tanggal_transaksi}','SequenceController@getNewKC
 //Type_Nomor & Tanggal_Transaksi
 Route::get('blg/getBranchCode','SequenceController@getBranchCode');
 Route::get('blg/getNewNumber/{type_nomor}/{tanggal_transaksi}','SequenceController@getNewNumber');
-
+#Route::get('blg/getLastNumber/{type_nomor}/{table_name}/{tanggal_transaksi}/{number_field_name}/{date_field_name}','SequenceController@getLastNumber');
 //create kkso BLG
 Route::get('blg/createadjustment','StockOpnameController@createkkso');
 //Bridging BISMySQL Peminjaman, Pengembalian & Pemfakturan Kanvas dari Odoo 
