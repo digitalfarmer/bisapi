@@ -23,6 +23,8 @@ class SequenceController extends Controller
             $tanggal_transaksi   = New Carbon($tanggal_transaksi);     
         }
 
+        $prefix_cabang = $this->getBranchCode();
+
         if($type_nomor=='KJ'){
             $nomor = $this->getNewKJNumber($type_nomor,$tanggal_transaksi);            
         } 
@@ -31,24 +33,29 @@ class SequenceController extends Controller
         } 
         else if(($type_nomor=='DS') || 
                 ($type_nomor=='DM') || 
-                ($type_nomor=='DO') )  {
-            $nomor =  $this->getNewDeliveryNumber($type_nomor, $tanggal_transaksi);  
+                ($type_nomor=='DO') )  {            
+            $last_id       = $this->getLastNumber($type_nomor,'in_delivery',$tanggal_transaksi,'No_Delivery','Tgl_Delivery');                               
         } 
-        else if($type_nomor=='KC'){
-            $nomor =  $this->getNewKCNumber($type_nomor,$tanggal_transaksi);            
+        else if($type_nomor=='KC'){            
+            $last_id       = $this->getLastNumber($type_nomor,'sr_peminjaman',$tanggal_transaksi,'No_Peminjaman','Tanggal_Pinjam');                               
         } 
-        else if($type_nomor=='FC'){
-            $nomor =  $this->getNewFCNumber($type_nomor,$tanggal_transaksi);            
+        else if($type_nomor=='FC'){            
+            $last_id       = $this->getLastNumber($type_nomor,'sr_pemfakturan',$tanggal_transaksi,'No_Pemfakturan','Tanggal_Pemfakturan');                               
         } 
-        else if($type_nomor=='FK'){
-            $nomor =  $this->getNewFKNumber($type_nomor,$tanggal_transaksi);            
+        else if($type_nomor=='FK'){            
+            $last_id       = $this->getLastNumber($type_nomor,'sl_faktur',$tanggal_transaksi,'No_Faktur','Tgl_Faktur');                               
         }   
-        else if($type_nomor=='SP'){
-            $nomor =  $this->getNewSPNumber($type_nomor,$tanggal_transaksi);            
+        else if($type_nomor=='SP'){            
+            $last_id       = $this->getLastNumber($type_nomor,'sl_surat_pesanan',$tanggal_transaksi,'No_SP','Tgl_SP');                               
         }  
         else if($type_nomor=='BD'){
-            $nomor =  $this->getNewBDNumber($type_nomor,$tanggal_transaksi);            
-        }    
+            
+            $last_id       = $this->getLastNumber($type_nomor,'pc_barang_datang',$tanggal_transaksi,'No_BD','Tgl_BD');                               
+        }           
+        
+        $tahun_bulan   = $this->convertTgltoTahunBulan($tanggal_transaksi);
+        $nomor         = $type_nomor.$prefix_cabang.'/'.$tahun_bulan.'/'.$last_id;   
+
         return  $nomor;           
     }
 
@@ -68,7 +75,7 @@ class SequenceController extends Controller
         $branchCode = sy_konfigurasi_model::where('Item','nocabang')
                                             ->select('Nilai')
                                             ->get();
-                                            
+
         $prefix_cabang = $branchCode[0]['Nilai'];
 
         return $prefix_cabang;    
@@ -125,88 +132,7 @@ class SequenceController extends Controller
               
         return  sprintf("%05d", $lastNumber);
     }
-
-     
-    public function getNewSPNumber($type_nomor,$tanggal_transaksi)    
-    {       
-        $pr_id         = $this->getLastNumber($type_nomor,'sl_surat_pesanan',$tanggal_transaksi,'No_SP','Tgl_SP');              
-        $prefix_cabang = $this->getBranchCode();        
-        $tahun_bulan   = $this->convertTgltoTahunBulan($tanggal_transaksi);
-        $no_sp         = $type_nomor.$prefix_cabang.'/'.$tahun_bulan.'/'.$pr_id;                               
-
-        return $no_sp; 
-    }
-
-    public function getNewBDNumber($type_nomor,$tanggal_transaksi)
-    {         
-        $pr_id         = $this->getLastNumber($type_nomor,'pc_barang_datang',$tanggal_transaksi,'No_BD','Tgl_BD');              
-        $prefix_cabang = $this->getBranchCode();     
-        $tahun_bulan   = $this->convertTgltoTahunBulan($tanggal_transaksi);
-        $no_bd         = $type_nomor.$prefix_cabang.'/'.$tahun_bulan.'/'.$pr_id; 
-
-        return  $no_bd; 
-    }
-
-    public function getNewFKNumber($type_nomor,$tanggal_transaksi)
-    {      
-        $pr_id         = $this->getLastNumber($type_nomor,'sl_faktur',$tanggal_transaksi,'No_Faktur','Tgl_Faktur');              
-        $prefix_cabang = $this->getBranchCode();
-        $tahun_bulan   = $this->convertTgltoTahunBulan($tanggal_transaksi);
-        $no_fk         = $type_nomor.$prefix_cabang.'/'.$tahun_bulan.'/'.$pr_id;   
-        
-        return  $no_fk; 
-    }
-
-    public function getNewFCNumber($type_nomor,$tanggal_transaksi)
-    {         
-        $pr_id         = $this->getLastNumber($type_nomor,'sr_pemfakturan',$tanggal_transaksi,'No_Pemfakturan','Tanggal_Pemfakturan');                
-        $prefix_cabang = $this->getBranchCode();         
-        $tahun_bulan   = $this->convertTgltoTahunBulan($tanggal_transaksi);
-        $no_fc         = $type_nomor.$prefix_cabang.'/'.$tahun_bulan.'/'.$pr_id;                        
-        
-        return  $no_fc; 
-    }
-
-    public function getNewKJNumber($type_nomor,$tanggal_transaksi)
-    {                
-        $pr_id         = $this->getLastNumber($type_nomor,'in_stock_opname',$tanggal_transaksi,'No_Kertas_Kerja','Tanggal');                   
-        $prefix_cabang = $this->getBranchCode();      
-        $tahun_bulan   = $this->convertTgltoTahunBulan($tanggal_transaksi);      
-        $no_kj         = $type_nomor.$prefix_cabang.'/'.$tahun_bulan.'/'.$pr_id;                        
-        
-        return  $no_kj;                     
-    }
-
-    public function getNewDeliveryNumber($type_nomor,$tanggal_transaksi)
-    {                         
-        $pr_id          = $this->getLastNumber($type_nomor,'in_delivery',$tanggal_transaksi,'No_Delivery','Tgl_Delivery');                   
-        $prefix_cabang  = $this->getBranchCode();
-        $tahun_bulan    = $this->convertTgltoTahunBulan($tanggal_transaksi);                  
-        $nomor          = $type_nomor.$prefix_cabang.'/'.$tahun_bulan.'/'.$pr_id;                       
-         
-        return $nomor;   
-    }
-
-    public function getNewOCNumber($type_nomor,$tanggal_transaksi)
-    {           
-        $pr_id         = $this->getLastNumber($type_nomor,'sr_peminjaman',$tanggal_transaksi,'No_Peminjaman','Tanggal_Pinjam');                   
-        $prefix_cabang = $this->getBranchCode();            
-        $tahun_bulan   = $this->convertTgltoTahunBulan($tanggal_transaksi);      
-        $no_oc         = $type_nomor.$prefix_cabang.'/'.$tahun_bulan.'/'.$pr_id;                               
-
-        return  $no_oc;                                    
-    }
-
-    public function getNewKCNumber($type_nomor,$tanggal_transaksi)
-    {                
-        $pr_id         = $this->getLastNumber($type_nomor,'sr_pengembalian',$tanggal_transaksi,'No_Pengembalian','Tanggal_Pelaporan');                   
-        $prefix_cabang = $this->getBranchCode();            
-        $tahun_bulan   = $this->convertTgltoTahunBulan($tanggal_transaksi);      
-        $no_kc         = $type_nomor.$prefix_cabang.'/'.$tahun_bulan.'/'.$pr_id;                   
-
-        return  $no_kc;                       
-    }
-
+ 
     public  function cekOpnameStatus(Request $request)
     {
         $OnOpnameStock = in_stock_opname_blocking_model::where('Status_Adjustment','=','progress')                                                      
@@ -233,8 +159,7 @@ class SequenceController extends Controller
                                                         ->where('Kode_Divisi_Produk','=',$request->Kode_Divisi_Produk)                                            
                                                         ->select('Kode_Divisi_Produk')
                                                         ->limit(1)
-                                                        ->get();
-                                                         
+                                                        ->get();                                                         
                             
         if (count($OnOpnameStock)>0) {
                               response()->json([
@@ -245,7 +170,6 @@ class SequenceController extends Controller
         else {    
             response()->json(['opname_status'=>0])->send();       
         }       
-
     }
     
 
