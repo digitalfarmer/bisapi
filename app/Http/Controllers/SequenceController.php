@@ -26,35 +26,35 @@ class SequenceController extends Controller
         $prefix_cabang = $this->getBranchCode();
 
         if($type_nomor =='KJ'){            
-            $last_id  = $this->getLastNumber($type_nomor,'in_stock_opname',$tanggal_transaksi,'No_Kertas_Kerja','Tanggal');                                   
+            $new_id  = $this->getLastNumber($type_nomor,'in_stock_opname',$tanggal_transaksi,'No_Kertas_Kerja','Tanggal');                                   
         } 
         else if($type_nomor=='OC'){                   
-            $last_id  = $this->getLastNumber($type_nomor,'sr_pengembalian',$tanggal_transaksi,'No_Pengembalian','Tanggal_Pelaporan');                                   
+            $new_id  = $this->getLastNumber($type_nomor,'sr_pengembalian',$tanggal_transaksi,'No_Pengembalian','Tanggal_Pelaporan');                                   
         } 
         else if(($type_nomor=='DS') || ($type_nomor=='DM') || ($type_nomor=='DO') )  {            
-            $last_id  = $this->getLastNumber($type_nomor,'in_delivery',$tanggal_transaksi,'No_Delivery','Tgl_Delivery');                               
+            $new_id  = $this->getLastNumber($type_nomor,'in_delivery',$tanggal_transaksi,'No_Delivery','Tgl_Delivery');                               
         } 
         else if($type_nomor=='KC'){            
-            $last_id  = $this->getLastNumber($type_nomor,'sr_peminjaman',$tanggal_transaksi,'No_Peminjaman','Tanggal_Pinjam');                               
+            $new_id  = $this->getLastNumber($type_nomor,'sr_peminjaman',$tanggal_transaksi,'No_Peminjaman','Tanggal_Pinjam');                               
         } 
         else if($type_nomor=='FC'){            
-            $last_id  = $this->getLastNumber($type_nomor,'sr_pemfakturan',$tanggal_transaksi,'No_Pemfakturan','Tanggal_Pemfakturan');                               
+            $new_id  = $this->getLastNumber($type_nomor,'sr_pemfakturan',$tanggal_transaksi,'No_Pemfakturan','Tanggal_Pemfakturan');                               
         } 
         else if($type_nomor=='FK'){            
-            $last_id  = $this->getLastNumber($type_nomor,'sl_faktur',$tanggal_transaksi,'No_Faktur','Tgl_Faktur');                               
+            $new_id  = $this->getLastNumber($type_nomor,'sl_faktur',$tanggal_transaksi,'No_Faktur','Tgl_Faktur');                               
         }   
         else if($type_nomor=='SP'){            
-            $last_id  = $this->getLastNumber($type_nomor,'sl_surat_pesanan',$tanggal_transaksi,'No_SP','Tgl_SP');                               
+            $new_id  = $this->getLastNumber($type_nomor,'sl_surat_pesanan',$tanggal_transaksi,'No_SP','Tgl_SP');                               
         }  
         else if($type_nomor=='BD'){            
-            $last_id  = $this->getLastNumber($type_nomor,'pc_barang_datang',$tanggal_transaksi,'No_BD','Tgl_BD');                               
+            $new_id  = $this->getLastNumber($type_nomor,'pc_barang_datang',$tanggal_transaksi,'No_BD','Tgl_BD');                               
         } 
         else if($type_nomor=='TR'){            
-            $last_id  = $this->getLastNumber($type_nomor,'sl_terima_barang_retur',$tanggal_transaksi,'No_TBR','Tgl_TBR');                               
+            $new_id  = $this->getLastNumber($type_nomor,'sl_terima_barang_retur',$tanggal_transaksi,'No_TBR','Tgl_TBR');                               
         }           
         
         $tahun_bulan  = $this->convertTgltoTahunBulan($tanggal_transaksi);
-        $nomor        = $type_nomor.$prefix_cabang.'/'.$tahun_bulan.'/'.$last_id;   
+        $nomor        = $type_nomor.$prefix_cabang.'/'.$tahun_bulan.'/'.$new_id;   
 
         return  $nomor;           
     }
@@ -108,9 +108,9 @@ class SequenceController extends Controller
 
         } else if ($type_nomor=='DO') {
             $Number = DB::table($table_name)->select($number_field_name)
-                                                  ->whereRaw('MONTH('.$date_field_name.') =?',$bln)
-                                                  ->where('Jenis_referensi','=','SP')
+                                                  ->whereRaw('MONTH('.$date_field_name.') =?',$bln)                                      
                                                   ->whereRaw('YEAR('.$date_field_name.') =?',$thn)
+                                                  ->where('Jenis_referensi','=','SP')
                                                   ->orderBy($number_field_name,'desc')     
                                                   ->limit('1')
                                                   ->get();      

@@ -744,6 +744,9 @@ class BISAPIController extends Controller
 
         $no_do_adalah = substr($no_delivery,0,5).'/'.substr($no_delivery,5,6).'/'.substr($no_delivery,11,5);
 
+      
+
+
         $picking_id= $odoo->where('origin','=',$no_do_adalah)                             
                           ->fields('id')
                           ->limit(1)                             
@@ -754,6 +757,9 @@ class BISAPIController extends Controller
                             'action_cancel',
                             [(int)$picking_id[0]['id']]             
                            );
+        $result_bis=in_delivery_flag_wms_model::where('no_delivery',$no_do_adalah)
+                                   ->update(['Flag_WMS'=> 'Canceled']);
+
         response()->json(['success'=>1])->send();             
     }
 
@@ -775,7 +781,10 @@ class BISAPIController extends Controller
                             'stock.picking', 
                             'button_validate',
                             [(int)$picking_id[0]['id']]             
-                           );                           
+                           );           
+        
+        $result_bis=in_delivery_flag_wms_model::where('no_delivery',$no_do_adalah)
+                                               ->update(['Flag_WMS'=> 'Picked']);
                            
         response()->json(['success'=>1])->send();               
     }
