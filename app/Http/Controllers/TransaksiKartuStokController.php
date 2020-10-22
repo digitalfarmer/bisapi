@@ -9,6 +9,6 @@ class TransaksiKartuStokController extends Controller
     public function postTransaksiKartuStokBD($no_transaksi)
     {
         
-        in_kartu_stok_detail_model:
+        #pc_barang_datang_model
     }
 }

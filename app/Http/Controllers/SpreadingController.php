@@ -68,8 +68,8 @@ class SpreadingController extends Controller
         $Delivery_Detail    = [];
         $Delivery_Subdetail = [];
         
-        $nomor_oc = $this->SequenceController->getNewOCNumber($data['spreading_header']['date']);
-        $nomor_ds = $this->SequenceController->getNewDeliveryNumber('DS',$data['spreading_header']['date']);                    
+        $nomor_oc = $this->SequenceController->getNewNumber('OC',$data['spreading_header']['date']);
+        $nomor_ds = $this->SequenceController->getNewNumber('DS',$data['spreading_header']['date']);                    
         #return $nomor_ds;        
 
         $Peminjaman_Header['No_Peminjaman']   = $nomor_oc;         

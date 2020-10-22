@@ -91,12 +91,28 @@ class ProsesKartuStokController extends Controller
         
     } 
 
-    public function KartuStokAdjustment($no_kertas_kerja)
+    public function ClearKartuStock($no_kertas_kerja)
+    {
+        $hapus_dulu = in_kartu_stok_detail_model::where('no_transaksi',$no_kertas_kerja) 
+                                               ->delete();        
+        if($hapus_dulu)
+        {
+            $resval='success';
+        }
+        else {
+            $resval='failed';
+        }
+        return $resval;
+    }
+
+    public function KartuStokAdjustment(Request $request)
     {      
 
-        #$no_ref = substr($no_kertas_kerja,0,5).'/'.substr($no_kertas_kerja,5,6).'/'.substr($no_kertas_kerja,11,5);
-
-        $no_ref = $no_kertas_kerja;                         
+        $no_ref = $request->No_Kertas_Kerja;
+        #return $no_ref;
+        #return $no_kertas_kerja; 
+        #$no_ref = substr($no_kertas_kerja,0,5).'/'.substr($no_kertas_kerja,5,6).'/'.substr($no_kertas_kerja,11,5); 
+        #BIS Logic, Query               
         $opname = in_stock_opname_model::where('in_stock_opname.no_kertas_kerja',$no_ref) 
                                         ->where('in_stock_opname.Status','POST')
                                         ->join('in_stock_opname_selisih','in_stock_opname.no_kertas_kerja','=','in_stock_opname_selisih.no_kertas_kerja')
@@ -150,11 +166,10 @@ class ProsesKartuStokController extends Controller
                                         'ms_barang_satuan.Satuan',
                                         'in_stock_opname_selisih.Referensi',
                                         'TimeStamp'
-                                        ) 
-                                        ->get();
+                                        )->get();
         
-        $rowCount=0;
- 
+        $rowCount   = 0;
+        $OpnameData = [];
         foreach ($opname as  $opnameItem)
         {
                 $OpnameData[$rowCount]['Periode']         =  $opnameItem['Periode'];
@@ -181,12 +196,21 @@ class ProsesKartuStokController extends Controller
                 $OpnameData[$rowCount]['TimeStamp']          =  $opnameItem['TimeStamp'];
                 $rowCount++;
         }
-        
-       // return($OpnameData);
-        if (count($OpnameData)>0) 
-        {  
-            return($OpnameData);    
-        } 
+          
+        if (count($OpnameData)>0)  {  
+            if($this->ClearKartuStock($no_ref)=='success')   {
+                $saved = in_kartu_stok_detail_model::insert($OpnameData);
+                if($saved){ 
+                  return response(['success'=>1,'message'=>'Kertas Kerja dengan Nomor '.$no_ref.' Berhasil di Posting !' ]);
+                }
+                else {
+                  return response(['success'=>0,'message'=>'Kertas Kerja dengan Nomor '.$no_ref.' Gagal di Posting !' ]);
+                }
+            }
+        } else
+        {
+          return response(['success'=>0,'message'=>'Kertas Kerja dengan Nomor '.$no_ref.' Gagal di Posting !' ]);
+        }
     }
 
     public function getStockOpname(request $request)
@@ -249,7 +273,7 @@ class ProsesKartuStokController extends Controller
         $opname['Status_Barang']      = 'BAIK';               
         $opname['Status']             = 'POST';                        
         $opname['User_ID']            = 'OdooWMS';                                
-        $opname['Time_Stamp']         = Carbon::now();   
+        $opname['Time_Stamp']         = Carbon::now('Asia/Jakarta');   
         
         $opname_awal    = []; /*'No_Kertas_Kerja','Kode_Barang','No_Batch','Kadaluarsa','Level','Jumlah','booked'*/
         $opname_hasil   = []; /*'No_Kertas_Kerja','Kode_Barang','No_Batch','Kadaluarsa','Level','Jumlah'*/
@@ -332,7 +356,6 @@ class ProsesKartuStokController extends Controller
         }    
       
     }
-
     
 
     public function sendStockAdjustment(request $request)
