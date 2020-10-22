@@ -324,7 +324,7 @@ class SpreadingController extends Controller
         #                                                ->get();
 
         $Order_ID      = $data['pemfakturan_header']['order_id'];
-        $nomor_fc      = $this->SequenceController->getNewFCNumber($data['pemfakturan_header']['tgl_pemfakturan']);
+        $nomor_fc      = $this->SequenceController->getNewNumber('FC',$data['pemfakturan_header']['tgl_pemfakturan']);
 
         $Pemfakturan_Header   = [];
         $Pemfakturan_Salesman = [];
