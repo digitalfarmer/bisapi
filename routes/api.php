@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 */ 
 //route module stock picking BLG
 Route::get('blg/getUpdatePickingItem/{picking_id}','BISAPIController@getUpdatePickingItem');   
+Route::post('blg/postCancelPicking/{no_delivery}','BISAPIController@postCancelPicking');   
+Route::post('blg/postValidatePicking/{no_delivery}','BISAPIController@postValidatePicking');   
 //route module Stock Adjustment BLG
 Route::get('blg/sendStockAdjustment/{adjustment_id}','ProsesKartuStokController@sendStockAdjustment');   
 Route::get('blg/getStockOpname/{adjustment_id}','ProsesKartuStokController@getStockOpname'); 
@@ -33,8 +35,10 @@ Route::get('blg/getNewOCNumber/{tanggal_transaksi}','SequenceController@getNewOC
 Route::get('blg/getNewDeliveryNumber/{type_nomor}/{tanggal_transaksi}','SequenceController@getNewDeliveryNumber');
 Route::get('blg/getNewKCNumber/{tanggal_transaksi}','SequenceController@getNewKCNumber');
 //All Sequence Numbering, Semua Fungsi di Gabung disini, Tinggal isi Parameter 
-//type_nomor & tanggal_transaksi
+//Type_Nomor & Tanggal_Transaksi
+Route::get('blg/getBranchCode','SequenceController@getBranchCode');
 Route::get('blg/getNewNumber/{type_nomor}/{tanggal_transaksi}','SequenceController@getNewNumber');
+
 //create kkso BLG
 Route::get('blg/createadjustment','StockOpnameController@createkkso');
 //Bridging BISMySQL Peminjaman, Pengembalian & Pemfakturan Kanvas dari Odoo 

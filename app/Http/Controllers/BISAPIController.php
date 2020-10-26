@@ -531,15 +531,15 @@ class BISAPIController extends Controller
                         $do_row=0;
                         foreach ($item_do_lama as  $details_do_lama[])      
                         {
-                            $item_do[$do_row]['No_Delivery']       = $details_do_lama[$do_row]['No_Delivery'];
-                            $item_do[$do_row]['Kode_Gudang']       = $details_do_lama[$do_row]['Kode_Gudang'];
-                            $item_do[$do_row]['Kode_Barang']       = $details_do_lama[$do_row]['Kode_Barang'];
-                            $item_do[$do_row]['No_Batch']          = $details_do_lama[$do_row]['No_Batch'];
-                            $item_do[$do_row]['Jumlah']            = $details_do_lama[$do_row]['Jumlah'];  
-                            $item_do[$do_row]['Satuan']            = $details_do_lama[$do_row]['Satuan'];  
-                            $item_do[$do_row]['Kadaluarsa']        = $details_do_lama[$do_row]['Kadaluarsa'];  
-                            $item_do[$do_row]['Terima']            = $details_do_lama[$do_row]['Terima'];  
-                            $item_do[$do_row]['ID_Program_Promosi']= $details_do_lama[$do_row]['ID_Program_Promosi'];  
+                            $item_do[$do_row]['No_Delivery']        = $details_do_lama[$do_row]['No_Delivery'];
+                            $item_do[$do_row]['Kode_Gudang']        = $details_do_lama[$do_row]['Kode_Gudang'];
+                            $item_do[$do_row]['Kode_Barang']        = $details_do_lama[$do_row]['Kode_Barang'];
+                            $item_do[$do_row]['No_Batch']           = $details_do_lama[$do_row]['No_Batch'];
+                            $item_do[$do_row]['Jumlah']             = $details_do_lama[$do_row]['Jumlah'];  
+                            $item_do[$do_row]['Satuan']             = $details_do_lama[$do_row]['Satuan'];  
+                            $item_do[$do_row]['Kadaluarsa']         = $details_do_lama[$do_row]['Kadaluarsa'];  
+                            $item_do[$do_row]['Terima']             = $details_do_lama[$do_row]['Terima'];  
+                            $item_do[$do_row]['ID_Program_Promosi'] = $details_do_lama[$do_row]['ID_Program_Promosi'];  
                              
                             $do_row++;
                         }
@@ -594,15 +594,13 @@ class BISAPIController extends Controller
                             }                                          
 
                             $Do_Detail[$rowCount]['Kode_Barang']  = $product[0]['default_code'];
-                            $Do_Detail[$rowCount]['No_Batch']     = $batch[0]['name'];
-                           
+                            $Do_Detail[$rowCount]['No_Batch']     = $batch[0]['name'];                           
                             /*
                             $qty_done1    = $details['level1_qty']; 
                             $qty_done2    = $details['level2_qty']; 
                             $qty_done3    = $details['level3_qty']; 
                             $qty_done4    = $details['level4_qty'];
                             */
-
                             $qty_done     = $details['qty_done']; 
                             /*
                             if ($qty_done1>0)
@@ -689,7 +687,7 @@ class BISAPIController extends Controller
                             
                             in_delivery_flag_wms_model::where('no_delivery',$mapping['No_Delivery'])
                                                        ->update([
-                                                       'Flag_WMS'=>$mapping['Flag_WMS'],
+                                                       'Flag_WMS'=> 'Confirm',// $mapping['Flag_WMS'],
                                                        'picking_name'=>$mapping['picking_name']         
                                                       ]);
                             
@@ -737,6 +735,52 @@ class BISAPIController extends Controller
         }
         //return response()->json([$resVal]);        
     }
+
+
+    
+    public function postCancelPicking($no_delivery)
+    {
+        $odoo = new \Edujugon\Laradoo\Odoo();
+        $odoo = $odoo->connect();   
+
+        $no_do_adalah = substr($no_delivery,0,5).'/'.substr($no_delivery,5,6).'/'.substr($no_delivery,11,5);
+
+        $picking_id= $odoo->where('origin','=',$no_do_adalah)                             
+                          ->fields('id')
+                          ->limit(1)                             
+                          ->get('stock.picking');
+
+        $result = $odoo->call(
+                            'stock.picking', 
+                            'action_cancel',
+                            [(int)$picking_id[0]['id']]             
+                           );
+        response()->json(['success'=>1])->send();             
+    }
+
+    public function postValidatePicking($no_delivery)
+    {
+
+         //$no_delivery=DOBLG20201000001
+        $odoo = new \Edujugon\Laradoo\Odoo();
+        $odoo = $odoo->connect();   
+
+        $no_do_adalah = substr($no_delivery,0,5).'/'.substr($no_delivery,5,6).'/'.substr($no_delivery,11,5);
+
+        $picking_id= $odoo->where('origin','=',$no_do_adalah)                             
+                            ->fields('id')
+                            ->limit(1)                             
+                            ->get('stock.picking');       
+
+        $result = $odoo->call(
+                            'stock.picking', 
+                            'button_validate',
+                            [(int)$picking_id[0]['id']]             
+                           );                           
+                           
+        response()->json(['success'=>1])->send();               
+    }
+
 
 
 }
