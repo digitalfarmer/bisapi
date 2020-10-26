@@ -14,7 +14,7 @@ use App\in_stock_opname_model;
 use App\in_stock_opname_selisih_model;
 use App\in_kartu_stok_detail_model;
 use App\in_delivery_subdetail_history_model;
-use Session; ##
+use Session; 
 
 use Illuminate\Http\Request;
 
@@ -177,7 +177,7 @@ class BISAPIController extends Controller
             } 
             else 
             {
-                
+               
                response()->json([ 
                 'success'=>0,                       
                 'data'=>$OpnameData,
@@ -522,8 +522,7 @@ class BISAPIController extends Controller
                 if( ($c_data_delivery>0) && ($c_stock_move_line>0) && ($c_no_sp>0) ) { 
                         $rowCount=0;
                         $item_do=[];
-                      #  $item_do_lama=[];
-                        
+                      #  $item_do_lama=[];                        
                         //delete in_delivery_subdetail row first base on no_delivery                         
                         $item_do_lama =  in_delivery_subdetail_model::where('no_delivery',  $no_delivery[0]['origin'])                               
                                                                      ->get();  
@@ -745,6 +744,9 @@ class BISAPIController extends Controller
 
         $no_do_adalah = substr($no_delivery,0,5).'/'.substr($no_delivery,5,6).'/'.substr($no_delivery,11,5);
 
+      
+
+
         $picking_id= $odoo->where('origin','=',$no_do_adalah)                             
                           ->fields('id')
                           ->limit(1)                             
@@ -755,6 +757,9 @@ class BISAPIController extends Controller
                             'action_cancel',
                             [(int)$picking_id[0]['id']]             
                            );
+        $result_bis=in_delivery_flag_wms_model::where('no_delivery',$no_do_adalah)
+                                   ->update(['Flag_WMS'=> 'Canceled']);
+
         response()->json(['success'=>1])->send();             
     }
 
@@ -776,7 +781,10 @@ class BISAPIController extends Controller
                             'stock.picking', 
                             'button_validate',
                             [(int)$picking_id[0]['id']]             
-                           );                           
+                           );           
+        
+        $result_bis=in_delivery_flag_wms_model::where('no_delivery',$no_do_adalah)
+                                               ->update(['Flag_WMS'=> 'Picked']);
                            
         response()->json(['success'=>1])->send();               
     }

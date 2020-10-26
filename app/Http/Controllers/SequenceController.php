@@ -16,35 +16,58 @@ use Illuminate\Support\Facades\DB;
 
 class SequenceController extends Controller
 {    
-    public  function getNewNumber($type_nomor, $tanggal_transaksi)
+    public  function getNewNumber($type_nomor, $tanggal_transaksi = null)
     {       
-        if($type_nomor=='KJ'){
-            $nomor = $this->getNewKJNumber($type_nomor,$tanggal_transaksi);            
+        if(!$tanggal_transaksi)
+        {            
+            $tanggal_transaksi   = Carbon::now('Asia/Jakarta');   
+        }
+
+        $prefix_cabang = $this->getBranchCode();
+
+        if($type_nomor =='KJ'){            
+            $new_id  = $this->getLastNumber($type_nomor,'in_stock_opname',$tanggal_transaksi,'No_Kertas_Kerja','Tanggal');                                   
         } 
-        else if($type_nomor=='OC'){
-            $nomor =  $this->getNewOCNumber($type_nomor,$tanggal_transaksi);            
+        else if($type_nomor=='OC'){                   
+            $new_id  = $this->getLastNumber($type_nomor,'sr_pengembalian',$tanggal_transaksi,'No_Pengembalian','Tanggal_Pelaporan');                                   
         } 
-        else if(($type_nomor=='DS') || 
-                ($type_nomor=='DM') || 
-                ($type_nomor=='DO') )  {
-            $nomor =  $this->getNewDeliveryNumber($type_nomor, $tanggal_transaksi);  
+        else if(($type_nomor=='DS') || ($type_nomor=='DM') || ($type_nomor=='DO') )  {            
+            $new_id  = $this->getLastNumber($type_nomor,'in_delivery',$tanggal_transaksi,'No_Delivery','Tgl_Delivery');                               
         } 
-        else if($type_nomor=='KC'){
-            $nomor =  $this->getNewKCNumber($type_nomor,$tanggal_transaksi);            
+        else if($type_nomor=='KC'){            
+            $new_id  = $this->getLastNumber($type_nomor,'sr_peminjaman',$tanggal_transaksi,'No_Peminjaman','Tanggal_Pinjam');                               
         } 
-        else if($type_nomor=='FC'){
-            $nomor =  $this->getNewFCNumber($type_nomor,$tanggal_transaksi);            
+        else if($type_nomor=='FC'){            
+            $new_id  = $this->getLastNumber($type_nomor,'sr_pemfakturan',$tanggal_transaksi,'No_Pemfakturan','Tanggal_Pemfakturan');                               
         } 
-        else if($type_nomor=='FK'){
-            $nomor =  $this->getNewFKNumber($type_nomor,$tanggal_transaksi);            
+        else if($type_nomor=='FK'){            
+            $new_id  = $this->getLastNumber($type_nomor,'sl_faktur',$tanggal_transaksi,'No_Faktur','Tgl_Faktur');                               
         }   
-        else if($type_nomor=='SP'){
-            $nomor =  $this->getNewSPNumber($type_nomor,$tanggal_transaksi);            
+        else if($type_nomor=='SP'){            
+            $new_id  = $this->getLastNumber($type_nomor,'sl_surat_pesanan',$tanggal_transaksi,'No_SP','Tgl_SP');                               
         }  
-        else if($type_nomor=='BD'){
-            $nomor =  $this->getNewBDNumber($type_nomor,$tanggal_transaksi);            
-        }    
+        else if($type_nomor=='BD'){            
+            $new_id  = $this->getLastNumber($type_nomor,'pc_barang_datang',$tanggal_transaksi,'No_BD','Tgl_BD');                               
+        } 
+        else if($type_nomor=='TR'){            
+            $new_id  = $this->getLastNumber($type_nomor,'sl_terima_barang_retur',$tanggal_transaksi,'No_TBR','Tgl_TBR');                               
+        }           
+        
+        $tahun_bulan  = $this->convertTgltoTahunBulan($tanggal_transaksi);
+        $nomor        = $type_nomor.$prefix_cabang.'/'.$tahun_bulan.'/'.$new_id;   
+
         return  $nomor;           
+    }
+
+    public function convertTgltoTahunBulan($tanggal_transaksi)
+    {
+        $tanggal    = New Carbon($tanggal_transaksi);    
+        $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
+        $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month; 
+
+        $padbln     = str_pad($bln,2,"0",STR_PAD_LEFT);
+
+        return $thn.$padbln;
     }
 
     public function getBranchCode()
@@ -52,307 +75,65 @@ class SequenceController extends Controller
         $branchCode = sy_konfigurasi_model::where('Item','nocabang')
                                             ->select('Nilai')
                                             ->get();
+
         $prefix_cabang = $branchCode[0]['Nilai'];
 
         return $prefix_cabang;    
     }
 
-     
-    public function getNewSPNumber($type_nomor,$tanggal_transaksi)
+    public function getLastNumber($type_nomor,$table_name,$tanggal_transaksi,$number_field_name,$date_field_name)
     {
         $tanggal    = New Carbon($tanggal_transaksi);    
         $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
-        $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;      
-
-        $NoSP_BIS   = sl_surat_pesanan_model::select('No_SP')    
-                                             ->whereRaw('MONTH(Tgl_SP) = ?',$bln)
-                                             ->whereRaw('YEAR(Tgl_SP) = ?', $thn)                                
-                                             ->orderBy('No_SP','desc')     
-                                             ->limit('1')
-                                             ->get();
-                            
-        if (count($NoSP_BIS)>0){                       
-            $TLast_Number = substr($NoSP_BIS,-8,5);
-        } else{
-            $TLast_Number = 0; 
-        }       
-                            
-        $lastNumber = $TLast_Number+1;      
-        $pr_id      = sprintf("%05d", $lastNumber);        
-        #$branchCode = sy_konfigurasi_model::where('Item','nocabang')
-                                            #->select('Nilai')
-                                            #->get();
-        
-        $prefix_cabang = $this->getBranchCode();
-
-        $padbln        = str_pad($bln,2,"0",STR_PAD_LEFT);
-
-        $no_sp         = $type_nomor.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
-        return  $no_sp ; 
-    }
-
-    public function getNewBDNumber($type_nomor,$tanggal_transaksi)
-    {
-        $tanggal    = New Carbon($tanggal_transaksi);    
-        $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
-        $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;      
-
-        $NoBD_BIS   = pc_barang_datang_model::select('No_BD')    
-                                            ->whereRaw('MONTH(Tgl_BD) = ?',$bln)
-                                            ->whereRaw('YEAR(Tgl_BD) = ?', $thn)                                
-                                            ->orderBy('No_BD','desc')     
-                                            ->limit('1')
-                                            ->get();
-                            
-        if (count($NoBD_BIS)>0){                       
-            $TLast_Number = substr($NoBD_BIS,-8,5);
-        } else{
-            $TLast_Number = 0; 
-        }       
-                            
-        $lastNumber = $TLast_Number+1;      
-        $pr_id      = sprintf("%05d", $lastNumber);
-        #$branchCode = sy_konfigurasi_model::where('Item','nocabang')
-                                            #->select('Nilai')
-                                            #->get();
-        
-        #$prefix_cabang = $branchCode[0]['Nilai'];
-        $prefix_cabang = $this->getBranchCode();
-        $padbln        = str_pad($bln,2,"0",STR_PAD_LEFT);
-
-        $no_bd         = $type_nomor.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
-        return  $no_bd ; 
-    }
-
-    public function getNewFKNumber($type_nomor,$tanggal_transaksi)
-    {
-        $tanggal    = New Carbon($tanggal_transaksi);    
-        $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
-        $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;       
-
-        $NoFK_BIS   = sl_faktur_model::select('No_Faktur')    
-                                       ->whereRaw('MONTH(Tgl_Faktur) = ?',$bln)
-                                       ->whereRaw('YEAR(Tgl_Faktur) = ?', $thn)                                
-                                       ->orderBy('No_Faktur','desc')     
-                                       ->limit('1')
-                                       ->get();
-                    
-        if (count($NoFK_BIS)>0){                       
-            $TLast_Number = substr($NoFK_BIS,-8,5);
-        } else{
-            $TLast_Number = 0; 
-        }       
-                            
-        $lastNumber = $TLast_Number+1;      
-        $pr_id      = sprintf("%05d", $lastNumber);
-        #$branchCode = sy_konfigurasi_model::where('Item','nocabang')
-                                            #->select('Nilai')
-                                            #->get();
-        
-        #$prefix_cabang = $branchCode[0]['Nilai'];
-        $prefix_cabang = $this->getBranchCode();
-        $padbln        = str_pad($bln,2,"0",STR_PAD_LEFT);
-
-        $no_fk         = $type_nomor.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
-        return  $no_fk; 
-    }
-
-
-    public function getNewFCNumber($type_nomor,$tanggal_transaksi)
-    {
-        $tanggal    = New Carbon($tanggal_transaksi);    
-        $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
-        $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;       
-
-
-        $NoFC_BIS   = sr_pemfakturan_model::select('No_Pemfakturan')    
-                                            ->whereRaw('MONTH(Tanggal_Pemfakturan) = ?',$bln)
-                                            ->whereRaw('YEAR(Tanggal_Pemfakturan) = ?', $thn)                                
-                                            ->orderBy('No_Pemfakturan','desc')     
-                                            ->limit('1')
-                                            ->get();
-                    
-        if (count($NoFC_BIS)>0){                       
-            $TLast_Number = substr($NoFC_BIS,-8,5);
-        } else{
-            $TLast_Number = 0; 
-        }       
-                            
-        $lastNumber = $TLast_Number+1;      
-        $pr_id      = sprintf("%05d", $lastNumber);
-        #$branchCode = sy_konfigurasi_model::where('Item','nocabang')
-                                            #->select('Nilai')
-                                            #->get();
-        
-        #$prefix_cabang = $branchCode[0]['Nilai'];
-        $prefix_cabang = $this->getBranchCode();
-        $padbln = str_pad($bln,2,"0",STR_PAD_LEFT);
-        $no_fc  = $type_nomor.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;                        
-        return  $no_fc ; 
-    }
-
-    public function getNewKJNumber($type_nomor,$tanggal_transaksi)
-    {        
-            $tanggal    = New Carbon($tanggal_transaksi);    
-            $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
-            $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;             
-            
-            $NoKJ_BIS   = StockOpname::select('no_kertas_kerja')    
-                                      ->whereRaw('MONTH(Tanggal) = ?',$bln)
-                                      ->whereRaw('YEAR(Tanggal) = ?',$thn)                                
-                                      ->orderBy('no_kertas_kerja','desc')     
-                                      ->limit('1')
-                                      ->get();
-    
-            if (count($NoKJ_BIS)>0){                       
-                $TLast_Number = substr($NoKJ_BIS,-8,5);
-            } else{
-                $TLast_Number = 0; 
-            }       
-        
-            $lastNumber    = $TLast_Number+1;      
-            $pr_id         = sprintf("%05d", $lastNumber);             
-            $prefix_cabang = $this->getBranchCode();
-            $padbln        = str_pad($bln,2,"0",STR_PAD_LEFT);
-
-            $no_kj     = $type_nomor.$prefix_kj.'/'.$thn.$padbln.'/'.$pr_id;                        
-            return  $no_kj ;                     
-    }
-
-    public function getNewDeliveryNumber($type_nomor,$tanggal_transaksi)
-    {           
-        $tanggal    = New Carbon($tanggal_transaksi);
-            
-        $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
-        $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;             
-
-        if($type_nomor=='DS'){    
-            $No_DO      = in_delivery_model::select('no_delivery')    
-                                            ->where('Jenis_referensi','=','SR')
-                                            ->whereRaw('MONTH(Tgl_Delivery) = ?',$bln)
-                                            ->whereRaw('YEAR(Tgl_Delivery) = ?', $thn)                                
-                                            ->orderBy('no_delivery','desc')     
-                                            ->limit('1')
-                                            ->get();
-        } else if($type_nomor=='DO'){   
-            $No_DO      = in_delivery_model::select('no_delivery')    
-                                            ->where('Jenis_referensi','=','SP')
-                                            ->whereRaw('MONTH(Tgl_Delivery) = ?',$bln)
-                                            ->whereRaw('YEAR(Tgl_Delivery) = ?', $thn)                                
-                                            ->orderBy('no_delivery','desc')     
-                                            ->limit('1')
-                                            ->get();    
-        } else if($type_nomor=='DM'){   
-            $No_DO      = in_delivery_model::select('no_delivery')    
-                                            ->where('Jenis_referensi','=','MC')
-                                            ->whereRaw('MONTH(Tgl_Delivery) = ?',$bln)
-                                            ->whereRaw('YEAR(Tgl_Delivery) = ?', $thn)                                
-                                            ->orderBy('no_delivery','desc')     
-                                            ->limit('1')
-                                            ->get();    
-        }
-          
-        if (count($No_DO)>0){                       
-            $TLast_Number = substr($No_DO,-8,5);
-        } else{
-            $TLast_Number = 0; 
-        }       
-            $lastNumber = $TLast_Number+1;                  
-
-            $pr_id = sprintf("%05d", $lastNumber);
-
-            #$branchCode = sy_konfigurasi_model::where('Item','nocabang')
-            #                                    ->select('Nilai')
-            #                                    ->get();
-            #$prefix_cabang = $branchCode[0]['Nilai'];
-            $prefix_cabang = $this->getBranchCode();
-            $padbln        = str_pad($bln,2,"0",STR_PAD_LEFT);
-
-            $no_ds              = $type_nomor.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;            
-            $Data['new_number'] = $no_ds ;
+        $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;            
          
-            return $no_ds ;      
-            
+        if($type_nomor=='DS')        
+        {
+            $Number = DB::table($table_name)->select($number_field_name)
+                                                   ->whereRaw('MONTH('.$date_field_name.') =?',$bln)
+                                                   ->whereRaw('YEAR('.$date_field_name.') =?',$thn)
+                                                   ->where('Jenis_referensi','=','SR')
+                                                   ->orderBy($number_field_name,'desc')     
+                                                   ->limit('1')
+                                                   ->get();   
+
+        } else if ($type_nomor=='DM') {
+            $Number = DB::table($table_name)->select($number_field_name)
+                                                   ->whereRaw('MONTH('.$date_field_name.') =?',$bln)
+                                                   ->whereRaw('YEAR('.$date_field_name.') =?',$thn)
+                                                   ->where('Jenis_referensi','=','MC')
+                                                   ->orderBy($number_field_name,'desc')     
+                                                   ->limit('1')
+                                                   ->get();                             
+
+        } else if ($type_nomor=='DO') {
+            $Number = DB::table($table_name)->select($number_field_name)
+                                                  ->whereRaw('MONTH('.$date_field_name.') =?',$bln)                                      
+                                                  ->whereRaw('YEAR('.$date_field_name.') =?',$thn)
+                                                  ->where('Jenis_referensi','=','SP')
+                                                  ->orderBy($number_field_name,'desc')     
+                                                  ->limit('1')
+                                                  ->get();      
+
+        }  else  {
+            $Number = DB::table($table_name)->select($number_field_name)
+                                                  ->whereRaw('MONTH('.$date_field_name.') =?',$bln)                                                  
+                                                  ->whereRaw('YEAR('.$date_field_name.') =?',$thn)
+                                                  ->orderBy($number_field_name,'desc')     
+                                                  ->limit('1')
+                                                  ->get();              
+        }        
+
+        if (count($Number)>0){                       
+            $TLast_Number = substr($Number,-8,5);
+        } else {
+            $TLast_Number = 0; 
+        }  
+        $lastNumber = $TLast_Number+1;   
+              
+        return  sprintf("%05d", $lastNumber);
     }
-
-    public function getNewOCNumber($type_nomor,$tanggal_transaksi)
-    {           
-      
-            $tanggal    = New Carbon($tanggal_transaksi);
-            #========================================================================
-            $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
-            $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;             
-            #=========================================================================
-            $No_Peminjaman = sr_peminjaman_model::select('No_Peminjaman')    
-                                                ->whereRaw('MONTH(Tanggal_Pinjam) = ?',$bln)
-                                                ->whereRaw('YEAR(Tanggal_Pinjam) = ?', $thn)                                
-                                                ->orderBy('No_Peminjaman','desc')     
-                                                ->limit('1')
-                                                ->get();
-             
-
-            if (count($No_Peminjaman)>0){                       
-                $TLast_Number = substr($No_Peminjaman,-8,5);
-            } else {
-                $TLast_Number = 0; 
-            }       
-        
-            $lastNumber = $TLast_Number+1;      
-
-            $pr_id = sprintf("%05d", $lastNumber);
-
-
-           # $branchCode = sy_konfigurasi_model::where('Item','nocabang')
-           #                                     ->select('Nilai')
-           #                                     ->get();
-           # $prefix_cabang = $branchCode[0]['Nilai'];
-            $prefix_cabang = $this->getBranchCode();
-            $padbln        = str_pad($bln,2,"0",STR_PAD_LEFT);
-
-            $no_oc=$type_nomor.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;
-            $Data['new_number'] = $no_oc;           
-            
-            return  $no_oc ;             
-                       
-    }
-
-    public function getNewKCNumber($type_nomor,$tanggal_transaksi)
-    {                
-            $tanggal    = New Carbon($tanggal_transaksi);
-            #========================================================================
-            $thn        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->year;
-            $bln        = Carbon::createFromFormat('Y-m-d H:i:s', $tanggal)->month;             
-            #=========================================================================
-            $No_Pengembalian = sr_pengembalian_model::select('No_Pengembalian')    
-                                                      ->whereRaw('MONTH(Tanggal_Pelaporan) = ?',$bln)
-                                                      ->whereRaw('YEAR(Tanggal_Pelaporan) = ?', $thn)                                
-                                                      ->orderBy('No_Pengembalian','desc')     
-                                                      ->limit('1')
-                                                      ->get();             
-
-            if (count($No_Pengembalian)>0){                       
-                $TLast_Number = substr($No_Pengembalian,-8,5);
-            } else {
-                $TLast_Number = 0; 
-            }       
-        
-            $lastNumber = $TLast_Number+1;      
-
-            $pr_id = sprintf("%05d", $lastNumber);
-
-
-            #$branchCode = sy_konfigurasi_model::where('Item','nocabang')
-            #                                    ->select('Nilai')
-            #                                    ->get();
-            #$prefix_cabang = $branchCode[0]['Nilai'];
-            $prefix_cabang = $this->getBranchCode();
-            $padbln        = str_pad($bln,2,"0",STR_PAD_LEFT);
-
-            $no_oc         = $type_nomor.$prefix_cabang.'/'.$thn.$padbln.'/'.$pr_id;
-            $Data['new_number'] = $no_oc;            
-            return  $no_oc ;                       
-    }
-
+ 
     public  function cekOpnameStatus(Request $request)
     {
         $OnOpnameStock = in_stock_opname_blocking_model::where('Status_Adjustment','=','progress')                                                      
@@ -379,8 +160,7 @@ class SequenceController extends Controller
                                                         ->where('Kode_Divisi_Produk','=',$request->Kode_Divisi_Produk)                                            
                                                         ->select('Kode_Divisi_Produk')
                                                         ->limit(1)
-                                                        ->get();
-                                                         
+                                                        ->get();                                                         
                             
         if (count($OnOpnameStock)>0) {
                               response()->json([
@@ -391,7 +171,6 @@ class SequenceController extends Controller
         else {    
             response()->json(['opname_status'=>0])->send();       
         }       
-
     }
     
 

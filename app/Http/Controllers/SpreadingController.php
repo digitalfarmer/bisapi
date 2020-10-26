@@ -57,7 +57,7 @@ class SpreadingController extends Controller
         $warehouse_code = $data['spreading_header']['warehouse_code'];
         $picking_id     = $data['spreading_header']['id'];
         #return  $warehouse_code;                
-        #$Picking_ID         = $request->picking_id;
+        #$Picking_ID    = $request->picking_id;
 
         #OC
         $Peminjaman_Header  = [];
@@ -68,8 +68,8 @@ class SpreadingController extends Controller
         $Delivery_Detail    = [];
         $Delivery_Subdetail = [];
         
-        $nomor_oc = $this->SequenceController->getNewOCNumber($data['spreading_header']['date']);
-        $nomor_ds = $this->SequenceController->getNewDeliveryNumber('DS',$data['spreading_header']['date']);                    
+        $nomor_oc = $this->SequenceController->getNewNumber('OC',$data['spreading_header']['date']);
+        $nomor_ds = $this->SequenceController->getNewNumber('DS',$data['spreading_header']['date']);                    
         #return $nomor_ds;        
 
         $Peminjaman_Header['No_Peminjaman']   = $nomor_oc;         
@@ -113,9 +113,9 @@ class SpreadingController extends Controller
             $Delivery_Detail[$row]['Satuan']            = $satuan[0]['uom_long_name'];  
 
             if($row==0) {                                 
-               $Delivery_Detail[$row]['Prepared']          = 'Y';                                             
+               $Delivery_Detail[$row]['Prepared']       = 'Y';                                             
             } else {
-               $Delivery_Detail[$row]['Prepared']          = 'N';                                                 
+               $Delivery_Detail[$row]['Prepared']       = 'N';                                                 
             }
             $Delivery_Detail[$row]['ID_Program_Promosi']= '';//$Details[$row]['ID_Program_Promosi'];                                  
 
@@ -150,13 +150,14 @@ class SpreadingController extends Controller
         try 
         {  
             DB::beginTransaction();
-            // Transaction Peminjaman (OC)
+            
             $mapping_peminjaman=[];
             $mapping_peminjaman['picking_id']   = $picking_id;
             $mapping_peminjaman['No_Peminjaman']= $nomor_oc;
             $mapping_peminjaman['No_Delivery']  = $nomor_ds;          
-            $mapping_pengembalian['Time_Stamp'] = Carbon::now('Asia/Jakarta');        
-            
+            $mapping_peminjaman['Time_Stamp']   = Carbon::now('Asia/Jakarta');        
+           
+            // Transaction Peminjaman (OC)
             $Saved_Peminjaman_Header  = sr_peminjaman_model::insert($Peminjaman_Header);            
             $Saved_Peminjaman_Detail  = sr_peminjaman_detail_model::insert($Peminjaman_Detail);    
 
@@ -219,7 +220,7 @@ class SpreadingController extends Controller
                                                           ->get();
 
         $picking_id     = $data['pengembalian_header']['id'];
-        $nomor_kc       = $this->SequenceController->getNewKCNumber($data['pengembalian_header']['date']);
+        $nomor_kc       = $this->SequenceController->getNewNumber('KC',$data['pengembalian_header']['date']);
 
         $Pengembalian_Header = [];
         $Pengembalian_Detail = [];
@@ -323,7 +324,7 @@ class SpreadingController extends Controller
         #                                                ->get();
 
         $Order_ID      = $data['pemfakturan_header']['order_id'];
-        $nomor_fc      = $this->SequenceController->getNewFCNumber($data['pemfakturan_header']['tgl_pemfakturan']);
+        $nomor_fc      = $this->SequenceController->getNewNumber('FC',$data['pemfakturan_header']['tgl_pemfakturan']);
 
         $Pemfakturan_Header   = [];
         $Pemfakturan_Salesman = [];
