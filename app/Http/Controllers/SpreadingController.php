@@ -267,8 +267,8 @@ class SpreadingController extends Controller
             $mapping_pengembalian['No_Delivery']   = $nomor_kc;                
             $mapping_pengembalian['Time_Stamp']    = Carbon::now('Asia/Jakarta');    
             
-            $Saved_Pengembalian_Header  = sr_pengembalian_model::insert($Pengembalian_Header);            
-            $Saved_Pengembalian_Detail  = sr_pengembalian_detail_model::insert($Pengembalian_Detail);                 
+            $Saved_Pengembalian_Header       = sr_pengembalian_model::insert($Pengembalian_Header);            
+            $Saved_Pengembalian_Detail       = sr_pengembalian_detail_model::insert($Pengembalian_Detail);                 
             $Saved_pengembalian_mapping_odoo = sr_peminjaman_mapping_odoo_model::insert($mapping_pengembalian);
 
             response()->json([                            
@@ -323,8 +323,8 @@ class SpreadingController extends Controller
         #                                                 ->select('kode_gudang')
         #                                                ->get();
 
-        $Order_ID      = $data['pemfakturan_header']['order_id'];
-        $nomor_fc      = $this->SequenceController->getNewNumber('FC',$data['pemfakturan_header']['tgl_pemfakturan']);
+        $Order_ID  = $data['pemfakturan_header']['order_id'];
+        $nomor_fc  = $this->SequenceController->getNewNumber('FC',$data['pemfakturan_header']['tgl_pemfakturan']);
 
         $Pemfakturan_Header   = [];
         $Pemfakturan_Salesman = [];
