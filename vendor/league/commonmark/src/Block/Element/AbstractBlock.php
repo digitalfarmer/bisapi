@@ -45,20 +45,12 @@ abstract class AbstractBlock extends Node
     /**
      * @var int
      */
-<<<<<<< HEAD
     protected $startLine;
-=======
-    protected $startLine = 0;
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
 
     /**
      * @var int
      */
-<<<<<<< HEAD
     protected $endLine;
-=======
-    protected $endLine = 0;
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
 
     protected function setParent(Node $node = null)
     {

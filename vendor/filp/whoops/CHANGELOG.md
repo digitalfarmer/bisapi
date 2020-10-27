@@ -1,23 +1,3 @@
-<<<<<<< HEAD
-=======
-# 2.9.0
-
-* JsonResponseHandler includes the exception code
-
-# 2.8.0
-
-* Support PHP 8
-
-# 2.7.3
-
-* PrettyPageHandler functionality to hide superglobal keys has a clearer name hideSuperglobalKey
-
-# 2.7.2
-
-* PrettyPageHandler now accepts custom js files
-* PrettyPageHandler templateHelper is now accessible through inheritance
-
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
 # 2.7.1
 
 * Fix a PHP warning in some cases with anonymous classes.

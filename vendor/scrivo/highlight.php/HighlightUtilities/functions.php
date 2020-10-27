@@ -173,7 +173,6 @@ function splitCodeIntoArray($html)
         throw new \RuntimeException("The DOM extension is not loaded but is required.");
     }
 
-<<<<<<< HEAD
     $dom = new \DOMDocument();
 
     // https://stackoverflow.com/a/8218649
@@ -196,42 +195,6 @@ function splitCodeIntoArray($html)
             );
             $html = str_replace($renderedSpan, $finished, $html);
         }
-=======
-    if (trim($html) === "") {
-        return array();
-    }
-
-    $dom = new \DOMDocument();
-
-    // https://stackoverflow.com/a/8218649
-    if (!$dom->loadHTML(mb_convert_encoding($html, "HTML-ENTITIES", "UTF-8"))) {
-        throw new \UnexpectedValueException("The given HTML could not be parsed correctly.");
-    }
-
-    $xpath = new \DOMXPath($dom);
-    $spans = $xpath->query("//span[contains(text(), '\n') or contains(text(), '\r\n')]");
-
-    /** @var \DOMElement $span */
-    foreach ($spans as $span) {
-        $closingTags = '';
-        $openingTags = '';
-        $curr = $span;
-
-        while ($curr->tagName === 'span') {
-            $closingTags .= '</span>';
-            $openingTags = sprintf('<span class="%s">%s', $curr->getAttribute("class"), $openingTags);
-
-            $curr = $curr->parentNode;
-        }
-
-        $renderedSpan = $dom->saveHTML($span);
-        $finished = preg_replace(
-            '/\R/u',
-            $closingTags . PHP_EOL . $openingTags,
-            $renderedSpan
-        );
-        $html = str_replace($renderedSpan, $finished, $html);
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
     }
 
     return preg_split('/\R/u', $html);

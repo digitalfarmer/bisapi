@@ -537,19 +537,11 @@ class ComposerStaticInit0664355f051cf5cdc53ff3fb113064cd
         'App\\Http\\Controllers\\BISAPIController' => __DIR__ . '/../..' . '/app/Http/Controllers/BISAPIController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\PagesController' => __DIR__ . '/../..' . '/app/Http/Controllers/PagesController.php',
-<<<<<<< HEAD
-=======
-        'App\\Http\\Controllers\\PenjualanController' => __DIR__ . '/../..' . '/app/Http/Controllers/PenjualanController.php',
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
         'App\\Http\\Controllers\\ProsesKartuStokController' => __DIR__ . '/../..' . '/app/Http/Controllers/ProsesKartuStokController.php',
         'App\\Http\\Controllers\\PurchaseOrderController' => __DIR__ . '/../..' . '/app/Http/Controllers/PurchaseOrderController.php',
         'App\\Http\\Controllers\\SequenceController' => __DIR__ . '/../..' . '/app/Http/Controllers/SequenceController.php',
         'App\\Http\\Controllers\\SpreadingController' => __DIR__ . '/../..' . '/app/Http/Controllers/SpreadingController.php',
         'App\\Http\\Controllers\\StockOpnameController' => __DIR__ . '/../..' . '/app/Http/Controllers/StockOpnameController.php',
-<<<<<<< HEAD
-=======
-        'App\\Http\\Controllers\\TransaksiKartuStokController' => __DIR__ . '/../..' . '/app/Http/Controllers/TransaksiKartuStokController.php',
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
         'App\\Http\\Controllers\\delivery' => __DIR__ . '/../..' . '/app/Http/Controllers/delivery.php',
         'App\\Http\\Controllers\\sentdo' => __DIR__ . '/../..' . '/app/Http/Controllers/sentdo.php',
         'App\\Http\\Controllers\\welcome' => __DIR__ . '/../..' . '/app/Http/Controllers/welcome.php',
@@ -569,12 +561,6 @@ class ComposerStaticInit0664355f051cf5cdc53ff3fb113064cd
         'App\\Providers\\BroadcastServiceProvider' => __DIR__ . '/../..' . '/app/Providers/BroadcastServiceProvider.php',
         'App\\Providers\\EventServiceProvider' => __DIR__ . '/../..' . '/app/Providers/EventServiceProvider.php',
         'App\\Providers\\RouteServiceProvider' => __DIR__ . '/../..' . '/app/Providers/RouteServiceProvider.php',
-<<<<<<< HEAD
-=======
-        'App\\Purchase\\pc_barang_datang_model' => __DIR__ . '/../..' . '/app/Purchase/pc_barang_datang_model.php',
-        'App\\Sales\\sl_faktur_model' => __DIR__ . '/../..' . '/app/Sales/sl_faktur_model.php',
-        'App\\Sales\\sl_surat_pesanan_model' => __DIR__ . '/../..' . '/app/Sales/sl_surat_pesanan_model.php',
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
         'App\\Spreading\\sr_pemfakturan_detail_model' => __DIR__ . '/../..' . '/app/Spreading/sr_pemfakturan_detail_model.php',
         'App\\Spreading\\sr_pemfakturan_model' => __DIR__ . '/../..' . '/app/Spreading/sr_pemfakturan_model.php',
         'App\\Spreading\\sr_pemfakturan_salesman_model' => __DIR__ . '/../..' . '/app/Spreading/sr_pemfakturan_salesman_model.php',
@@ -587,10 +573,6 @@ class ComposerStaticInit0664355f051cf5cdc53ff3fb113064cd
         'App\\User' => __DIR__ . '/../..' . '/app/User.php',
         'App\\in_delivery_detail_model' => __DIR__ . '/../..' . '/app/in_delivery_detail_model.php',
         'App\\in_delivery_model' => __DIR__ . '/../..' . '/app/in_delivery_model.php',
-<<<<<<< HEAD
-=======
-        'App\\in_delivery_subdetail_history_model' => __DIR__ . '/../..' . '/app/in_delivery_subdetail_history_model.php',
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
         'App\\in_delivery_subdetail_model' => __DIR__ . '/../..' . '/app/in_delivery_subdetail_model.php',
         'App\\in_kartu_stok_detail_model' => __DIR__ . '/../..' . '/app/in_kartu_stok_detail_model.php',
         'App\\in_stock_opname_awal_model' => __DIR__ . '/../..' . '/app/in_stock_opname_awal_model.php',
@@ -992,10 +974,6 @@ class ComposerStaticInit0664355f051cf5cdc53ff3fb113064cd
         'Facade\\Ignition\\SolutionProviders\\MissingAppKeySolutionProvider' => __DIR__ . '/..' . '/facade/ignition/src/SolutionProviders/MissingAppKeySolutionProvider.php',
         'Facade\\Ignition\\SolutionProviders\\MissingColumnSolutionProvider' => __DIR__ . '/..' . '/facade/ignition/src/SolutionProviders/MissingColumnSolutionProvider.php',
         'Facade\\Ignition\\SolutionProviders\\MissingImportSolutionProvider' => __DIR__ . '/..' . '/facade/ignition/src/SolutionProviders/MissingImportSolutionProvider.php',
-<<<<<<< HEAD
-=======
-        'Facade\\Ignition\\SolutionProviders\\MissingLivewireComponentSolutionProvider' => __DIR__ . '/..' . '/facade/ignition/src/SolutionProviders/MissingLivewireComponentSolutionProvider.php',
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
         'Facade\\Ignition\\SolutionProviders\\MissingMixManifestSolutionProvider' => __DIR__ . '/..' . '/facade/ignition/src/SolutionProviders/MissingMixManifestSolutionProvider.php',
         'Facade\\Ignition\\SolutionProviders\\MissingPackageSolutionProvider' => __DIR__ . '/..' . '/facade/ignition/src/SolutionProviders/MissingPackageSolutionProvider.php',
         'Facade\\Ignition\\SolutionProviders\\RouteNotDefinedSolutionProvider' => __DIR__ . '/..' . '/facade/ignition/src/SolutionProviders/RouteNotDefinedSolutionProvider.php',
@@ -1007,10 +985,6 @@ class ComposerStaticInit0664355f051cf5cdc53ff3fb113064cd
         'Facade\\Ignition\\SolutionProviders\\UnknownValidationSolutionProvider' => __DIR__ . '/..' . '/facade/ignition/src/SolutionProviders/UnknownValidationSolutionProvider.php',
         'Facade\\Ignition\\SolutionProviders\\ViewNotFoundSolutionProvider' => __DIR__ . '/..' . '/facade/ignition/src/SolutionProviders/ViewNotFoundSolutionProvider.php',
         'Facade\\Ignition\\Solutions\\GenerateAppKeySolution' => __DIR__ . '/..' . '/facade/ignition/src/Solutions/GenerateAppKeySolution.php',
-<<<<<<< HEAD
-=======
-        'Facade\\Ignition\\Solutions\\LivewireDiscoverSolution' => __DIR__ . '/..' . '/facade/ignition/src/Solutions/LivewireDiscoverSolution.php',
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
         'Facade\\Ignition\\Solutions\\MakeViewVariableOptionalSolution' => __DIR__ . '/..' . '/facade/ignition/src/Solutions/MakeViewVariableOptionalSolution.php',
         'Facade\\Ignition\\Solutions\\MissingPackageSolution' => __DIR__ . '/..' . '/facade/ignition/src/Solutions/MissingPackageSolution.php',
         'Facade\\Ignition\\Solutions\\RunMigrationsSolution' => __DIR__ . '/..' . '/facade/ignition/src/Solutions/RunMigrationsSolution.php',

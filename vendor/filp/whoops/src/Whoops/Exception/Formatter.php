@@ -21,10 +21,6 @@ class Formatter
         $response = [
             'type'    => get_class($exception),
             'message' => $exception->getMessage(),
-<<<<<<< HEAD
-=======
-            'code'    => $exception->getCode(),
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
             'file'    => $exception->getFile(),
             'line'    => $exception->getLine(),
         ];

@@ -54,11 +54,7 @@ final class TableOfContentsGenerator implements TableOfContentsGeneratorInterfac
 
     public function generate(Document $document): ?TableOfContents
     {
-<<<<<<< HEAD
         $toc = $this->createToc();
-=======
-        $toc = $this->createToc($document);
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
 
         $normalizer = $this->getNormalizer($toc);
 
@@ -107,11 +103,7 @@ final class TableOfContentsGenerator implements TableOfContentsGeneratorInterfac
         return $toc;
     }
 
-<<<<<<< HEAD
     private function createToc(): TableOfContents
-=======
-    private function createToc(Document $document): TableOfContents
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
     {
         $listData = new ListData();
 
@@ -123,16 +115,7 @@ final class TableOfContentsGenerator implements TableOfContentsGeneratorInterfac
             throw new InvalidOptionException(\sprintf('Invalid table of contents list style "%s"', $this->style));
         }
 
-<<<<<<< HEAD
         return new TableOfContents($listData);
-=======
-        $toc = new TableOfContents($listData);
-
-        $toc->setStartLine($document->getStartLine());
-        $toc->setEndLine($document->getEndLine());
-
-        return $toc;
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
     }
 
     /**

@@ -2,17 +2,6 @@
 
 All notable changes to `ignition` will be documented in this file
 
-<<<<<<< HEAD
-=======
-## 2.4.1 - 2020-10-14
-
-- fix copy casing
-
-## 2.4.0 - 2020-10-14
-
-- add livewire component discovery solution
-
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
 ## 2.3.8 - 2020-10-02
 
 - Address Missing Mix Manifest Error (#317)

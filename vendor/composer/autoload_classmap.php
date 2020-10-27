@@ -14,19 +14,11 @@ return array(
     'App\\Http\\Controllers\\BISAPIController' => $baseDir . '/app/Http/Controllers/BISAPIController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\PagesController' => $baseDir . '/app/Http/Controllers/PagesController.php',
-<<<<<<< HEAD
-=======
-    'App\\Http\\Controllers\\PenjualanController' => $baseDir . '/app/Http/Controllers/PenjualanController.php',
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
     'App\\Http\\Controllers\\ProsesKartuStokController' => $baseDir . '/app/Http/Controllers/ProsesKartuStokController.php',
     'App\\Http\\Controllers\\PurchaseOrderController' => $baseDir . '/app/Http/Controllers/PurchaseOrderController.php',
     'App\\Http\\Controllers\\SequenceController' => $baseDir . '/app/Http/Controllers/SequenceController.php',
     'App\\Http\\Controllers\\SpreadingController' => $baseDir . '/app/Http/Controllers/SpreadingController.php',
     'App\\Http\\Controllers\\StockOpnameController' => $baseDir . '/app/Http/Controllers/StockOpnameController.php',
-<<<<<<< HEAD
-=======
-    'App\\Http\\Controllers\\TransaksiKartuStokController' => $baseDir . '/app/Http/Controllers/TransaksiKartuStokController.php',
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
     'App\\Http\\Controllers\\delivery' => $baseDir . '/app/Http/Controllers/delivery.php',
     'App\\Http\\Controllers\\sentdo' => $baseDir . '/app/Http/Controllers/sentdo.php',
     'App\\Http\\Controllers\\welcome' => $baseDir . '/app/Http/Controllers/welcome.php',
@@ -46,12 +38,6 @@ return array(
     'App\\Providers\\BroadcastServiceProvider' => $baseDir . '/app/Providers/BroadcastServiceProvider.php',
     'App\\Providers\\EventServiceProvider' => $baseDir . '/app/Providers/EventServiceProvider.php',
     'App\\Providers\\RouteServiceProvider' => $baseDir . '/app/Providers/RouteServiceProvider.php',
-<<<<<<< HEAD
-=======
-    'App\\Purchase\\pc_barang_datang_model' => $baseDir . '/app/Purchase/pc_barang_datang_model.php',
-    'App\\Sales\\sl_faktur_model' => $baseDir . '/app/Sales/sl_faktur_model.php',
-    'App\\Sales\\sl_surat_pesanan_model' => $baseDir . '/app/Sales/sl_surat_pesanan_model.php',
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
     'App\\Spreading\\sr_pemfakturan_detail_model' => $baseDir . '/app/Spreading/sr_pemfakturan_detail_model.php',
     'App\\Spreading\\sr_pemfakturan_model' => $baseDir . '/app/Spreading/sr_pemfakturan_model.php',
     'App\\Spreading\\sr_pemfakturan_salesman_model' => $baseDir . '/app/Spreading/sr_pemfakturan_salesman_model.php',
@@ -64,10 +50,6 @@ return array(
     'App\\User' => $baseDir . '/app/User.php',
     'App\\in_delivery_detail_model' => $baseDir . '/app/in_delivery_detail_model.php',
     'App\\in_delivery_model' => $baseDir . '/app/in_delivery_model.php',
-<<<<<<< HEAD
-=======
-    'App\\in_delivery_subdetail_history_model' => $baseDir . '/app/in_delivery_subdetail_history_model.php',
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
     'App\\in_delivery_subdetail_model' => $baseDir . '/app/in_delivery_subdetail_model.php',
     'App\\in_kartu_stok_detail_model' => $baseDir . '/app/in_kartu_stok_detail_model.php',
     'App\\in_stock_opname_awal_model' => $baseDir . '/app/in_stock_opname_awal_model.php',
@@ -469,10 +451,6 @@ return array(
     'Facade\\Ignition\\SolutionProviders\\MissingAppKeySolutionProvider' => $vendorDir . '/facade/ignition/src/SolutionProviders/MissingAppKeySolutionProvider.php',
     'Facade\\Ignition\\SolutionProviders\\MissingColumnSolutionProvider' => $vendorDir . '/facade/ignition/src/SolutionProviders/MissingColumnSolutionProvider.php',
     'Facade\\Ignition\\SolutionProviders\\MissingImportSolutionProvider' => $vendorDir . '/facade/ignition/src/SolutionProviders/MissingImportSolutionProvider.php',
-<<<<<<< HEAD
-=======
-    'Facade\\Ignition\\SolutionProviders\\MissingLivewireComponentSolutionProvider' => $vendorDir . '/facade/ignition/src/SolutionProviders/MissingLivewireComponentSolutionProvider.php',
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
     'Facade\\Ignition\\SolutionProviders\\MissingMixManifestSolutionProvider' => $vendorDir . '/facade/ignition/src/SolutionProviders/MissingMixManifestSolutionProvider.php',
     'Facade\\Ignition\\SolutionProviders\\MissingPackageSolutionProvider' => $vendorDir . '/facade/ignition/src/SolutionProviders/MissingPackageSolutionProvider.php',
     'Facade\\Ignition\\SolutionProviders\\RouteNotDefinedSolutionProvider' => $vendorDir . '/facade/ignition/src/SolutionProviders/RouteNotDefinedSolutionProvider.php',
@@ -484,10 +462,6 @@ return array(
     'Facade\\Ignition\\SolutionProviders\\UnknownValidationSolutionProvider' => $vendorDir . '/facade/ignition/src/SolutionProviders/UnknownValidationSolutionProvider.php',
     'Facade\\Ignition\\SolutionProviders\\ViewNotFoundSolutionProvider' => $vendorDir . '/facade/ignition/src/SolutionProviders/ViewNotFoundSolutionProvider.php',
     'Facade\\Ignition\\Solutions\\GenerateAppKeySolution' => $vendorDir . '/facade/ignition/src/Solutions/GenerateAppKeySolution.php',
-<<<<<<< HEAD
-=======
-    'Facade\\Ignition\\Solutions\\LivewireDiscoverSolution' => $vendorDir . '/facade/ignition/src/Solutions/LivewireDiscoverSolution.php',
->>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
     'Facade\\Ignition\\Solutions\\MakeViewVariableOptionalSolution' => $vendorDir . '/facade/ignition/src/Solutions/MakeViewVariableOptionalSolution.php',
     'Facade\\Ignition\\Solutions\\MissingPackageSolution' => $vendorDir . '/facade/ignition/src/Solutions/MissingPackageSolution.php',
     'Facade\\Ignition\\Solutions\\RunMigrationsSolution' => $vendorDir . '/facade/ignition/src/Solutions/RunMigrationsSolution.php',
