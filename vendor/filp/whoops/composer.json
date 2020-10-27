@@ -12,11 +12,19 @@
         }
     ],
     "require": {
+<<<<<<< HEAD
         "php": "^5.5.9 || ^7.0",
         "psr/log": "^1.0.1"        
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.0",
+=======
+        "php": "^5.5.9 || ^7.0 || ^8.0",
+        "psr/log": "^1.0.1"        
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8.36 || ^5.7.27 || ^6.5.14 || ^7.5.20 || ^8.5.8 || ^9.3.3",
+>>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
         "mockery/mockery": "^0.9 || ^1.0",
         "symfony/var-dumper": "^2.6 || ^3.0 || ^4.0 || ^5.0"
     },
@@ -36,7 +44,11 @@
     },
     "extra": {
         "branch-alias": {
+<<<<<<< HEAD
             "dev-master": "2.6-dev"
+=======
+            "dev-master": "2.7-dev"
+>>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
         }
     }
 }

@@ -46,6 +46,11 @@ final class RelativeNormalizerStrategy implements NormalizerStrategyInterface
         // Need to go one level deeper? Add that level
         if ($lastListItem !== false && $level > $previousLevel) {
             $targetListBlock = new ListBlock($lastListItem->getListData());
+<<<<<<< HEAD
+=======
+            $targetListBlock->setStartLine($listItemToAdd->getStartLine());
+            $targetListBlock->setEndLine($listItemToAdd->getEndLine());
+>>>>>>> 109dd305eaa4645d7e6dd5de84e85aa2a7a2c70a
             $lastListItem->appendChild($targetListBlock);
         // Otherwise we're at the right level
         // If there's no stack we're adding this item directly to the TOC element
