@@ -72,14 +72,14 @@ class SpreadingController extends Controller
         $nomor_ds = $this->SequenceController->getNewNumber('DS',$data['spreading_header']['date']);                    
         #return $nomor_ds;        
 
-        $Peminjaman_Header['No_Peminjaman']   = $nomor_oc;         
-        $Peminjaman_Header['ID_Spreading']    = $data['spreading_header']['salesman_code'];         
-        $Peminjaman_Header['Tanggal_Pinjam']  = $data['spreading_header']['date'];                                 
-        $Peminjaman_Header['Kode_Rayon']      = '';                                 
-        $Peminjaman_Header['Status_Tercetak'] = 'N';                                 
-        $Peminjaman_Header['Time_Stamp']      = Carbon::now('Asia/Jakarta');                             
-        $Peminjaman_Header['User_ID']         = 'OdooWMS';                                 
-        $Peminjaman_Header['No_Depo']         = '0';                                         
+        $Peminjaman_Header['No_Peminjaman']    = $nomor_oc;         
+        $Peminjaman_Header['ID_Spreading']     = $data['spreading_header']['salesman_code'];         
+        $Peminjaman_Header['Tanggal_Pinjam']   = $data['spreading_header']['date'];                                 
+        $Peminjaman_Header['Kode_Rayon']       = '';                                 
+        $Peminjaman_Header['Status_Tercetak']  = 'N';                                 
+        $Peminjaman_Header['Time_Stamp']       = Carbon::now('Asia/Jakarta');                             
+        $Peminjaman_Header['User_ID']          = 'OdooWMS';                                 
+        $Peminjaman_Header['No_Depo']          = '0';                                         
                 
         $Delivery_Header['No_Delivery']         = $nomor_ds;            
         $Delivery_Header['Kode_Referensi']      = $nomor_oc;
@@ -126,7 +126,7 @@ class SpreadingController extends Controller
         foreach($data['spreading_subdetail'] as $Subdetails[]) 
         {
             $Delivery_Subdetail[$row]['No_Delivery'] = $nomor_ds; 
-            $Mapping_Kode_Gudang          = ms_mapping_wh_odoo_model::where('wh_code','=',$warehouse_code)
+            $Mapping_Kode_Gudang  = ms_mapping_wh_odoo_model::where('wh_code','=',$warehouse_code)
                                                                      ->select('kode_gudang')
                                                                      ->get();
 

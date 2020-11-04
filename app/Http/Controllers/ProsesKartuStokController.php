@@ -572,10 +572,10 @@ class ProsesKartuStokController extends Controller
     {
         $data = [];
 
-        $data['adjustment_id']       = $request->adjustment_id ;   
-        $sudah_ada = in_stock_opname_blocking_model::where('adjustment_id','=', (int)$data['adjustment_id'])
-                                                     ->select('adjustment_id')
-                                                     ->get();  
+        $data['adjustment_id']  = $request->adjustment_id ;   
+        $sudah_ada              = in_stock_opname_blocking_model::where('adjustment_id','=', (int)$data['adjustment_id'])
+                                                                 ->select('adjustment_id')
+                                                                 ->get();  
         #return($data['adjustment_id']);
 
         

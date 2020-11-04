@@ -143,7 +143,7 @@ class SequenceController extends Controller
                             
         if (count($OnOpnameStock)>0) {
             response()->json([
-                             'opname_status'=>1,                           
+                             'opname_status'=> 1,                           
                              'kkso_status'=> $OnOpnameStock
                              ])->send();        
         } 

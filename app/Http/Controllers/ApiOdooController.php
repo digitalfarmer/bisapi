@@ -12,7 +12,6 @@ use App\ms_mapping_spg_odoo_model;
 
 class ApiOdooController extends Controller
 {    
-   
     public function getPickingItem($picking_id)
     {        
         $odoo = new \Edujugon\Laradoo\Odoo();
@@ -30,7 +29,7 @@ class ApiOdooController extends Controller
                                 ->get('stock.move.line');
 
  
-            $rowCount=0;
+            $rowCount = 0;
             foreach ($stock_move_line as  $details)
             {
                 $Do_Detail[$rowCount]['No_Delivery']       = $no_delivery[0]['origin'];
@@ -46,13 +45,13 @@ class ApiOdooController extends Controller
                               ->limit(1)                             
                               ->get('stock.production.lot');   
 
-                $Do_Detail[$rowCount]['Kode_Barang']       = $product[0]['default_code'];
-                $Do_Detail[$rowCount]['No_Batch']          = $batch[0]['name'];
-                $Do_Detail[$rowCount]['Jumlah']            = $details['qty_done'];
-                $Do_Detail[$rowCount]['Satuan']            = $details['product_uom_id'][1];
-                $Do_Detail[$rowCount]['Kadaluarsa']        = $batch[0]['expiry_date'];
-                $Do_Detail[$rowCount]['Terima']            = $details['qty_done'];
-                $Do_Detail[$rowCount]['ID_Program_Promosi']= '';
+                $Do_Detail[$rowCount]['Kode_Barang']        = $product[0]['default_code'];
+                $Do_Detail[$rowCount]['No_Batch']           = $batch[0]['name'];
+                $Do_Detail[$rowCount]['Jumlah']             = $details['qty_done'];
+                $Do_Detail[$rowCount]['Satuan']             = $details['product_uom_id'][1];
+                $Do_Detail[$rowCount]['Kadaluarsa']         = $batch[0]['expiry_date'];
+                $Do_Detail[$rowCount]['Terima']             = $details['qty_done'];
+                $Do_Detail[$rowCount]['ID_Program_Promosi'] = '';
                 $rowCount++;   
             }         
 
@@ -78,26 +77,25 @@ class ApiOdooController extends Controller
         //$product_uom= $request->prodcut_uom; 
         $odoo = new \Edujugon\Laradoo\Odoo();
         $odoo = $odoo->connect(); 
-        $picking_id = $request->picking_id;
-        $product_id = $request->product_id;
+
+        $picking_id  = $request->picking_id;
+        $product_id  = $request->product_id;
         $product_uom = $request->product_uom;
 
-        $result1 = $odoo->where('picking_id.id','=',$picking_id)                            
-                        ->where('product_id.id','=',$product_id)
-                        ->where('product_uom.id','=',$product_uom)
-                        ->search('stock.move');   
-
+        $result1     = $odoo->where('picking_id.id','=',$picking_id)                            
+                            ->where('product_id.id','=',$product_id)
+                            ->where('product_uom.id','=',$product_uom)
+                            ->search('stock.move');   
         return $result1;         
     }
 
     public function get_rqStockMoveLine(Request $request )
     {
         //$product_uom= $request->prodcut_uom; 
-        $odoo = new \Edujugon\Laradoo\Odoo();
-        $odoo = $odoo->connect(); 
-        $no_delivery = $request->no_delivery;
-
-        $no_delivery1= substr($no_delivery,0,5).'/'.substr($no_delivery,5,6).'/'.substr($no_delivery,11,5); 
+        $odoo         = new \Edujugon\Laradoo\Odoo();
+        $odoo         = $odoo->connect(); 
+        $no_delivery  = $request->no_delivery;
+        $no_delivery1 = substr($no_delivery,0,5).'/'.substr($no_delivery,5,6).'/'.substr($no_delivery,11,5); 
 
         //$product_id = $request->product_id;
         //$product_uom = $request->product_uom;
@@ -106,7 +104,6 @@ class ApiOdooController extends Controller
         $stock_move_line = $odoo->where('picking_id.origin','=',$no_delivery1)   
                                 ->where('picking_id.state','=','done')                               
                                 ->search('stock.move.line');   
-
                         
 
         return $stock_move_line;         
@@ -128,8 +125,8 @@ class ApiOdooController extends Controller
 
     public function confirmStockPicking($picking_id)
     {
-        $odoo = new \Edujugon\Laradoo\Odoo();
-        $odoo = $odoo->connect();   
+        $odoo   = new \Edujugon\Laradoo\Odoo();
+        $odoo   = $odoo->connect();   
         $result = $odoo->call(
                             'stock.picking', 
                             'action_confirm',
@@ -154,23 +151,23 @@ class ApiOdooController extends Controller
                     $odoo = $odoo->connect();           
 
                    
-                    $header= in_delivery_model::where('no_delivery',$no_delivery1)->get(); 
-                    $detail= in_delivery_detail_model::where('no_delivery',$no_delivery1)        
-                                                     ->leftjoin('ms_satuan_map','in_delivery_detail.satuan','=','ms_satuan_map.satuanBSP')    
-                                                     ->leftjoin('ms_mapping_uom_odoo', function($join)
+                    $header = in_delivery_model::where('no_delivery',$no_delivery1)->get(); 
+                    $detail = in_delivery_detail_model::where('no_delivery',$no_delivery1)        
+                                                        ->leftjoin('ms_satuan_map','in_delivery_detail.satuan','=','ms_satuan_map.satuanBSP')    
+                                                        ->leftjoin('ms_mapping_uom_odoo', function($join)
                                                                     {
                                                                     $join->on('ms_satuan_map.satuanSAP','=','ms_mapping_uom_odoo.satuan_odoo');
                                                                     $join->on('in_delivery_detail.kode_barang','=','ms_mapping_uom_odoo.kode_barang');                      
                                                                     }                       
                                                                 )
-                                                     ->leftjoin('ms_mapping_product_odoo','in_delivery_detail.kode_barang','=','ms_mapping_product_odoo.kode_barang')       
-                                                     ->select(
+                                                        ->leftjoin('ms_mapping_product_odoo','in_delivery_detail.kode_barang','=','ms_mapping_product_odoo.kode_barang')       
+                                                        ->select(
                                                                 'in_delivery_detail.*',
                                                                 'ms_satuan_map.satuanSAP as satuan_odoo',
                                                                 'ms_mapping_uom_odoo.uom_id',
                                                                 'ms_mapping_product_odoo.product_id'                           
                                                                 )
-                                                      ->get();  
+                                                        ->get();  
 
                     /* 
                     $subdetail= in_delivery_subdetail_model::where('no_delivery',$no_delivery1)        
@@ -203,14 +200,14 @@ class ApiOdooController extends Controller
                 
                 
                     //Stock.Move Model       
-                    $rowCount=0;
+                    $rowCount = 0 ;
                     foreach ($detail as  $details)
                     {                                     
-                        $Do_Detail[$rowCount]['No_Delivery']=$details['No_Delivery'];
-                        $Do_Detail[$rowCount]['Kode_Barang']=$details['Kode_Barang'];
-                        $Do_Detail[$rowCount]['Jumlah']     =$details['Jumlah'];       
-                        $Do_Detail[$rowCount]['uom_id']     =$details['uom_id'];
-                        $Do_Detail[$rowCount]['product_id'] =$details['product_id']; 
+                        $Do_Detail[$rowCount]['No_Delivery'] = $details['No_Delivery'];
+                        $Do_Detail[$rowCount]['Kode_Barang'] = $details['Kode_Barang'];
+                        $Do_Detail[$rowCount]['Jumlah']      = $details['Jumlah'];       
+                        $Do_Detail[$rowCount]['uom_id']      = $details['uom_id'];
+                        $Do_Detail[$rowCount]['product_id']  = $details['product_id']; 
                         
                         $stock_move_id = $odoo->create('stock.move',
                                                         [    
@@ -361,9 +358,9 @@ class ApiOdooController extends Controller
                        /* ==== end Stock Move Line   */
                                        
                     //insert to ms_mapping_spg_odoo model (mysql)
-                    $ms_mapping_spg_odoo = new ms_mapping_spg_odoo_model;
+                    $ms_mapping_spg_odoo              = new ms_mapping_spg_odoo_model;
                     $ms_mapping_spg_odoo->no_delivery = $no_delivery1;
-                    $ms_mapping_spg_odoo->picking_id = $stock_picking_id;
+                    $ms_mapping_spg_odoo->picking_id  = $stock_picking_id;
                     $ms_mapping_spg_odoo->save();                                
 
                     
@@ -382,44 +379,44 @@ class ApiOdooController extends Controller
     public function getDelivery($no_delivery)  
     {   //doblg20200100001
         //DOBLG/202002/09864
-        $no_delivery1= substr($no_delivery,0,5).'/'.substr($no_delivery,5,6).'/'.substr($no_delivery,11,5); 
-        $header= in_delivery_model::where('no_delivery',$no_delivery1)->get();
-        $detail= in_delivery_detail_model::where('no_delivery',$no_delivery1)        
-               ->leftjoin('ms_satuan_map','in_delivery_detail.satuan','=','ms_satuan_map.satuanBSP')    
-               ->leftjoin('ms_mapping_uom_odoo', function($join)
-                          {
-                           $join->on('ms_satuan_map.satuanSAP','=','ms_mapping_uom_odoo.satuan_odoo');
-                           $join->on('in_delivery_detail.kode_barang','=','ms_mapping_uom_odoo.kode_barang');                      
-                          }                       
-                       )
-              ->leftjoin('ms_mapping_product_odoo','in_delivery_detail.kode_barang','=','ms_mapping_product_odoo.kode_barang')       
-              ->select(
-                      'in_delivery_detail.*',
-                      'ms_satuan_map.satuanSAP as satuan_odoo',
-                      'ms_mapping_uom_odoo.uom_id',
-                      'ms_mapping_product_odoo.product_id'                           
-                      )
-              ->get();
+        $no_delivery1 = substr($no_delivery,0,5).'/'.substr($no_delivery,5,6).'/'.substr($no_delivery,11,5); 
+        $header = in_delivery_model::where('no_delivery',$no_delivery1)->get();
+        $detail = in_delivery_detail_model::where('no_delivery',$no_delivery1)        
+                                            ->leftjoin('ms_satuan_map','in_delivery_detail.satuan','=','ms_satuan_map.satuanBSP')    
+                                            ->leftjoin('ms_mapping_uom_odoo', function($join)
+                                                        {
+                                                        $join->on('ms_satuan_map.satuanSAP','=','ms_mapping_uom_odoo.satuan_odoo');
+                                                        $join->on('in_delivery_detail.kode_barang','=','ms_mapping_uom_odoo.kode_barang');                      
+                                                        }                       
+                                                    )
+                                            ->leftjoin('ms_mapping_product_odoo','in_delivery_detail.kode_barang','=','ms_mapping_product_odoo.kode_barang')       
+                                            ->select(
+                                                    'in_delivery_detail.*',
+                                                    'ms_satuan_map.satuanSAP as satuan_odoo',
+                                                    'ms_mapping_uom_odoo.uom_id',
+                                                    'ms_mapping_product_odoo.product_id'                           
+                                                    )
+                                            ->get();
 
         $subdetail= in_delivery_subdetail_model::where('no_delivery',$no_delivery1)        
-              ->leftjoin('ms_satuan_map','in_delivery_subdetail.satuan','=','ms_satuan_map.satuanBSP')    
-              ->leftjoin('ms_mapping_uom_odoo', function($join)
-                       {
-                         $join->on('ms_satuan_map.satuanSAP','=','ms_mapping_uom_odoo.satuan_odoo');
-                         $join->on('in_delivery_subdetail.kode_barang','=','ms_mapping_uom_odoo.kode_barang');                      
-                       }                       
-                      )
-               ->leftjoin('ms_mapping_product_odoo','in_delivery_subdetail.kode_barang','=','ms_mapping_product_odoo.kode_barang')        
-               ->select('in_delivery_subdetail.*',
-                        'ms_satuan_map.satuanSAP as satuan_odoo',
-                        'ms_mapping_uom_odoo.uom_id',
-                        'ms_mapping_product_odoo.product_id'                           
-                    )
-               ->get();
+                                                ->leftjoin('ms_satuan_map','in_delivery_subdetail.satuan','=','ms_satuan_map.satuanBSP')    
+                                                ->leftjoin('ms_mapping_uom_odoo', function($join)
+                                                            {
+                                                                $join->on('ms_satuan_map.satuanSAP','=','ms_mapping_uom_odoo.satuan_odoo');
+                                                                $join->on('in_delivery_subdetail.kode_barang','=','ms_mapping_uom_odoo.kode_barang');                      
+                                                            }                       
+                                                    )
+                                                ->leftjoin('ms_mapping_product_odoo','in_delivery_subdetail.kode_barang','=','ms_mapping_product_odoo.kode_barang')        
+                                                ->select('in_delivery_subdetail.*',
+                                                            'ms_satuan_map.satuanSAP as satuan_odoo',
+                                                            'ms_mapping_uom_odoo.uom_id',
+                                                            'ms_mapping_product_odoo.product_id'                           
+                                                        )
+                                                ->get();
 
-        $result['in_delivery']=$header;
-        $result['in_delivery_detail']=$detail;//tambahin uom_id & product_id
-        $result['in_delivery_subdetail']=$subdetail;//tambahin uom_id & product_id        
+        $result['in_delivery']           = $header;
+        $result['in_delivery_detail']    = $detail;//tambahin uom_id & product_id
+        $result['in_delivery_subdetail'] = $subdetail;//tambahin uom_id & product_id        
         return $result;
     }
 
@@ -431,41 +428,41 @@ class ApiOdooController extends Controller
         $no_delivery1= substr($no_delivery,0,5).'/'.substr($no_delivery,5,6).'/'.substr($no_delivery,11,5); 
         $header= in_delivery_model::where('no_delivery',$no_delivery1)->get();
         $detail= in_delivery_detail_model::where('no_delivery',$no_delivery1)        
-               ->leftjoin('ms_satuan_map','in_delivery_detail.satuan','=','ms_satuan_map.satuanBSP')    
-               ->leftjoin('ms_mapping_uom_odoo', function($join)
-                          {
-                           $join->on('ms_satuan_map.satuanSAP','=','ms_mapping_uom_odoo.satuan_odoo');
-                           $join->on('in_delivery_detail.kode_barang','=','ms_mapping_uom_odoo.kode_barang');                      
-                          }                       
-                       )
-              ->leftjoin('ms_mapping_product_odoo','in_delivery_detail.kode_barang','=','ms_mapping_product_odoo.kode_barang')       
-              ->select(
-                      'in_delivery_detail.*',
-                      'ms_satuan_map.satuanSAP',
-                      'ms_mapping_uom_odoo.uom_id',
-                      'ms_mapping_product_odoo.product_id'                           
-                      )
-              ->get();
+                                            ->leftjoin('ms_satuan_map','in_delivery_detail.satuan','=','ms_satuan_map.satuanBSP')    
+                                            ->leftjoin('ms_mapping_uom_odoo', function($join)
+                                                        {
+                                                        $join->on('ms_satuan_map.satuanSAP','=','ms_mapping_uom_odoo.satuan_odoo');
+                                                        $join->on('in_delivery_detail.kode_barang','=','ms_mapping_uom_odoo.kode_barang');                      
+                                                        }                       
+                                                    )
+                                            ->leftjoin('ms_mapping_product_odoo','in_delivery_detail.kode_barang','=','ms_mapping_product_odoo.kode_barang')       
+                                            ->select(
+                                                    'in_delivery_detail.*',
+                                                    'ms_satuan_map.satuanSAP',
+                                                    'ms_mapping_uom_odoo.uom_id',
+                                                    'ms_mapping_product_odoo.product_id'                           
+                                                    )
+                                            ->get();
 
-        $subdetail= in_delivery_subdetail_model::where('no_delivery',$no_delivery1)        
-              ->leftjoin('ms_satuan_map','in_delivery_subdetail.satuan','=','ms_satuan_map.satuanBSP')    
-              ->leftjoin('ms_mapping_uom_odoo', function($join)
-                      {
-                            $join->on('ms_satuan_map.satuanSAP','=','ms_mapping_uom_odoo.satuan_odoo');
-                            $join->on('in_delivery_subdetail.kode_barang','=','ms_mapping_uom_odoo.kode_barang');                      
-                       }                       
-                      )
-               ->leftjoin('ms_mapping_product_odoo','in_delivery_subdetail.kode_barang','=','ms_mapping_product_odoo.kode_barang')        
-               ->select('in_delivery_subdetail.*',
-                        'ms_satuan_map.satuanSAP',
-                        'ms_mapping_uom_odoo.uom_id',
-                        'ms_mapping_product_odoo.product_id'                           
-                    )
-               ->get();
+        $subdetail = in_delivery_subdetail_model::where('no_delivery',$no_delivery1)        
+                                                  ->leftjoin('ms_satuan_map','in_delivery_subdetail.satuan','=','ms_satuan_map.satuanBSP')    
+                                                  ->leftjoin('ms_mapping_uom_odoo', function($join)
+                                                        {
+                                                                $join->on('ms_satuan_map.satuanSAP','=','ms_mapping_uom_odoo.satuan_odoo');
+                                                                $join->on('in_delivery_subdetail.kode_barang','=','ms_mapping_uom_odoo.kode_barang');                      
+                                                        }                       
+                                                        )
+                                                  ->leftjoin('ms_mapping_product_odoo','in_delivery_subdetail.kode_barang','=','ms_mapping_product_odoo.kode_barang')        
+                                                  ->select('in_delivery_subdetail.*',
+                                                            'ms_satuan_map.satuanSAP',
+                                                            'ms_mapping_uom_odoo.uom_id',
+                                                            'ms_mapping_product_odoo.product_id'                           
+                                                        )
+                                                 ->get();
 
-        $result['in_delivery']=$header;
-        $result['in_delivery_detail']=$detail;//tambahin uom_id & product_id
-        $result['in_delivery_subdetail']=$subdetail;//tambahin uom_id & product_id        
+        $result['in_delivery']           = $header;
+        $result['in_delivery_detail']    = $detail;//tambahin uom_id & product_id
+        $result['in_delivery_subdetail'] = $subdetail;//tambahin uom_id & product_id        
         return $result;
     }
 
