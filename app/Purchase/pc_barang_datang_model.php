@@ -24,5 +24,6 @@ class pc_barang_datang_model extends Model
                     'Time_Stamp'];  
     
     public $timestamps = false;          
+	// test 2020-11-10 14:10
 
 }
