@@ -9,20 +9,16 @@ use Illuminate\Http\Request;
 
 class PurchaseReceiveController extends Controller
 {
-    public function getReceiving() 
-    {
+    public function getReceiving($no_bpb,$no_do)     
+    {              
         $odoo = new \Edujugon\Laradoo\Odoo();
         $odoo = $odoo->connect(); 
-     
+
         $result = $odoo->call(
                             'stock.picking', 
-                            'get_summarize_move_line',                           
-                            [['BPB1111'],['DO11111']]           
-                            #['DO11111','BPB1111']           
+                            'get_summarize_move_line',                                                                               
+                             [0,$no_bpb,$no_do]
                            );
-        return($result);       
-
- 
-        
-    }  //
+        return($result);               
+    }  
 }

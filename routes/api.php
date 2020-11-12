@@ -38,4 +38,4 @@ Route::post('blg/postPemfakturanKanvas/{order_id}','SpreadingController@postPemf
 
 route::post('blg/KartuStokAdjustment','ProsesKartuStokController@KartuStokAdjustment');
  
-Route::get('blg/getReceiving','PurchaseReceiveController@getReceiving');
+Route::get('blg/getReceiving/{no_bpb}/{no_do}','PurchaseReceiveController@getReceiving');
