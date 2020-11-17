@@ -25,8 +25,8 @@ Route::get('blg/get_stock/{adjustment_id}','ProsesKartuStokController@get_stock'
 Route::post('blg/flagBlockingStock/{adjustment_id}','ProsesKartuStokController@FlagBlockingStock');   
 Route::post('blg/cancelBlockingStock/{adjustment_id}','ProsesKartuStokController@CancelBlockingStock');   
 //Cek Status Adjustment BLG
-Route::post('blg/cekOpnameStatus','SequenceController@cekOpnameStatus');
-Route::get('blg/cekDivisiProdukOpname/{Kode_Divisi_Produk}','SequenceController@cekDivisiProdukOpname');
+Route::post('blg/cekOpnameStatus','OdooBISOpnameController@cekOpnameStatus');
+Route::get('blg/cekDivisiProdukOpname/{Kode_Divisi_Produk}','OdooBISOpnameController@cekDivisiProdukOpname');
 //Sequence numbering BISMySQL Version
 Route::get('blg/getNewNumber/{type_nomor}/{tanggal_transaksi}','SequenceController@getNewNumber');
 //create kkso BLG
@@ -39,3 +39,4 @@ Route::post('blg/postPemfakturanKanvas/{order_id}','SpreadingController@postPemf
 route::post('blg/KartuStokAdjustment','ProsesKartuStokController@KartuStokAdjustment');
  
 Route::get('blg/getReceiving/{no_bpb}/{no_do}','PurchaseReceiveController@getReceiving');
+Route::get('blg/getListReceiving','PurchaseReceiveController@getListReceiving');
