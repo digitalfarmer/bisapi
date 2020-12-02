@@ -7,7 +7,7 @@ services:
     volumes:
       - ./:/var/www
     ports:
-      - "8011:80"
+      - "80:80"
     links:
       - bis
 
@@ -29,9 +29,9 @@ services:
         MYSQL_ROOT_PASSWORD: secret
         MYSQL_DATABASE: bisapi
     ports:
-        - "33061:3306"
+        - "3306:3306"
 
   cache:
     image: redis:3.0
     ports:
-      - "63791:6379"
+      - "6379:6379"
